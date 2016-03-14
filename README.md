@@ -7,31 +7,32 @@ Usage
 * build image from Dockerfile
 
 ```
-$ docker build -t fess .
+$ docker build -t fess-img .
 ```
 
-* run fess image
+* create container from image
 
 ```
-$ docker run -d -p 127.0.0.1:8080:8080 fess
+$ docker create -p 127.0.0.1:8080:8080 --name fess fess-img
 ```
 
-* check the container id
+* start fess container
 
 ```
-$ docker ps
+$ docker start fess
 ```
+
+You can access http://127.0.0.1:8080 from the host os!
 
 * execute bash in running container
 
 ```
-$ docker exec -it CONTAINER_ID /bin/bash
+$ docker exec -it fess /bin/bash
 ```
 
 * stop container
 
 ```
-$ docker stop CONTAINER_ID
+$ docker stop fess
 ```
 
-* open http://127.0.0.1:8080 from the host os
