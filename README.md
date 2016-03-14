@@ -7,7 +7,7 @@ Usage
 * build image from Dockerfile
 
 ```
-$ docker build -t fess-img .
+$ docker build --rm -t fess-img .
 ```
 
 * create container from image
