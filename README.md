@@ -13,7 +13,7 @@ $ docker build --rm -t fess-img .
 * create container from image
 
 ```
-$ docker create -p 8080:8080 --name fess --privileged fess-img
+$ docker create -p 8080:8080 --name fess fess-img
 ```
 
 * start fess container
@@ -28,6 +28,12 @@ You can access http://127.0.0.1:8080 from the host os!
 
 ```
 $ docker exec -it fess /bin/bash
+```
+
+* show container IP address
+
+```
+$ docker inspect --format '{{ .NetworkSettings.IPAddress }}' fess
 ```
 
 * stop container
