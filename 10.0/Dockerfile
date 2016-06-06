@@ -6,6 +6,7 @@ ENV FESS_FILENAME=fess-${FESS_VERSION}.zip
 ENV FESS_REMOTE_URI=https://github.com/codelibs/fess/releases/download/fess-${FESS_VERSION}/${FESS_FILENAME}
 
 EXPOSE 8080
+EXPOSE 9201
 
 WORKDIR /tmp
 
