@@ -1,5 +1,5 @@
 FROM centos:7
-MAINTAINER codelibs <oss@n2sm.net>
+MAINTAINER N2SM <support@n2sm.net>
 
 ENV FESS_VERSION=10.1.0
 ENV FESS_FILENAME=fess-${FESS_VERSION}-SNAPSHOT.zip
