@@ -5,9 +5,6 @@ ENV FESS_VERSION=10.1.0
 ENV FESS_FILENAME=fess-${FESS_VERSION}-SNAPSHOT.zip
 ENV FESS_REMOTE_URI=http://fess.codelibs.org/snapshot/${FESS_FILENAME}
 
-EXPOSE 8080
-EXPOSE 9201
-
 WORKDIR /tmp
 
 # java
@@ -26,3 +23,5 @@ WORKDIR /opt/fess
 
 ENTRYPOINT [ "/opt/fess/bin/fess" ]
 CMD [ "/opt/fess/bin/fess" ]
+
+EXPOSE 8080 9201 9301
