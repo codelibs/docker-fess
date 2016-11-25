@@ -1,9 +1,9 @@
 FROM centos:7
 MAINTAINER N2SM <support@n2sm.net>
 
-ENV FESS_VERSION=11.0.0
-ENV FESS_FILENAME=fess-${FESS_VERSION}-SNAPSHOT.zip
-ENV FESS_REMOTE_URI=http://fess.codelibs.org/snapshot/${FESS_FILENAME}
+ENV FESS_VERSION=10.3.0
+ENV FESS_FILENAME=fess-${FESS_VERSION}.zip
+ENV FESS_REMOTE_URI=https://github.com/codelibs/fess/releases/download/fess-${FESS_VERSION}/${FESS_FILENAME}
 
 WORKDIR /tmp
 
@@ -17,7 +17,7 @@ RUN yum -y update && yum -y install \
 RUN curl -OL ${FESS_REMOTE_URI}
 RUN unzip /tmp/${FESS_FILENAME} -d /opt
 RUN rm /tmp/${FESS_FILENAME}
-RUN ln -s /opt/fess-${FESS_VERSION}-SNAPSHOT /opt/fess
+RUN ln -s /opt/fess-${FESS_VERSION} /opt/fess
 
 WORKDIR /opt/fess
 
