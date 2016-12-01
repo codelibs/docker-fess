@@ -1,10 +1,14 @@
 version: '2'
 services:
   fess:
-    build: ./
+    build: ./fess
     ports:
       - "8080:8080"
     depends_on:
       - elasticsearch
+    environment:
+      - ES_HTTP_URL=http://compose_elasticsearch_1:9200
+      - ES_TRANSPORT_URL=compose_elasticsearch_1:9300
+      - FESS_DICTIONARY_PATH=/usr/share/elasticsearch/config/
   elasticsearch:
-    image: elasticsearch:2.4.2
+    build: ./elasticsearch

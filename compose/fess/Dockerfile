@@ -30,7 +30,7 @@ ENV PATH /usr/share/fess/bin:$PATH
 
 WORKDIR /usr/share/fess
 
-COPY config ./lib/classes
+RUN cp -r /etc/fess/* /usr/share/fess/lib/classes
 
 COPY docker-entrypoint.sh /
 
