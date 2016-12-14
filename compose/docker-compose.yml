@@ -7,8 +7,19 @@ services:
     depends_on:
       - elasticsearch
     environment:
-      - ES_HTTP_URL=http://compose_elasticsearch_1:9200
-      - ES_TRANSPORT_URL=compose_elasticsearch_1:9300
+      - ES_HTTP_URL=http://elasticsearch:9200
+      - ES_TRANSPORT_URL=elasticsearch:9300
       - FESS_DICTIONARY_PATH=/usr/share/elasticsearch/config/
+    volumes:
+      - esconfig:/usr/share/elasticsearch/config
   elasticsearch:
     build: ./elasticsearch
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+      - esconfig:/usr/share/elasticsearch/config
+
+volumes:
+  esdata:
+    driver: local
+  esconfig:
+    driver: local

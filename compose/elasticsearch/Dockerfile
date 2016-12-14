@@ -9,10 +9,15 @@ RUN /usr/share/elasticsearch/bin/plugin install org.codelibs/elasticsearch-analy
     /usr/share/elasticsearch/bin/plugin install http://maven.codelibs.org/archive/elasticsearch/plugin/kopf/elasticsearch-kopf-2.0.1.0.zip && \
     /usr/share/elasticsearch/bin/plugin install org.codelibs/elasticsearch-analysis-kuromoji-neologd/2.3.1
 
-RUN echo -e "configsync.config_path: /usr/share/elasticsearch/config\nscript.engine.groovy.inline.update: on" && \
-    tee -a /usr/share/elasticsearch/config/elasticsearch.yml
-
-EXPOSE 9200 9300
+RUN (echo "network.host: 0.0.0.0"; \
+    echo "cluster.name: elasticsearch"; \
+    echo "discovery.zen.minimum_master_nodes: 1"; \
+    echo "configsync.config_path: /usr/share/elasticsearch/config"; \
+    echo "discovery.zen.ping.unicast.hosts: [ \"elasticsearch\" ]"; \
+    echo "script.engine.groovy.inline.update: on") | \
+    tee /usr/share/elasticsearch/config/elasticsearch.yml
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["elasticsearch"]
+
+EXPOSE 9200 9300
