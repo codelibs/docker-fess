@@ -21,6 +21,11 @@ RUN ln -s /opt/fess-${FESS_VERSION} /opt/fess
 
 WORKDIR /opt/fess
 
+RUN useradd fess \
+  && gpasswd -a fess fess \
+  && chown -R fess:fess ./
+USER fess
+
 ENTRYPOINT [ "/opt/fess/bin/fess" ]
 CMD [ "/opt/fess/bin/fess" ]
 
