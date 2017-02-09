@@ -14,10 +14,20 @@ RUN yum -y update && yum -y install \
   && yum clean all
 
 # fess
-RUN curl -OL ${FESS_REMOTE_URI}
-RUN unzip /tmp/${FESS_FILENAME} -d /opt
-RUN rm /tmp/${FESS_FILENAME}
-RUN ln -s /opt/fess-${FESS_VERSION} /opt/fess
+RUN curl -OL ${FESS_REMOTE_URI} \
+    && unzip /tmp/${FESS_FILENAME} -d /opt \
+    && rm /tmp/${FESS_FILENAME} \
+    && ln -s /opt/fess-${FESS_VERSION} /opt/fess
+
+#phantomjs
+RUN yum -y update \
+    && yum -y install bzip2 fontconfig freetype freetype-devel fontconfig-devel libstdc++ \
+    && yum clean all
+    
+RUN curl -OL https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2 \
+    && tar xvf phantomjs-2.1.1-linux-x86_64.tar.bz2 \
+    && cp phantomjs-2.1.1-linux-x86_64/bin/phantomjs /usr/local/bin \
+    && rm -rf phantomjs-2.1.1-linux-x86_64
 
 WORKDIR /opt/fess
 
