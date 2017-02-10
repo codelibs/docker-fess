@@ -19,11 +19,11 @@ RUN curl -OL ${FESS_REMOTE_URI} \
     && rm /tmp/${FESS_FILENAME} \
     && ln -s /opt/fess-${FESS_VERSION} /opt/fess
 
-#phantomjs
+# thumbnail
 RUN yum -y update \
-    && yum -y install bzip2 fontconfig freetype freetype-devel fontconfig-devel libstdc++ \
+    && yum -y install bzip2 fontconfig freetype freetype-devel fontconfig-devel libstdc++ unoconv libreoffice-headless vlgothic-fonts ImageMagick \
     && yum clean all
-    
+
 RUN curl -OL https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2 \
     && tar xvf phantomjs-2.1.1-linux-x86_64.tar.bz2 \
     && cp phantomjs-2.1.1-linux-x86_64/bin/phantomjs /usr/local/bin \
@@ -40,3 +40,4 @@ ENTRYPOINT [ "/opt/fess/bin/fess" ]
 CMD [ "/opt/fess/bin/fess" ]
 
 EXPOSE 8080 9201 9301
+
