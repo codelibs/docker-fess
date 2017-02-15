@@ -1,5 +1,5 @@
 FROM centos:7
-MAINTAINER N2SM <support@n2sm.net>
+LABEL maintainer "N2SM <support@n2sm.net>"
 
 ENV FESS_VERSION=11.0.0
 ENV FESS_FILENAME=fess-${FESS_VERSION}.zip
