@@ -1,0 +1,13 @@
+version: '2'
+services:
+  fess:
+    image: codelibs/fess:11.0.1
+    ports:
+      - "8081:8081"
+    command: [ "-Dfess.port=8081", "-Dfess.context.path=/fess" ]
+  gitbucket:
+    build: .
+    ports:
+      - "8080:8080"
+    command: [ "--port=8080", "--prefix=gitbucket" ]
+
