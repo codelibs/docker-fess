@@ -1,7 +1,7 @@
 FROM centos:7
 LABEL maintainer "N2SM <support@n2sm.net>"
 
-ENV FESS_VERSION=11.0.0
+ENV FESS_VERSION=11.0.1
 ENV FESS_FILENAME=fess-${FESS_VERSION}.zip
 ENV FESS_REMOTE_URI=https://github.com/codelibs/fess/releases/download/fess-${FESS_VERSION}/${FESS_FILENAME}
 
