@@ -1,7 +1,7 @@
 FROM centos:7
 MAINTAINER N2SM <support@n2sm.net>
 
-ENV FESS_VERSION=10.3.4
+ENV FESS_VERSION=10.3.5
 ENV FESS_FILENAME=fess-${FESS_VERSION}.zip
 ENV FESS_REMOTE_URI=https://github.com/codelibs/fess/releases/download/fess-${FESS_VERSION}/${FESS_FILENAME}
 
