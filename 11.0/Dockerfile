@@ -1,9 +1,7 @@
 FROM centos:7
 LABEL maintainer "N2SM <support@n2sm.net>"
 
-ENV FESS_VERSION=11.0.2
-ENV FESS_FILENAME=fess-${FESS_VERSION}.zip
-ENV FESS_REMOTE_URI=https://github.com/codelibs/fess/releases/download/fess-${FESS_VERSION}/${FESS_FILENAME}
+ENV FESS_VERSION=11.0.3
 
 WORKDIR /tmp
 
@@ -14,9 +12,9 @@ RUN yum -y install \
     && yum clean all
 
 # fess
-RUN curl -OL ${FESS_REMOTE_URI} \
-    && unzip /tmp/${FESS_FILENAME} -d /opt \
-    && rm /tmp/${FESS_FILENAME} \
+RUN curl -OL https://github.com/codelibs/fess/releases/download/fess-${FESS_VERSION}/fess-${FESS_VERSION}.zip \
+    && unzip /tmp/fess-${FESS_VERSION}.zip -d /opt \
+    && rm /tmp/fess-${FESS_VERSION}.zip \
     && ln -s /opt/fess-${FESS_VERSION} /opt/fess
 
 RUN curl -OL https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2 \
