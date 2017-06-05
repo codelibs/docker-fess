@@ -1,7 +1,7 @@
 FROM centos:7
 LABEL maintainer "N2SM <support@n2sm.net>"
 
-ENV FESS_VERSION=11.1.0
+ENV FESS_VERSION=11.1.1
 
 WORKDIR /tmp
 
