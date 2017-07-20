@@ -1,23 +1,48 @@
-FROM elasticsearch:2.3.5
+FROM docker.elastic.co/elasticsearch/elasticsearch-alpine-base:latest
+LABEL maintainer "N2SM <support@n2sm.net>"
 
-RUN /usr/share/elasticsearch/bin/plugin install org.codelibs/elasticsearch-analysis-fess/2.3.0 && \
-    /usr/share/elasticsearch/bin/plugin install org.codelibs/elasticsearch-analysis-ja/2.3.0 && \
-    /usr/share/elasticsearch/bin/plugin install org.codelibs/elasticsearch-analysis-synonym/2.3.0 && \
-    /usr/share/elasticsearch/bin/plugin install org.codelibs/elasticsearch-configsync/2.3.1 && \
-    /usr/share/elasticsearch/bin/plugin install org.codelibs/elasticsearch-dataformat/2.3.0 && \
-    /usr/share/elasticsearch/bin/plugin install org.codelibs/elasticsearch-langfield/2.3.0 && \
-    /usr/share/elasticsearch/bin/plugin install http://maven.codelibs.org/archive/elasticsearch/plugin/kopf/elasticsearch-kopf-2.0.1.0.zip && \
-    /usr/share/elasticsearch/bin/plugin install org.codelibs/elasticsearch-analysis-kuromoji-neologd/2.3.1
+ARG ELASTIC_VERSION
+ARG ES_DOWNLOAD_URL
+ARG ES_JAVA_OPTS
 
-RUN (echo "network.host: 0.0.0.0"; \
-    echo "cluster.name: elasticsearch"; \
-    echo "discovery.zen.minimum_master_nodes: 1"; \
-    echo "configsync.config_path: /usr/share/elasticsearch/config"; \
-    echo "discovery.zen.ping.unicast.hosts: [ \"elasticsearch\" ]"; \
-    echo "script.engine.groovy.inline.update: on") | \
-    tee /usr/share/elasticsearch/config/elasticsearch.yml
+ENV PATH /usr/share/elasticsearch/bin:$PATH
+ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
 
-ENTRYPOINT ["/docker-entrypoint.sh"]
-CMD ["elasticsearch"]
+WORKDIR /usr/share/elasticsearch
+
+RUN wget ${ES_DOWNLOAD_URL}/elasticsearch-${ELASTIC_VERSION}.tar.gz && \
+    EXPECTED_SHA=$(wget -O - ${ES_DOWNLOAD_URL}/elasticsearch-${ELASTIC_VERSION}.tar.gz.sha1) && \
+    test $EXPECTED_SHA == $(sha1sum elasticsearch-${ELASTIC_VERSION}.tar.gz | awk '{print $1}') && \
+    tar zxf elasticsearch-${ELASTIC_VERSION}.tar.gz && \
+    chown -R elasticsearch:elasticsearch elasticsearch-${ELASTIC_VERSION} && \
+    mv elasticsearch-${ELASTIC_VERSION}/* . && \
+    rmdir elasticsearch-${ELASTIC_VERSION} && \
+    rm elasticsearch-${ELASTIC_VERSION}.tar.gz
+
+RUN set -ex && for esdirs in config data logs; do \
+        mkdir -p "$esdirs"; \
+        chown -R elasticsearch:elasticsearch "$esdirs"; \
+    done
+
+USER elasticsearch
+
+RUN ./bin/elasticsearch-plugin install org.codelibs:elasticsearch-analysis-fess:5.2.0 && \
+    ./bin/elasticsearch-plugin install org.codelibs:elasticsearch-analysis-ja:5.2.0 && \
+    ./bin/elasticsearch-plugin install org.codelibs:elasticsearch-analysis-synonym:5.2.0 && \
+    ./bin/elasticsearch-plugin install org.codelibs:elasticsearch-configsync:5.2.0 && \
+    ./bin/elasticsearch-plugin install org.codelibs:elasticsearch-dataformat:5.2.0 && \
+    ./bin/elasticsearch-plugin install org.codelibs:elasticsearch-langfield:5.2.0 && \
+    ./bin/elasticsearch-plugin install org.codelibs:elasticsearch-analysis-kuromoji-neologd:5.2.0
+
+COPY config config
+COPY bin bin
+
+USER root
+RUN chown -R elasticsearch:elasticsearch config bin && \
+    chmod 0750 bin/es-docker
+
+USER elasticsearch
+CMD ["/bin/bash", "bin/es-docker"]
 
 EXPOSE 9200 9300
+
