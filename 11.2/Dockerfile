@@ -1,38 +1,49 @@
-FROM centos:7
+FROM openjdk:8-jre
 LABEL maintainer "N2SM <support@n2sm.net>"
 
-ENV FESS_VERSION=11.2.1
-ENV PHANTOMJS_VERSION=2.1.1
+ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
 
-WORKDIR /tmp
+ENV FESS_VERSION 11.2.1
+ENV ELASTIC_VERSION 5.4.2
+ENV ES_DOWNLOAD_URL https://artifacts.elastic.co/downloads/elasticsearch
 
-RUN yum -y install \
-    java-1.8.0-openjdk unzip \
-# thumbnail
-    bzip2 fontconfig freetype freetype-devel fontconfig-devel libstdc++ unoconv libreoffice-headless vlgothic-fonts ImageMagick \
-    && yum clean all
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y \
+      imagemagick \
+      procps \
+      unoconv \
+      && \
+    apt-get clean
 
-RUN curl -OL https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-${PHANTOMJS_VERSION}-linux-x86_64.tar.bz2 \
-    && tar xvf phantomjs-${PHANTOMJS_VERSION}-linux-x86_64.tar.bz2 \
-    && cp phantomjs-${PHANTOMJS_VERSION}-linux-x86_64/bin/phantomjs /usr/local/bin \
-    && rm -rf phantomjs-${PHANTOMJS_VERSION}-linux-x86_64
+RUN groupadd -g 1000 elasticsearch && \
+    groupadd -g 1001 fess && \
+    useradd -u 1000 elasticsearch -g elasticsearch && \
+    useradd -u 1001 fess -g fess
 
-# fess
-RUN curl -OL https://github.com/codelibs/fess/releases/download/fess-${FESS_VERSION}/fess-${FESS_VERSION}.zip \
-    && unzip /tmp/fess-${FESS_VERSION}.zip -d /opt \
-    && rm /tmp/fess-${FESS_VERSION}.zip \
-    && ln -s /opt/fess-${FESS_VERSION} /opt/fess
+RUN set -x && \
+    wget --progress=dot:mega ${ES_DOWNLOAD_URL}/elasticsearch-${ELASTIC_VERSION}.deb -O /tmp/elasticsearch-${ELASTIC_VERSION}.deb && \
+    dpkg -i /tmp/elasticsearch-${ELASTIC_VERSION}.deb && \
+    rm -rf /tmp/elasticsearch-${ELASTIC_VERSION}.deb && \
+    \
+    wget --progress=dot:mega https://github.com/codelibs/fess/releases/download/fess-${FESS_VERSION}/fess-${FESS_VERSION}.deb -O /tmp/fess-${FESS_VERSION}.deb && \
+    dpkg -i /tmp/fess-${FESS_VERSION}.deb && \
+    rm -rf /tmp/fess-${FESS_VERSION}.deb
 
-WORKDIR /opt/fess
-RUN useradd fess \
-    && gpasswd -a fess fess \
-    && mkdir -p ./es/config/node_1 \
-    && echo "network.host: 0.0.0.0" > ./es/config/node_1/elasticsearch.yml \
-    && chown -R fess:fess ./
-USER fess
+RUN /usr/share/elasticsearch/bin/elasticsearch-plugin install org.codelibs:elasticsearch-analysis-fess:5.4.2 && \
+    /usr/share/elasticsearch/bin/elasticsearch-plugin install org.codelibs:elasticsearch-analysis-ja:5.4.1 && \
+    /usr/share/elasticsearch/bin/elasticsearch-plugin install org.codelibs:elasticsearch-analysis-synonym:5.4.1 && \
+    /usr/share/elasticsearch/bin/elasticsearch-plugin install org.codelibs:elasticsearch-configsync:5.4.1 && \
+    /usr/share/elasticsearch/bin/elasticsearch-plugin install org.codelibs:elasticsearch-dataformat:5.4.1 && \
+    /usr/share/elasticsearch/bin/elasticsearch-plugin install org.codelibs:elasticsearch-langfield:5.4.1 && \
+    /usr/share/elasticsearch/bin/elasticsearch-plugin install org.codelibs:elasticsearch-minhash:5.4.1
 
-ENTRYPOINT [ "/opt/fess/bin/fess" ]
-CMD [ "/opt/fess/bin/fess" ]
+COPY elasticsearch/config /etc/elasticsearch
+COPY fess/config /etc/fess
 
-EXPOSE 8080 9201 9301
+WORKDIR /usr/share/fess
+EXPOSE 9200 9300 8080
 
+USER root
+COPY run.sh /etc/run.sh
+ENTRYPOINT /etc/run.sh
