@@ -1,7 +1,7 @@
 Description
 =====
 
-This is the official Fess image created by N2SM Inc.
+This is example compose file for running Fess and Elasticsearch with Docker Compose.
 
 Usage
 =====
