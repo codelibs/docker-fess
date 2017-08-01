@@ -3,7 +3,7 @@ LABEL maintainer "N2SM <support@n2sm.net>"
 
 ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
 
-ENV FESS_VERSION 11.2.1
+ENV FESS_VERSION 11.2.2
 ENV ELASTIC_VERSION 5.4.2
 ENV ES_DOWNLOAD_URL https://artifacts.elastic.co/downloads/elasticsearch
 
