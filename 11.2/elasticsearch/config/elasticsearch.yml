@@ -4,6 +4,4 @@ discovery.zen.minimum_master_nodes: 1
 configsync.config_path: /var/lib/elasticsearch/config
 path.data: /var/lib/elasticsearch
 path.logs: /var/log/elasticsearch
-discovery.zen.ping.unicast.hosts: [ "elasticsearch" ]
 script.engine.groovy.inline.update: on
-
