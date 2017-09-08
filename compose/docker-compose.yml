@@ -4,7 +4,7 @@ services:
     build:
       context: ./fess
       args:
-        FESS_VERSION: "11.0.1"
+        FESS_VERSION: "11.3.1"
     restart: always
     ports:
       - "8080:8080"
@@ -21,7 +21,7 @@ services:
     build:
       context: ./elasticsearch
       args:
-        ELASTIC_VERSION: "5.2.2"
+        ELASTIC_VERSION: "5.5.2"
         ES_DOWNLOAD_URL: "https://artifacts.elastic.co/downloads/elasticsearch"
         ES_JAVA_OPTS: "-Xms2g -Xmx2g"
     restart: always
@@ -44,4 +44,3 @@ volumes:
 networks:
   esnet:
     driver: bridge
-

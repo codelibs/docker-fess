@@ -33,7 +33,8 @@ RUN chown -R fess:fess bin /etc/fess && \
     chmod 0750 bin/fess-docker
 
 USER fess
-RUN cp -r /etc/fess/* /usr/share/fess/lib/classes
+RUN cp -r /etc/fess/* /usr/share/fess/app/WEB-INF/classes && \
+    cp -r /etc/fess/* /usr/share/fess/lib/classes
 
 CMD ["/bin/bash", "bin/fess-docker"]
 

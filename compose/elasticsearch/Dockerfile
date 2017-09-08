@@ -26,14 +26,14 @@ RUN set -ex && for esdirs in config data logs; do \
 
 USER elasticsearch
 
-RUN ./bin/elasticsearch-plugin install org.codelibs:elasticsearch-analysis-fess:5.2.0 && \
-    ./bin/elasticsearch-plugin install org.codelibs:elasticsearch-analysis-ja:5.2.0 && \
-    ./bin/elasticsearch-plugin install org.codelibs:elasticsearch-analysis-synonym:5.2.0 && \
-    ./bin/elasticsearch-plugin install org.codelibs:elasticsearch-configsync:5.2.0 && \
-    ./bin/elasticsearch-plugin install org.codelibs:elasticsearch-dataformat:5.2.0 && \
-    ./bin/elasticsearch-plugin install org.codelibs:elasticsearch-langfield:5.2.0 && \
-    ./bin/elasticsearch-plugin install org.codelibs:elasticsearch-analysis-kuromoji-neologd:5.2.0
-
+RUN ./bin/elasticsearch-plugin install org.codelibs:elasticsearch-analysis-fess:5.5.0 && \
+    ./bin/elasticsearch-plugin install org.codelibs:elasticsearch-analysis-ja:5.5.0 && \
+    ./bin/elasticsearch-plugin install org.codelibs:elasticsearch-analysis-synonym:5.5.0 && \
+    ./bin/elasticsearch-plugin install org.codelibs:elasticsearch-configsync:5.5.0 && \
+    ./bin/elasticsearch-plugin install org.codelibs:elasticsearch-dataformat:5.5.0 && \
+    ./bin/elasticsearch-plugin install org.codelibs:elasticsearch-langfield:5.5.0 && \
+    ./bin/elasticsearch-plugin install org.codelibs:elasticsearch-analysis-kuromoji-neologd:5.5.0 && \
+    ./bin/elasticsearch-plugin install org.codelibs:elasticsearch-minhash:5.5.0
 COPY config config
 COPY bin bin
 
@@ -45,4 +45,3 @@ USER elasticsearch
 CMD ["/bin/bash", "bin/es-docker"]
 
 EXPOSE 9200 9300
-
