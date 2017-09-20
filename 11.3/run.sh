@@ -1,7 +1,7 @@
 #!/bin/bash
 
-/sbin/service elasticsearch start
-/sbin/service fess start
+service elasticsearch start
+service fess start
 
 ES_LOGFILE=/var/log/elasticsearch/elasticsearch.log
 FESS_LOGFILE=/var/log/fess/fess.log
