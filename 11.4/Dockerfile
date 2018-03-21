@@ -3,7 +3,7 @@ LABEL maintainer "N2SM <support@n2sm.net>"
 
 ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
 
-ENV FESS_VERSION 11.4.9
+ENV FESS_VERSION 11.4.10
 ENV ELASTIC_VERSION 5.6.8
 ENV ES_DOWNLOAD_URL https://artifacts.elastic.co/downloads/elasticsearch
 
@@ -35,10 +35,10 @@ RUN mkdir /opt/fess && \
     sed -i -e 's#FESS_CLASSPATH="$FESS_CONF_PATH:$FESS_CLASSPATH"#FESS_CLASSPATH="/opt/fess:$FESS_CONF_PATH:$FESS_CLASSPATH"#g' /usr/share/fess/bin/fess
 
 RUN /usr/share/elasticsearch/bin/elasticsearch-plugin install org.codelibs:elasticsearch-analysis-fess:5.6.1 && \
-    /usr/share/elasticsearch/bin/elasticsearch-plugin install org.codelibs:elasticsearch-analysis-ja:5.6.1 && \
+    /usr/share/elasticsearch/bin/elasticsearch-plugin install org.codelibs:elasticsearch-analysis-ja:5.6.2 && \
     /usr/share/elasticsearch/bin/elasticsearch-plugin install org.codelibs:elasticsearch-analysis-synonym:5.6.1 && \
-    /usr/share/elasticsearch/bin/elasticsearch-plugin install org.codelibs:elasticsearch-configsync:5.6.1 && \
-    /usr/share/elasticsearch/bin/elasticsearch-plugin install org.codelibs:elasticsearch-dataformat:5.6.1 && \
+    /usr/share/elasticsearch/bin/elasticsearch-plugin install org.codelibs:elasticsearch-configsync:5.6.2 && \
+    /usr/share/elasticsearch/bin/elasticsearch-plugin install org.codelibs:elasticsearch-dataformat:5.6.3 && \
     /usr/share/elasticsearch/bin/elasticsearch-plugin install org.codelibs:elasticsearch-langfield:5.6.1 && \
     /usr/share/elasticsearch/bin/elasticsearch-plugin install org.codelibs:elasticsearch-minhash:5.6.1
 

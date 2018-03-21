@@ -3,7 +3,7 @@ LABEL maintainer "N2SM <support@n2sm.net>"
 
 ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
 
-ENV FESS_VERSION 12.0.2
+ENV FESS_VERSION 12.0.3
 ENV ELASTIC_VERSION 6.1.3
 ENV ES_DOWNLOAD_URL https://artifacts.elastic.co/downloads/elasticsearch
 
@@ -37,8 +37,8 @@ RUN mkdir /opt/fess && \
 RUN /usr/share/elasticsearch/bin/elasticsearch-plugin install org.codelibs:elasticsearch-analysis-fess:6.1.0 && \
     /usr/share/elasticsearch/bin/elasticsearch-plugin install org.codelibs:elasticsearch-analysis-ja:6.1.0 && \
     /usr/share/elasticsearch/bin/elasticsearch-plugin install org.codelibs:elasticsearch-analysis-synonym:6.1.0 && \
-    /usr/share/elasticsearch/bin/elasticsearch-plugin install org.codelibs:elasticsearch-configsync:6.1.1 && \
-    /usr/share/elasticsearch/bin/elasticsearch-plugin install org.codelibs:elasticsearch-dataformat:6.1.0 && \
+    /usr/share/elasticsearch/bin/elasticsearch-plugin install org.codelibs:elasticsearch-configsync:6.1.2 && \
+    /usr/share/elasticsearch/bin/elasticsearch-plugin install org.codelibs:elasticsearch-dataformat:6.1.1 && \
     /usr/share/elasticsearch/bin/elasticsearch-plugin install org.codelibs:elasticsearch-langfield:6.1.0 && \
     /usr/share/elasticsearch/bin/elasticsearch-plugin install org.codelibs:elasticsearch-minhash:6.1.0
 
