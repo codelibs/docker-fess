@@ -67,6 +67,14 @@ If you want to use a default setting for Elasticsearch, remove `-v $PWD/es/confi
 
 Elasticsearch needs to set vm.max_map_count to  at least 262144. See [Install Elasticsearch with Docker](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#docker-cli-run-prod-mode).
 
-# License
+## Build
+
+To build docker images, run as below:
+
+```console
+$ docker build --rm -t codelibs/fess:<tag name> ./<version_dir>/
+```
+
+## License
 
 Apache license.
