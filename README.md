@@ -40,7 +40,7 @@ $ docker run -d -p 8080:8080 --name fess codelibs/fess:latest
 To monitoring Fess logs with Kibana, run Fess and Kibana with these commands:
 
 ```console
-$ docker run -d --name fess codelibs/fess:latest
+$ docker run -d -p 8080:8080 --name fess codelibs/fess:latest
 $ docker run -d -e ELASTICSEARCH_URL=http://localhost:9200 \
     --name kibana kibana:latest
 ```
@@ -62,6 +62,14 @@ $ docker run -d -p 8080:8080 --name fess \
 
 You can put fess_config.properties to fess/config directory.
 If you want to use a default setting for Elasticsearch, remove `-v $PWD/es/config:/etc/elasticsearch`.
+
+### Set ES\_JAVA\_OPTS
+
+To set ES\_JAVA\_OPTS, use -e option:
+
+```console
+$ docker run -e 'ES_JAVA_OPTS="-Xms2g -Xmx2g"' -d -p 8080:8080 codelibs/fess:snapshot
+```
 
 ## Kernel settings
 
