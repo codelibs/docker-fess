@@ -5,17 +5,18 @@ See [https://hub.docker.com/r/codelibs/fess/](https://hub.docker.com/r/codelibs/
 
 ## Docker Images
 
--   [`latest`, `12`, `12.1`, `12.1.1` (*12.1/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/12.1/Dockerfile)
--   [`12.0`, `12.0.3` (*12.1/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/12.0/Dockerfile)
--   [`11.4.0`, `11.4.4`, `11.4.5`, `11.4.6` (*11.4/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/11.4/Dockerfile)
--   [`11.3`, `11.3.0`, `11.3.1`, `11.3.2` (*11.3/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/11.3/Dockerfile)
--   [`11.2`, `11.2.1`, `11.2.2` (*11.2/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/11.2/Dockerfile)
--   [`11.1`, `11.1.1` (*11.1/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/11.1/Dockerfile)
--   [`11.0`, `11.0.4` (*11.0/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/11.0/Dockerfile)
--   [`10`, `10.3`, `10.3.4` (*10.3/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/10.3/Dockerfile)
--   [`10.2`, `10.2.3` (*10.2/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/10.2/Dockerfile)
--   [`10.1`, `10.1.3` (*10.1/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/10.1/Dockerfile)
--   [`10.0`, `10.0.4` (*10.0/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/10.0/Dockerfile)
+-   [`latest`, `12`, `12.1`, `12.1.x` (*12.1/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/12.1/Dockerfile)
+-   [`12.0`, `12.0.x` (*12.1/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/12.0/Dockerfile)
+-   [`11`, `11.4`, `11.4.x` (*11.4/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/11.4/Dockerfile)
+-   [`11.3`, `11.3.x` (*11.3/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/11.3/Dockerfile)
+-   [`11.2`, `11.2.x` (*11.2/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/11.2/Dockerfile)
+-   [`11.1`, `11.1.x` (*11.1/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/11.1/Dockerfile)
+-   [`11.0`, `11.0.x` (*11.0/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/11.0/Dockerfile)
+-   [`10`, `10.3`, `10.3.x` (*10.3/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/10.3/Dockerfile)
+-   [`10.2`, `10.2.x` (*10.2/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/10.2/Dockerfile)
+-   [`10.1`, `10.1.x` (*10.1/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/10.1/Dockerfile)
+-   [`10.0`, `10.0.x` (*10.0/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/10.0/Dockerfile)
+-   [`snapshot` (*snapshot/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/snapshot/Dockerfile)
 
 ## What is Fess ?
 
