@@ -10,17 +10,6 @@ service elasticsearch start
 
 counter=1
 ret=1
-while [ $ret != 0 -a $counter -le 10 ] ; do
-  echo "Checking Elasticsearch log file #$counter"
-  ls $ES_LOGFILE > /dev/null 2>&1
-  ret=$?
-  counter=`expr $counter + 1`
-  sleep 1
-done
-tail -f ${ES_LOGFILE} &
-
-counter=1
-ret=1
 while [ $ret != 0 -a $counter -le 60 ] ; do
   echo "Checking Elasticsearch status #$counter"
   grep "started" $ES_LOGFILE > /dev/null 2>&1
@@ -29,6 +18,8 @@ while [ $ret != 0 -a $counter -le 60 ] ; do
   sleep 1
 done
 
+cat ${ES_LOGFILE}
+tail -f ${ES_LOGFILE} &
 curl -XGET "$ES_HOST/_cluster/health?wait_for_status=yellow&timeout=3m"
 
 touch /var/log/fess/fess-crawler.log /var/log/fess/fess-suggest.log \
