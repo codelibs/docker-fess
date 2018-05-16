@@ -1,5 +1,5 @@
 FROM openjdk:8-jre
-LABEL maintainer "N2SM <support@n2sm.net>"
+LABEL maintainer "Rubberbird Tech"
 
 ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
 
