@@ -8,7 +8,7 @@ ENV ELASTIC_VERSION 6.2.4
 ENV ES_DOWNLOAD_URL https://artifacts.elastic.co/downloads/elasticsearch
 ENV FESS_APP_TYPE docker
 
-RUN yum install -y java-1.8.0-openjdk-devel imagemagick procps unoconv wget
+RUN yum install -y java-1.8.0-openjdk-devel imagemagick procps unoconv wget sed
 
 RUN groupadd -g 1000 elasticsearch && \
     groupadd -g 1001 fess && \
@@ -17,7 +17,6 @@ RUN groupadd -g 1000 elasticsearch && \
 
 RUN set -x && \
     wget --progress=dot:mega ${ES_DOWNLOAD_URL}/elasticsearch-${ELASTIC_VERSION}.deb -O /tmp/elasticsearch-${ELASTIC_VERSION}.deb && \
-    dpkg -i /tmp/elasticsearch-${ELASTIC_VERSION}.deb && \
     rm -rf /tmp/elasticsearch-${ELASTIC_VERSION}.deb
 RUN /usr/share/elasticsearch/bin/elasticsearch-plugin install org.codelibs:elasticsearch-analysis-fess:6.2.1 && \
     /usr/share/elasticsearch/bin/elasticsearch-plugin install org.codelibs:elasticsearch-analysis-ja:6.2.1 && \
@@ -29,7 +28,6 @@ RUN /usr/share/elasticsearch/bin/elasticsearch-plugin install org.codelibs:elast
 
 RUN set -x && \
     wget --progress=dot:mega https://github.com/codelibs/fess/releases/download/fess-${FESS_VERSION}/fess-${FESS_VERSION}.deb -O /tmp/fess-${FESS_VERSION}.deb && \
-    dpkg -i /tmp/fess-${FESS_VERSION}.deb && \
     rm -rf /tmp/fess-${FESS_VERSION}.deb
 RUN mkdir /opt/fess && \
     chown -R fess.fess /opt/fess && \
