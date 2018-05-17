@@ -1,4 +1,4 @@
-FROM openjdk:8-jre
+FROM registry.access.redhat.com/rhel7/rhel
 LABEL maintainer "Rubberbird Tech"
 
 ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
@@ -8,14 +8,7 @@ ENV ELASTIC_VERSION 6.2.4
 ENV ES_DOWNLOAD_URL https://artifacts.elastic.co/downloads/elasticsearch
 ENV FESS_APP_TYPE docker
 
-RUN apt-get update && \
-    apt-get upgrade -y && \
-    apt-get install -y \
-      imagemagick \
-      procps \
-      unoconv \
-      && \
-    apt-get clean
+RUN yum install -y java-1.8.0-openjdk-devel imagemagick procps unoconv
 
 RUN groupadd -g 1000 elasticsearch && \
     groupadd -g 1001 fess && \
