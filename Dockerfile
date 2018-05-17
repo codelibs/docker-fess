@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/rhel7/rhel
+FROM centos:7
 LABEL maintainer "Rubberbird Tech"
 
 ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
