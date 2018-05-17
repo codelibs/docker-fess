@@ -1,7 +1,7 @@
 FROM centos:7
 LABEL maintainer "Rubberbird Tech"
 
-ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
+ENV JAVA_HOME=/usr/lib/jvm/java-1.8-openjdk/jre
 ENV FESS_VERSION 12.1.2
 ENV ELASTIC_VERSION 6.2.4
 ENV ES_DOWNLOAD_URL https://artifacts.elastic.co/downloads/elasticsearch
@@ -15,7 +15,7 @@ RUN groupadd -g 1000 elasticsearch && \
     useradd -u 1001 fess -g fess
 
 RUN set -x && \
-    export JAVA_HOME=/usr/lib/jvm/java-1.8-openjdk && \
+    export JAVA_HOME=/usr/lib/jvm/java-1.8-openjdk/jre/ && \
     wget --progress=dot:mega ${ES_DOWNLOAD_URL}/elasticsearch-${ELASTIC_VERSION}.rpm -O /tmp/elasticsearch-${ELASTIC_VERSION}.rpm && \
     rpm -i /tmp/elasticsearch-${ELASTIC_VERSION}.rpm && \
     rm -rf /tmp/elasticsearch-${ELASTIC_VERSION}.rpm
