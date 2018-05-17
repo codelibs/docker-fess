@@ -16,8 +16,9 @@ RUN groupadd -g 1000 elasticsearch && \
     useradd -u 1001 fess -g fess
 
 RUN set -x && \
-    wget --progress=dot:mega ${ES_DOWNLOAD_URL}/elasticsearch-${ELASTIC_VERSION}.deb -O /tmp/elasticsearch-${ELASTIC_VERSION}.deb && \
-    rm -rf /tmp/elasticsearch-${ELASTIC_VERSION}.deb
+    wget --progress=dot:mega ${ES_DOWNLOAD_URL}/elasticsearch-${ELASTIC_VERSION}.rpm -O /tmp/elasticsearch-${ELASTIC_VERSION}.rpm && \
+    rpm -i /tmp/elasticsearch-${ELASTIC_VERSION}.rpm && \
+    rm -rf /tmp/elasticsearch-${ELASTIC_VERSION}.rpm
 RUN /usr/share/elasticsearch/bin/elasticsearch-plugin install org.codelibs:elasticsearch-analysis-fess:6.2.1 && \
     /usr/share/elasticsearch/bin/elasticsearch-plugin install org.codelibs:elasticsearch-analysis-ja:6.2.1 && \
     /usr/share/elasticsearch/bin/elasticsearch-plugin install org.codelibs:elasticsearch-analysis-synonym:6.2.1 && \
@@ -27,8 +28,9 @@ RUN /usr/share/elasticsearch/bin/elasticsearch-plugin install org.codelibs:elast
     /usr/share/elasticsearch/bin/elasticsearch-plugin install org.codelibs:elasticsearch-minhash:6.2.1
 
 RUN set -x && \
-    wget --progress=dot:mega https://github.com/codelibs/fess/releases/download/fess-${FESS_VERSION}/fess-${FESS_VERSION}.deb -O /tmp/fess-${FESS_VERSION}.deb && \
-    rm -rf /tmp/fess-${FESS_VERSION}.deb
+    wget --progress=dot:mega https://github.com/codelibs/fess/releases/download/fess-${FESS_VERSION}/fess-${FESS_VERSION}.rpm -O /tmp/fess-${FESS_VERSION}.rpm && \
+    rpm -i /tmp/fess-${FESS_VERSION}.rpm && \
+    rm -rf /tmp/fess-${FESS_VERSION}.rpm
 RUN mkdir /opt/fess && \
     chown -R fess.fess /opt/fess && \
     sed -i -e 's#FESS_CLASSPATH="$FESS_CONF_PATH:$FESS_CLASSPATH"#FESS_CLASSPATH="/opt/fess:$FESS_CONF_PATH:$FESS_CLASSPATH"#g' /usr/share/fess/bin/fess
