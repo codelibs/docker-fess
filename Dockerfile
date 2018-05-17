@@ -16,7 +16,7 @@ RUN groupadd -g 1000 elasticsearch && \
     useradd -u 1001 fess -g fess
 
 RUN set -x && \
-    export JAVA_HOME /usr/lib/jvm/java-1.8-openjdk && \
+    export JAVA_HOME=/usr/lib/jvm/java-1.8-openjdk && \
     wget --progress=dot:mega ${ES_DOWNLOAD_URL}/elasticsearch-${ELASTIC_VERSION}.rpm -O /tmp/elasticsearch-${ELASTIC_VERSION}.rpm && \
     rpm -i /tmp/elasticsearch-${ELASTIC_VERSION}.rpm && \
     rm -rf /tmp/elasticsearch-${ELASTIC_VERSION}.rpm
