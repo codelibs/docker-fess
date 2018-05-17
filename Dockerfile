@@ -2,7 +2,6 @@ FROM centos:7
 LABEL maintainer "Rubberbird Tech"
 
 ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
-
 ENV FESS_VERSION 12.1.2
 ENV ELASTIC_VERSION 6.2.4
 ENV ES_DOWNLOAD_URL https://artifacts.elastic.co/downloads/elasticsearch
