@@ -6,11 +6,13 @@ ES_HOST=localhost:9200
 if [ x"$ES_JAVA_OPTS" != "x" ] ; then
   echo "ES_JAVA_OPTS=$ES_JAVA_OPTS" >> /etc/default/elasticsearch
 fi
-sudo /etc/init.d/elasticsearch start
+
+# Start elastic Search
+/etc/init.d/elasticsearch start
 
 counter=1
 ret=1
-while [ $ret != 0 -a $counter -le 60 ] ; do
+while [ $ret != 0 -a $counter -le 150 ] ; do
   echo "Checking Elasticsearch status #$counter"
   grep "started" $ES_LOGFILE > /dev/null 2>&1
   ret=$?
