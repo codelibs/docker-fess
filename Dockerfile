@@ -6,7 +6,7 @@ ENV ELASTIC_VERSION 6.2.4
 ENV ES_DOWNLOAD_URL https://artifacts.elastic.co/downloads/elasticsearch
 ENV FESS_APP_TYPE docker
 
-RUN yum install -y java-1.8.0-openjdk-devel imagemagick procps unoconv wget sed
+RUN yum install -y java-1.8.0-openjdk-devel imagemagick procps unoconv wget sed initscripts
 
 ENV JAVA_HOME /usr/lib/jvm/java-1.8.0-openjdk
 
