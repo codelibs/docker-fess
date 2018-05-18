@@ -19,7 +19,9 @@ RUN set -x && \
     echo $JAVA_HOME && \
     wget --progress=dot:mega ${ES_DOWNLOAD_URL}/elasticsearch-${ELASTIC_VERSION}.rpm -O /tmp/elasticsearch-${ELASTIC_VERSION}.rpm && \
     rpm -i /tmp/elasticsearch-${ELASTIC_VERSION}.rpm && \
-    rm -rf /tmp/elasticsearch-${ELASTIC_VERSION}.rpm
+    rm -rf /tmp/elasticsearch-${ELASTIC_VERSION}.rpm && \
+    chkconfig --add elasticsearch
+    
 RUN /usr/share/elasticsearch/bin/elasticsearch-plugin install org.codelibs:elasticsearch-analysis-fess:6.2.1 && \
     /usr/share/elasticsearch/bin/elasticsearch-plugin install org.codelibs:elasticsearch-analysis-ja:6.2.1 && \
     /usr/share/elasticsearch/bin/elasticsearch-plugin install org.codelibs:elasticsearch-analysis-synonym:6.2.1 && \
