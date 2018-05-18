@@ -6,7 +6,7 @@ ES_HOST=localhost:9200
 if [ x"$ES_JAVA_OPTS" != "x" ] ; then
   echo "ES_JAVA_OPTS=$ES_JAVA_OPTS" >> /etc/default/elasticsearch
 fi
-service elasticsearch start
+sudo /etc/init.d/elasticsearch start
 
 counter=1
 ret=1
@@ -27,7 +27,7 @@ touch /var/log/fess/fess-crawler.log /var/log/fess/fess-suggest.log \
 chown fess:fess /var/log/fess/fess-crawler.log /var/log/fess/fess-suggest.log \
       /var/log/fess/fess-thumbnail.log \
       /var/log/fess/audit.log  /var/log/fess/fess.log
-service fess start
+sudo /etc/init.d/fess start
 
 if [ x"$RUN_SHELL" = "xtrue" ] ; then
   /bin/bash
