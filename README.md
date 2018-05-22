@@ -1,12 +1,11 @@
-Docker for Fess
+Docker for Fess - Centos7/RHEL7
 =====
 
 See [https://hub.docker.com/r/codelibs/fess/](https://hub.docker.com/r/codelibs/fess/).
 
 ## Docker Images
 
--   [`latest`, `12`, `12.1`, `12.1.x` (*12.1/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/12.1/Dockerfile)
--   [`12.0`, `12.0.x` (*12.1/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/12.0/Dockerfile)
+-   12.1
 
 ## What is Fess ?
 
