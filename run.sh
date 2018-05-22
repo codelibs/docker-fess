@@ -29,7 +29,8 @@ touch /var/log/fess/fess-crawler.log /var/log/fess/fess-suggest.log \
 chown fess:fess /var/log/fess/fess-crawler.log /var/log/fess/fess-suggest.log \
       /var/log/fess/fess-thumbnail.log \
       /var/log/fess/audit.log  /var/log/fess/fess.log
-sudo /etc/init.d/fess start
+
+/etc/init.d/fess start
 
 if [ x"$RUN_SHELL" = "xtrue" ] ; then
   /bin/bash
