@@ -4,7 +4,7 @@ LABEL maintainer "N2SM <support@n2sm.net>"
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
 
 ARG FESS_VERSION=12.2.0-SNAPSHOT
-ARG ELASTIC_VERSION=6.2.4
+ARG ELASTIC_VERSION=6.3.0
 ENV ES_DOWNLOAD_URL https://artifacts.elastic.co/downloads/elasticsearch
 ENV FESS_APP_TYPE docker
 
