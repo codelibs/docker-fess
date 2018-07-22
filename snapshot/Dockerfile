@@ -3,8 +3,6 @@ LABEL maintainer "N2SM <support@n2sm.net>"
 
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
 
-ARG FESS_VERSION=12.2.0-SNAPSHOT
-ARG ELASTIC_VERSION=6.3.0
 ENV ES_DOWNLOAD_URL https://artifacts.elastic.co/downloads/elasticsearch
 ENV FESS_APP_TYPE docker
 
@@ -17,6 +15,9 @@ RUN apt-get update && \
       ant \
       && \
     apt-get clean
+
+ARG FESS_VERSION=12.2.0-SNAPSHOT
+ARG ELASTIC_VERSION=6.3.1
 
 RUN groupadd -g 1000 elasticsearch && \
     groupadd -g 1001 fess && \
@@ -37,8 +38,9 @@ RUN ant -f /usr/share/fess/bin/plugin.xml -Dtarget.dir=/tmp \
     rm -rf /tmp/elasticsearch-*
 RUN mkdir /opt/fess && \
     chown -R fess.fess /opt/fess && \
-    sed -i -e 's#FESS_CLASSPATH="$FESS_CONF_PATH:$FESS_CLASSPATH"#FESS_CLASSPATH="/opt/fess:$FESS_CONF_PATH:$FESS_CLASSPATH"#g' /usr/share/fess/bin/fess
+    sed -i -e 's#FESS_CLASSPATH="$FESS_CONF_PATH:$FESS_CLASSPATH"#FESS_CLASSPATH="$FESS_OVERRIDE_CONF_PATH:$FESS_CONF_PATH:$FESS_CLASSPATH"#g' /usr/share/fess/bin/fess
 RUN echo "export FESS_APP_TYPE=$FESS_APP_TYPE" >>  /usr/share/fess/bin/fess.in.sh
+RUN echo "export FESS_OVERRIDE_CONF_PATH=/opt/fess" >>  /usr/share/fess/bin/fess.in.sh
 RUN apt-get remove -y ant
 
 COPY elasticsearch/config /etc/elasticsearch
