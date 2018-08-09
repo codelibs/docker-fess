@@ -16,7 +16,7 @@ RUN apt-get update && \
       && \
     apt-get clean
 
-ARG FESS_VERSION=12.2.1-SNAPSHOT
+ARG FESS_VERSION=12.2.0
 ARG ELASTIC_VERSION=6.3.2
 
 RUN groupadd -g 1000 elasticsearch && \
@@ -30,7 +30,7 @@ RUN set -x && \
     rm -rf /tmp/elasticsearch-${ELASTIC_VERSION}.deb
 
 RUN set -x && \
-    wget --progress=dot:mega https://fess.codelibs.org/snapshot/fess-${FESS_VERSION}.deb -O /tmp/fess-${FESS_VERSION}.deb && \
+    wget --progress=dot:mega https://github.com/codelibs/fess/releases/download/fess-${FESS_VERSION}/fess-${FESS_VERSION}.deb -O /tmp/fess-${FESS_VERSION}.deb && \
     dpkg -i /tmp/fess-${FESS_VERSION}.deb && \
     rm -rf /tmp/fess-${FESS_VERSION}.deb
 RUN ant -f /usr/share/fess/bin/plugin.xml -Dtarget.dir=/tmp \
