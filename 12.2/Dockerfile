@@ -16,7 +16,7 @@ RUN apt-get update && \
       && \
     apt-get clean
 
-ARG FESS_VERSION=12.2.2
+ARG FESS_VERSION=12.2.3
 ARG ELASTIC_VERSION=6.3.2
 
 RUN groupadd -g 1000 elasticsearch && \
