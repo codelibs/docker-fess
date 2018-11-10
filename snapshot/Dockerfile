@@ -17,7 +17,7 @@ RUN apt-get update && \
     apt-get clean
 
 ARG FESS_VERSION=12.3.3-SNAPSHOT
-ARG ELASTIC_VERSION=6.4.2
+ARG ELASTIC_VERSION=6.4.3
 
 RUN groupadd -g 1000 elasticsearch && \
     groupadd -g 1001 fess && \
@@ -25,7 +25,8 @@ RUN groupadd -g 1000 elasticsearch && \
     useradd -u 1001 fess -g fess
 
 RUN set -x && \
-    wget --progress=dot:mega ${ES_DOWNLOAD_URL}/elasticsearch-${ELASTIC_VERSION}.deb -O /tmp/elasticsearch-${ELASTIC_VERSION}.deb && \
+    wget --progress=dot:mega ${ES_DOWNLOAD_URL}/elasticsearch-oss-${ELASTIC_VERSION}.deb \
+      -O /tmp/elasticsearch-${ELASTIC_VERSION}.deb && \
     dpkg -i /tmp/elasticsearch-${ELASTIC_VERSION}.deb && \
     rm -rf /tmp/elasticsearch-${ELASTIC_VERSION}.deb
 
@@ -41,14 +42,13 @@ RUN mkdir /opt/fess && \
     sed -i -e 's#FESS_CLASSPATH="$FESS_CONF_PATH:$FESS_CLASSPATH"#FESS_CLASSPATH="$FESS_OVERRIDE_CONF_PATH:$FESS_CONF_PATH:$FESS_CLASSPATH"#g' /usr/share/fess/bin/fess
 RUN echo "export FESS_APP_TYPE=$FESS_APP_TYPE" >>  /usr/share/fess/bin/fess.in.sh
 RUN echo "export FESS_OVERRIDE_CONF_PATH=/opt/fess" >>  /usr/share/fess/bin/fess.in.sh
-RUN apt-get remove -y ant
 
 COPY elasticsearch/config /etc/elasticsearch
 COPY fess/config /etc/fess
 
 WORKDIR /usr/share/fess
-EXPOSE 9200 9300 8080
+EXPOSE 8080
 
 USER root
-COPY run.sh /etc/run.sh
-ENTRYPOINT /etc/run.sh
+COPY run.sh /usr/share/fess/run.sh
+ENTRYPOINT /usr/share/fess/run.sh
