@@ -5,13 +5,13 @@ ES_LOGFILE=/var/log/elasticsearch/elasticsearch.log
 if [ x"$ES_HTTP_URL" = "x" ] ; then
   ES_HTTP_URL=http://localhost:9200
 else
-  sed -i -e "s/^ES_HTTP_URL=.*/ES_HTTP_URL=$ES_HTTP_URL/" /etc/default/fess
+  sed -i -e "s|^ES_HTTP_URL=.*|ES_HTTP_URL=$ES_HTTP_URL|" /etc/default/fess
 fi
 
 if [ x"$ES_TRANSPORT_URL" = "x" ] ; then
   ES_TRANSPORT_URL=localhost:9300
 else
-  sed -i -e "s/^ES_TRANSPORT_URL=.*/ES_TRANSPORT_URL=$ES_TRANSPORT_URL/" /etc/default/fess
+  sed -i -e "s|^ES_TRANSPORT_URL=.*|ES_TRANSPORT_URL=$ES_TRANSPORT_URL|" /etc/default/fess
 fi
 
 if [ x"$PING_RETRIES" = "x" ] ; then
@@ -42,7 +42,6 @@ start_elasticsearch() {
     sleep 1
   done
 
-  curl -XGET "$ES_HTTP_URL/_cluster/health?wait_for_status=yellow&timeout=3m"
 }
 
 start_fess() {
@@ -93,6 +92,8 @@ wait_app() {
 if [ x"$RUN_ELASTICSEARCH" != "xfalse" ] ; then
   start_elasticsearch
 fi
+
+curl --retry 30 --retry-connrefused -XGET "$ES_HTTP_URL/_cluster/health?wait_for_status=yellow&timeout=3m"
 
 if [ x"$RUN_FESS" != "xfalse" ] ; then
   start_fess

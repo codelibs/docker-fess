@@ -1,39 +1,31 @@
-version: '2'
+version: "3"
 services:
   fess:
-    build:
-      context: ./fess
-      args:
-        FESS_VERSION: "11.3.1"
+    image: codelibs/fess:latest
     restart: always
     ports:
       - "8080:8080"
     depends_on:
       - elasticsearch
     environment:
-      ES_HTTP_URL: "http://elasticsearch:9200"
-      ES_TRANSPORT_URL: "elasticsearch:9300"
-      FESS_DICTIONARY_PATH: "/var/lib/elasticsearch/config/"
+      - RUN_ELASTICSEARCH=false
+      - "ES_HTTP_URL=http://elasticsearch:9200"
+      - "ES_TRANSPORT_URL=elasticsearch:9300"
     networks:
       - esnet
 
   elasticsearch:
-    build:
-      context: ./elasticsearch
-      args:
-        ELASTIC_VERSION: "5.5.2"
-        ES_DOWNLOAD_URL: "https://artifacts.elastic.co/downloads/elasticsearch"
-        ES_JAVA_OPTS: "-Xms2g -Xmx2g"
+    image: codelibs/fess:latest
     restart: always
-    cap_add:
-      - IPC_LOCK
-    mem_limit: 4g
+    environment:
+      - RUN_FESS=false
+      - "ES_JAVA_OPTS=\"-Xms2g -Xmx2g\""
     ulimits:
       memlock:
         soft: -1
         hard: -1
-    volumes:
-      - ./esdata:/var/lib/elasticsearch
+#    volumes:
+#      - ./esdata:/var/lib/elasticsearch
     networks:
       - esnet
 

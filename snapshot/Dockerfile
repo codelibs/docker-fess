@@ -44,10 +44,9 @@ RUN echo "export FESS_APP_TYPE=$FESS_APP_TYPE" >>  /usr/share/fess/bin/fess.in.s
 RUN echo "export FESS_OVERRIDE_CONF_PATH=/opt/fess" >>  /usr/share/fess/bin/fess.in.sh
 
 COPY elasticsearch/config /etc/elasticsearch
-COPY fess/config /etc/fess
 
 WORKDIR /usr/share/fess
-EXPOSE 8080
+EXPOSE 8080 9200 9300
 
 USER root
 COPY run.sh /usr/share/fess/run.sh
