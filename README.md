@@ -5,7 +5,8 @@ See [https://hub.docker.com/r/codelibs/fess/](https://hub.docker.com/r/codelibs/
 
 ## Docker Images
 
--   [`latest`, `12`, `12.4`, `12.4.x` (*12.4/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/12.4/Dockerfile)
+-   [`latest`, `12`, `12.5`, `12.5.x` (*12.5/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/12.5/Dockerfile)
+-   [`12.4`, `12.4.x` (*12.4/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/12.4/Dockerfile)
 -   [`12.3`, `12.3.x` (*12.3/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/12.3/Dockerfile)
 -   [`12.2`, `12.2.x` (*12.2/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/12.2/Dockerfile)
 -   [`12.1`, `12.1.x` (*12.1/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/12.1/Dockerfile)
