@@ -90,4 +90,4 @@ $ docker build --rm -t codelibs/fess:<tag name> ./<version_dir>/
 
 ## License
 
-Apache license.
+[Apache License 2.0](LICENSE)
