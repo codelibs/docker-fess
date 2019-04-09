@@ -11,8 +11,8 @@ RUN apt-get update && \
     apt-get install -y imagemagick procps unoconv ant && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-ARG FESS_VERSION=12.5.2-SNAPSHOT
-ARG ELASTIC_VERSION=6.6.1
+ARG FESS_VERSION=13.0.0-SNAPSHOT
+ARG ELASTIC_VERSION=7.0.0-rc1
 
 RUN groupadd -g 1000 elasticsearch && \
     groupadd -g 1001 fess && \
@@ -36,7 +36,7 @@ RUN mkdir /opt/fess && \
     chown -R fess.fess /opt/fess && \
     sed -i -e 's#FESS_CLASSPATH="$FESS_CONF_PATH:$FESS_CLASSPATH"#FESS_CLASSPATH="$FESS_OVERRIDE_CONF_PATH:$FESS_CONF_PATH:$FESS_CLASSPATH"#g' /usr/share/fess/bin/fess && \
     echo "export FESS_APP_TYPE=$FESS_APP_TYPE" >>  /usr/share/fess/bin/fess.in.sh && \
-     echo "export FESS_OVERRIDE_CONF_PATH=/opt/fess" >>  /usr/share/fess/bin/fess.in.sh
+    echo "export FESS_OVERRIDE_CONF_PATH=/opt/fess" >>  /usr/share/fess/bin/fess.in.sh
 
 COPY elasticsearch/config /etc/elasticsearch
 RUN chown root:elasticsearch /etc/elasticsearch/* && \
