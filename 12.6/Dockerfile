@@ -25,7 +25,7 @@ RUN set -x && \
     dpkg -i /tmp/elasticsearch-${ELASTIC_VERSION}.deb && \
     rm -rf /tmp/elasticsearch-${ELASTIC_VERSION}.deb && \
     echo "JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64" >> /etc/default/elasticsearch && \
-    wget --progress=dot:mega https://fess.codelibs.org/snapshot/fess-${FESS_VERSION}.deb -O /tmp/fess-${FESS_VERSION}.deb && \
+    wget --progress=dot:mega https://github.com/codelibs/fess/releases/download/fess-${FESS_VERSION}/fess-${FESS_VERSION}.deb -O /tmp/fess-${FESS_VERSION}.deb && \
     dpkg -i /tmp/fess-${FESS_VERSION}.deb && \
     rm -rf /tmp/fess-${FESS_VERSION}.deb && \
     ant -f /usr/share/fess/bin/plugin.xml -Dtarget.dir=/tmp \

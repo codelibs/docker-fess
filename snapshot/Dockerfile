@@ -12,7 +12,7 @@ RUN apt-get update && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 ARG FESS_VERSION=13.0.0-SNAPSHOT
-ARG ELASTIC_VERSION=7.0.0-rc1
+ARG ELASTIC_VERSION=7.0.0
 
 RUN groupadd -g 1000 elasticsearch && \
     groupadd -g 1001 fess && \
@@ -24,6 +24,7 @@ RUN set -x && \
       -O /tmp/elasticsearch-${ELASTIC_VERSION}.deb && \
     dpkg -i /tmp/elasticsearch-${ELASTIC_VERSION}.deb && \
     rm -rf /tmp/elasticsearch-${ELASTIC_VERSION}.deb && \
+    echo "JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64" >> /etc/default/elasticsearch && \
     wget --progress=dot:mega https://fess.codelibs.org/snapshot/fess-${FESS_VERSION}.deb -O /tmp/fess-${FESS_VERSION}.deb && \
     dpkg -i /tmp/fess-${FESS_VERSION}.deb && \
     rm -rf /tmp/fess-${FESS_VERSION}.deb && \
