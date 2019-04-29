@@ -20,7 +20,7 @@ RUN groupadd -g 1000 elasticsearch && \
     useradd -u 1001 fess -g fess
 
 RUN set -x && \
-    wget --progress=dot:mega ${ES_DOWNLOAD_URL}/elasticsearch-oss-${ELASTIC_VERSION}.deb \
+    wget --progress=dot:mega ${ES_DOWNLOAD_URL}/elasticsearch-oss-${ELASTIC_VERSION}-amd64.deb \
       -O /tmp/elasticsearch-${ELASTIC_VERSION}.deb && \
     dpkg -i /tmp/elasticsearch-${ELASTIC_VERSION}.deb && \
     rm -rf /tmp/elasticsearch-${ELASTIC_VERSION}.deb && \
