@@ -5,7 +5,9 @@ See [https://hub.docker.com/r/codelibs/fess/](https://hub.docker.com/r/codelibs/
 
 ## Docker Images
 
--   [`latest`, `12`, `12.5`, `12.5.x` (*12.5/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/12.5/Dockerfile)
+-   [`latest`, `13`, `13.0`, `13.0.x` (*13.0/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.0/Dockerfile)
+-   [`12.6`, `12.6.x` (*12.6/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/12.6/Dockerfile)
+-   [`12.5`, `12.5.x` (*12.5/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/12.5/Dockerfile)
 -   [`12.4`, `12.4.x` (*12.4/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/12.4/Dockerfile)
 -   [`12.3`, `12.3.x` (*12.3/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/12.3/Dockerfile)
 -   [`12.2`, `12.2.x` (*12.2/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/12.2/Dockerfile)
@@ -65,7 +67,7 @@ $ docker run -d -p 8080:8080 --name fess \
     -v $PWD/es/data:/var/lib/elasticsearch codelibs/fess:latest
 ```
 
-You can put fess_config.properties to fess/config directory.
+You can put fess\_config.properties to fess/config directory.
 If you want to use a default setting for Elasticsearch, remove `-v $PWD/es/config:/etc/elasticsearch`.
 
 ### Set ES\_JAVA\_OPTS
@@ -78,7 +80,7 @@ $ docker run -e 'ES_JAVA_OPTS="-Xms2g -Xmx2g"' -d -p 8080:8080 codelibs/fess:sna
 
 ## Kernel settings
 
-Elasticsearch needs to set vm.max_map_count to  at least 262144. See [Install Elasticsearch with Docker](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#docker-cli-run-prod-mode).
+Elasticsearch needs to set vm.max\_map\_count to  at least 262144. See [Install Elasticsearch with Docker](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#docker-cli-run-prod-mode).
 
 ## Build
 
