@@ -4,3 +4,4 @@ discovery.type: single-node
 configsync.config_path: /var/lib/elasticsearch/config
 path.data: /var/lib/elasticsearch
 path.logs: /var/log/elasticsearch
+indices.breaker.total.limit: 100%
