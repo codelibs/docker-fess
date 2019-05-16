@@ -11,8 +11,8 @@ RUN apt-get update && \
     apt-get install -y imagemagick procps unoconv ant && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-ARG FESS_VERSION=12.6.0
-ARG ELASTIC_VERSION=6.7.1
+ARG FESS_VERSION=12.6.1
+ARG ELASTIC_VERSION=6.7.2
 
 RUN groupadd -g 1000 elasticsearch && \
     groupadd -g 1001 fess && \
