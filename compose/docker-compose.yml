@@ -10,7 +10,7 @@ services:
     environment:
       - RUN_ELASTICSEARCH=false
       - "ES_HTTP_URL=http://elasticsearch:9200"
-      - "ES_TRANSPORT_URL=elasticsearch:9300"
+#      - "ES_TRANSPORT_URL=elasticsearch:9300"
     networks:
       - esnet
 
