@@ -59,12 +59,13 @@ and import settings with following this [link](https://github.com/codelibs/fess/
 To save data and config for Fess/Elasticsearch, use -v option for mount host directory:
 
 ```console
-$ mkdir ./data
-$ sudo chown 1000:1000 ./data
+$ mkdir -p ./data/fess/config data/es/{config,data}
+$ sudo chown -R 1001:1001 ./data/fess
+$ sudo chown -R 1000:1000 ./data/es
 $ docker run -d -p 8080:8080 --name fess \
-    -v $PWD/fess/config:/opt/fess \
-    -v $PWD/es/config:/etc/elasticsearch \
-    -v $PWD/es/data:/var/lib/elasticsearch codelibs/fess:latest
+    -v $PWD/data/fess/config:/opt/fess \
+    -v $PWD/data/es/config:/etc/elasticsearch \
+    -v $PWD/data/es/data:/var/lib/elasticsearch codelibs/fess:latest
 ```
 
 You can put fess\_config.properties to fess/config directory.
