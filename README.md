@@ -44,17 +44,9 @@ You can access http://localhost:8080 from the host OS with:
 $ docker run -d -p 8080:8080 --name fess codelibs/fess:latest
 ```
 
-### Run Fess with Kibana
+### Run Fess with Elasticsearch Cluster and Kibana
 
-To monitoring Fess logs with Kibana, run Fess and Kibana with these commands:
-
-```console
-$ docker run -d -p 8080:8080 --name fess codelibs/fess:latest
-$ docker run -d -e ELASTICSEARCH_URL=http://localhost:9200 \
-    --name kibana kibana:latest
-```
-
-and import settings with following this [link](https://github.com/codelibs/fess/blob/master/src/main/assemblies/extension/kibana/README.md).
+See [docker-compose.yml](https://github.com/codelibs/docker-fess/blob/master/compose/docker-compose.yml).
 
 ### Run Fess with Your Data/Config
 
