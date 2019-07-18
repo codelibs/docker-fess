@@ -1,36 +1,85 @@
 version: "3"
 services:
-  fess:
-    image: codelibs/fess:latest
-    restart: always
+  fess01:
+    image: codelibs/fess:13.2.0
+    container_name: fess01
     ports:
       - "8080:8080"
     depends_on:
-      - elasticsearch
+      - es01
+      - es02
     environment:
       - RUN_ELASTICSEARCH=false
-      - "ES_HTTP_URL=http://elasticsearch:9200"
-#      - "ES_TRANSPORT_URL=elasticsearch:9300"
+      - "ES_HTTP_URL=http://es01:9200"
+      - "FESS_DICTIONARY_PATH=/usr/share/elasticsearch/config/dictionary/"
     networks:
       - esnet
 
-  elasticsearch:
-    image: codelibs/fess:latest
-    restart: always
+  es01:
+    image: codelibs/fess-elasticsearch:7.2.0
+    container_name: es01
     environment:
-      - RUN_FESS=false
-      - "ES_JAVA_OPTS=\"-Xms2g -Xmx2g\""
+      - node.name=es01
+      - discovery.seed_hosts=es02
+      - cluster.initial_master_nodes=es01,es02
+      - cluster.name=fess-es
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+      - "FESS_DICTIONARY_PATH=/usr/share/elasticsearch/config/dictionary"
     ulimits:
       memlock:
         soft: -1
         hard: -1
-#    volumes:
-#      - ./esdata:/var/lib/elasticsearch
+    volumes:
+      - esdata01:/usr/share/elasticsearch/data
+      - esdictionary01:/usr/share/elasticsearch/config/dictionary
+#    ports:
+#      - 9200:9200
+    networks:
+      - esnet
+
+  es02:
+    image: codelibs/fess-elasticsearch:7.2.0
+    container_name: es02
+    environment:
+      - node.name=es02
+      - discovery.seed_hosts=es01
+      - cluster.initial_master_nodes=es01,es02
+      - cluster.name=fess-es
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+      - "FESS_DICTIONARY_PATH=/usr/share/elasticsearch/config/dictionary"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata02:/usr/share/elasticsearch/data
+      - esdictionary02:/usr/share/elasticsearch/config/dictionary
+    networks:
+      - esnet
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.2.0
+    container_name: kibana
+    depends_on:
+      - es01
+      - es02
+    environment:
+      - "ELASTICSEARCH_HOSTS=http://es01:9200"
+    ports:
+      - 5601:5601
     networks:
       - esnet
 
 volumes:
-  esdata:
+  esdata01:
+    driver: local
+  esdictionary01:
+    driver: local
+  esdata02:
+    driver: local
+  esdictionary02:
     driver: local
 
 networks:

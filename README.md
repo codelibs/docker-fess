@@ -87,10 +87,18 @@ Elasticsearch needs to set vm.max\_map\_count to  at least 262144. See [Install 
 
 ## Build
 
+### Fess
+
 To build docker images, run as below:
 
 ```console
 $ docker build --rm -t codelibs/fess:<tag name> ./<version_dir>/
+```
+
+### Elasticsearch
+
+```console
+$ docker build --rm -t codelibs/fess-elasticsearch:<tag name> ./elasticsearch/<version_dir>/
 ```
 
 ## License

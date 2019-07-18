@@ -2,6 +2,10 @@
 
 ES_LOGFILE=/var/log/elasticsearch/elasticsearch.log
 
+if [ x"$FESS_DICTIONARY_PATH" != "x" ] ; then
+  sed -i -e "s|^FESS_DICTIONARY_PATH=.*|FESS_DICTIONARY_PATH=$FESS_DICTIONARY_PATH|" /etc/default/fess
+fi
+
 if [ x"$ES_HTTP_URL" = "x" ] ; then
   ES_HTTP_URL=http://localhost:9200
 else
@@ -93,7 +97,7 @@ if [ x"$RUN_ELASTICSEARCH" != "xfalse" ] ; then
   start_elasticsearch
 fi
 
-curl --retry 30 --retry-connrefused -XGET "$ES_HTTP_URL/_cluster/health?wait_for_status=yellow&timeout=3m"
+curl --retry 30 --retry-delay 1 --retry-connrefused -XGET "$ES_HTTP_URL/_cluster/health?wait_for_status=yellow&timeout=3m"
 
 if [ x"$RUN_FESS" != "xfalse" ] ; then
   start_fess
