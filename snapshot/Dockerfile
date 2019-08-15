@@ -7,7 +7,6 @@ ENV ES_DOWNLOAD_URL https://artifacts.elastic.co/downloads/elasticsearch
 ENV FESS_APP_TYPE docker
 
 RUN apt-get update && \
-    apt-get upgrade -y && \
     apt-get install -y imagemagick procps unoconv ant && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
