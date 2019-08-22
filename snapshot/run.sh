@@ -34,7 +34,7 @@ start_elasticsearch() {
   if [ x"$ES_JAVA_OPTS" != "x" ] ; then
     echo "ES_JAVA_OPTS=$ES_JAVA_OPTS" >> /etc/default/elasticsearch
   fi
-  service elasticsearch start
+  /etc/init.d/elasticsearch start
 
   counter=1
   ret=1
@@ -60,7 +60,7 @@ start_fess() {
                   /var/log/fess/audit.log \
 		  /var/log/fess/fess.log
   tail -f /var/log/fess/*.log &
-  service fess start
+  /etc/init.d/fess start
 }
 
 wait_app() {

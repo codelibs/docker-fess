@@ -1,18 +1,14 @@
-FROM openjdk:11-jre
-LABEL maintainer "N2SM <support@n2sm.net>"
-
-ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64
+FROM amd64/adoptopenjdk:11-jre-hotspot-bionic
 
 ENV ES_DOWNLOAD_URL https://artifacts.elastic.co/downloads/elasticsearch
 ENV FESS_APP_TYPE docker
 
 RUN apt-get update && \
-    apt-get upgrade -y && \
     apt-get install -y imagemagick procps unoconv ant && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-ARG FESS_VERSION=13.2.0
-ARG ELASTIC_VERSION=7.2.0
+ARG FESS_VERSION=13.2.1
+ARG ELASTIC_VERSION=7.2.1
 
 RUN groupadd -g 1000 elasticsearch && \
     groupadd -g 1001 fess && \
@@ -20,12 +16,12 @@ RUN groupadd -g 1000 elasticsearch && \
     useradd -u 1001 fess -g fess
 
 RUN set -x && \
-    wget --progress=dot:mega ${ES_DOWNLOAD_URL}/elasticsearch-oss-${ELASTIC_VERSION}-amd64.deb \
-      -O /tmp/elasticsearch-${ELASTIC_VERSION}.deb && \
+    curl -LfsSo /tmp/elasticsearch-${ELASTIC_VERSION}.deb \
+      ${ES_DOWNLOAD_URL}/elasticsearch-oss-${ELASTIC_VERSION}-amd64.deb && \
     dpkg -i /tmp/elasticsearch-${ELASTIC_VERSION}.deb && \
     rm -rf /tmp/elasticsearch-${ELASTIC_VERSION}.deb && \
-    echo "JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64" >> /etc/default/elasticsearch && \
-    wget --progress=dot:mega https://github.com/codelibs/fess/releases/download/fess-${FESS_VERSION}/fess-${FESS_VERSION}.deb -O /tmp/fess-${FESS_VERSION}.deb && \
+    curl -LfsSo /tmp/fess-${FESS_VERSION}.deb \
+      https://github.com/codelibs/fess/releases/download/fess-${FESS_VERSION}/fess-${FESS_VERSION}.deb && \
     dpkg -i /tmp/fess-${FESS_VERSION}.deb && \
     rm -rf /tmp/fess-${FESS_VERSION}.deb && \
     ant -f /usr/share/fess/bin/plugin.xml -Dtarget.dir=/tmp \

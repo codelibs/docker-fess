@@ -7,7 +7,7 @@ RUN apt-get update && \
     apt-get install -y imagemagick procps unoconv ant && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-ARG FESS_VERSION=13.3.1-SNAPSHOT
+ARG FESS_VERSION=13.3.0
 ARG ELASTIC_VERSION=7.3.0
 
 RUN groupadd -g 1000 elasticsearch && \
@@ -21,7 +21,7 @@ RUN set -x && \
     dpkg -i /tmp/elasticsearch-${ELASTIC_VERSION}.deb && \
     rm -rf /tmp/elasticsearch-${ELASTIC_VERSION}.deb && \
     curl -LfsSo /tmp/fess-${FESS_VERSION}.deb \
-      https://fess.codelibs.org/snapshot/fess-${FESS_VERSION}.deb && \
+      https://github.com/codelibs/fess/releases/download/fess-${FESS_VERSION}/fess-${FESS_VERSION}.deb && \
     dpkg -i /tmp/fess-${FESS_VERSION}.deb && \
     rm -rf /tmp/fess-${FESS_VERSION}.deb && \
     ant -f /usr/share/fess/bin/plugin.xml -Dtarget.dir=/tmp \
