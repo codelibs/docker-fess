@@ -1,7 +1,7 @@
 version: "3"
 services:
   fess01:
-    image: codelibs/fess:13.2.0
+    image: codelibs/fess:13.3.1
     container_name: fess01
     ports:
       - "8080:8080"
@@ -16,7 +16,7 @@ services:
       - esnet
 
   es01:
-    image: codelibs/fess-elasticsearch:7.2.0
+    image: codelibs/fess-elasticsearch:7.3.1
     container_name: es01
     environment:
       - node.name=es01
@@ -33,13 +33,13 @@ services:
     volumes:
       - esdata01:/usr/share/elasticsearch/data
       - esdictionary01:/usr/share/elasticsearch/config/dictionary
-#    ports:
-#      - 9200:9200
+    ports:
+      - 9200:9200
     networks:
       - esnet
 
   es02:
-    image: codelibs/fess-elasticsearch:7.2.0
+    image: codelibs/fess-elasticsearch:7.3.1
     container_name: es02
     environment:
       - node.name=es02
@@ -56,11 +56,13 @@ services:
     volumes:
       - esdata02:/usr/share/elasticsearch/data
       - esdictionary02:/usr/share/elasticsearch/config/dictionary
+    ports:
+      - 9201:9200
     networks:
       - esnet
 
   kibana:
-    image: docker.elastic.co/kibana/kibana:7.2.0
+    image: docker.elastic.co/kibana/kibana:7.3.1
     container_name: kibana
     depends_on:
       - es01
