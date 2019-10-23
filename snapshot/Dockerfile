@@ -15,6 +15,7 @@ RUN groupadd -g 1000 elasticsearch && \
     useradd -u 1000 elasticsearch -g elasticsearch && \
     useradd -u 1001 fess -g fess
 
+ARG CACHEBUST=1
 RUN set -x && \
     curl -LfsSo /tmp/elasticsearch-${ELASTIC_VERSION}.deb \
       ${ES_DOWNLOAD_URL}/elasticsearch-oss-${ELASTIC_VERSION}-amd64.deb && \
