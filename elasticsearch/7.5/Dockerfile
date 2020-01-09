@@ -9,3 +9,10 @@ RUN /usr/share/elasticsearch/bin/elasticsearch-plugin install org.codelibs:elast
     mkdir /usr/share/elasticsearch/config/dictionary && \
     chown elasticsearch /usr/share/elasticsearch/config/dictionary
 
+ENV ES_PATH_CONF '/var/lib/elasticsearch/config'
+ENV FESS_DICTIONARY_PATH '/var/lib/elasticsearch/config/'
+
+RUN mkdir -p /var/lib/elasticsearch/config && \
+    mv /usr/share/elasticsearch/config /var/lib/elasticsearch/
+
+VOLUME [ "/usr/share/elasticsearch/data" ]
