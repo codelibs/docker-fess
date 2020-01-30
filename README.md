@@ -5,7 +5,8 @@ See [https://hub.docker.com/r/codelibs/fess/](https://hub.docker.com/r/codelibs/
 
 ## Docker Images
 
--   [`latest`, `13`, `13.4`, `13.4.x` (*13.4/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.4/Dockerfile)
+-   [`latest`, `13`, `13.5`, `13.5.x` (*13.5/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.5/Dockerfile)
+-   [`13.4`, `13.4.x` (*13.4/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.4/Dockerfile)
 -   [`13.3`, `13.3.x` (*13.3/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.3/Dockerfile)
 -   [`13.2`, `13.2.x` (*13.2/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.2/Dockerfile)
 -   [`13.1`, `13.1.x` (*13.1/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.1/Dockerfile)
@@ -56,18 +57,15 @@ See [docker-compose.yml](https://github.com/codelibs/docker-fess/blob/master/com
 To save data and config for Fess/Elasticsearch, use -v option for mount host directory:
 
 ```console
-$ mkdir -p ./data/fess/config data/es/{config,data}
-... Copy Elasticsearch config files to data/es/config directory ...
+$ mkdir -p ./data/fess/config data/es/data
 $ sudo chown -R 1001:1001 ./data/fess
 $ sudo chown -R 1000:1000 ./data/es
 $ docker run -d -p 8080:8080 --name fess \
     -v $PWD/data/fess/config:/opt/fess \
-    -v $PWD/data/es/config:/etc/elasticsearch \
     -v $PWD/data/es/data:/var/lib/elasticsearch codelibs/fess:latest
 ```
 
 You can put fess\_config.properties to fess/config directory.
-If you want to use a default setting for Elasticsearch, remove `-v $PWD/es/config:/etc/elasticsearch`.
 
 ### Set ES\_JAVA\_OPTS
 
