@@ -57,6 +57,7 @@ To save data and config for Fess/Elasticsearch, use -v option for mount host dir
 
 ```console
 $ mkdir -p ./data/fess/config data/es/{config,data}
+... Copy Elasticsearch config files to data/es/config directory ...
 $ sudo chown -R 1001:1001 ./data/fess
 $ sudo chown -R 1000:1000 ./data/es
 $ docker run -d -p 8080:8080 --name fess \
