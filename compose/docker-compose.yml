@@ -30,6 +30,9 @@ services:
       memlock:
         soft: -1
         hard: -1
+      nofile:
+        soft: 65535
+        hard: 65535
     volumes:
       - esdata01:/usr/share/elasticsearch/data
       - esdictionary01:/usr/share/elasticsearch/config/dictionary
