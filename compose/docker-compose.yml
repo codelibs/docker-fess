@@ -1,7 +1,7 @@
 version: "3"
 services:
   fess01:
-    image: codelibs/fess:13.6.1
+    image: codelibs/fess:13.6.2
     container_name: fess01
     ports:
       - "8080:8080"
@@ -16,7 +16,7 @@ services:
       - esnet
 
   es01:
-    image: codelibs/fess-elasticsearch:7.6.1
+    image: codelibs/fess-elasticsearch:7.6.1.1
     container_name: es01
     environment:
       - node.name=es01
@@ -42,7 +42,7 @@ services:
       - esnet
 
   es02:
-    image: codelibs/fess-elasticsearch:7.6.1
+    image: codelibs/fess-elasticsearch:7.6.1.1
     container_name: es02
     environment:
       - node.name=es02
