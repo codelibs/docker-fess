@@ -64,6 +64,11 @@ start_fess() {
 }
 
 wait_app() {
+  if [ "x$FESS_CONTEXT_PATH" = "x" ]; then
+    PING_PATH=/json/ping
+  else
+    PING_PATH=$FESS_CONTEXT_PATH/json/ping
+  fi
   while [ 1 ] ; do
     if [ x"$RUN_ELASTICSEARCH" != "xfalse" ] ; then
       STATUS=`curl -w '%{http_code}\n' -s -o /dev/null http://localhost:9200`
@@ -78,7 +83,7 @@ wait_app() {
       fi
     fi
     if [ x"$RUN_FESS" != "xfalse" ] ; then
-      STATUS=`curl -w '%{http_code}\n' -s -o /dev/null http://localhost:8080/json/ping`
+      STATUS=`curl -w '%{http_code}\n' -s -o /dev/null http://localhost:8080$PING_PATH`
       if [ x"$STATUS" = x200 ] ; then
         FESS_ERROR_COUNT=0
       else
