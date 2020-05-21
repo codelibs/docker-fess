@@ -1,7 +1,7 @@
 version: "3"
 services:
   fess01:
-    image: codelibs/fess:13.6.4
+    image: codelibs/fess:snapshot
     container_name: fess01
     environment:
       - RUN_ELASTICSEARCH=false
@@ -15,7 +15,7 @@ services:
       - es02
 
   es01:
-    image: codelibs/fess-elasticsearch:7.6.2
+    image: codelibs/fess-elasticsearch:7.7.0
     container_name: es01
     environment:
       - node.name=es01
@@ -41,7 +41,7 @@ services:
       - esnet
 
   es02:
-    image: codelibs/fess-elasticsearch:7.6.2
+    image: codelibs/fess-elasticsearch:7.7.0
     container_name: es02
     environment:
       - node.name=es02
@@ -69,7 +69,7 @@ services:
       - es01
 
   kibana:
-    image: docker.elastic.co/kibana/kibana:7.6.2
+    image: docker.elastic.co/kibana/kibana:7.7.0
     container_name: kibana
     depends_on:
       - es01
