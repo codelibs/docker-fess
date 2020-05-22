@@ -102,7 +102,7 @@ if [ x"$RUN_ELASTICSEARCH" != "xfalse" ] ; then
   start_elasticsearch
 fi
 
-curl --retry 30 --retry-delay 1 --retry-connrefused -XGET "$ES_HTTP_URL/_cluster/health?wait_for_status=yellow&timeout=3m"
+curl --retry 300 --retry-delay 1 --retry-connrefused -XGET "$ES_HTTP_URL/_cluster/health?wait_for_status=yellow&timeout=3m"
 
 if [ x"$RUN_FESS" != "xfalse" ] ; then
   start_fess
