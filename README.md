@@ -94,7 +94,8 @@ $ docker build --rm -t codelibs/fess:<tag name> ./<version_dir>/
 ### Elasticsearch
 
 ```console
-$ docker build --rm -t codelibs/fess-elasticsearch:<tag name> ./elasticsearch/<version_dir>/
+$ docker build --rm --build-arg ES_TYPE=elasticsearch -t codelibs/fess-elasticsearch:<tag name> ./elasticsearch/<version_dir>/
+$ docker build --rm --build-arg ES_TYPE=elasticsearch-oss -t codelibs/fess-elasticsearch-oss:<tag name> ./elasticsearch/<version_dir>/
 ```
 
 ## License
