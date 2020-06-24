@@ -5,9 +5,10 @@ See [https://hub.docker.com/r/codelibs/fess/](https://hub.docker.com/r/codelibs/
 
 ## Docker Images
 
--   [`latest`, `13`, `13.7`, `13.7.x` (*13.5/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.7/Dockerfile)
--   [`13.6`, `13.6.x` (*13.6/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.4/Dockerfile)
--   [`13.5`, `13.5.x` (*13.5/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.4/Dockerfile)
+-   [`latest`, `13`, `13.8`, `13.8.x` (*13.8/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.8/Dockerfile)
+-   [`13.7`, `13.7.x` (*13.7/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.7/Dockerfile)
+-   [`13.6`, `13.6.x` (*13.6/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.6/Dockerfile)
+-   [`13.5`, `13.5.x` (*13.5/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.5/Dockerfile)
 -   [`13.4`, `13.4.x` (*13.4/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.4/Dockerfile)
 -   [`13.3`, `13.3.x` (*13.3/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.3/Dockerfile)
 -   [`13.2`, `13.2.x` (*13.2/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.2/Dockerfile)
@@ -32,7 +33,7 @@ See [https://hub.docker.com/r/codelibs/fess/](https://hub.docker.com/r/codelibs/
 -   [`10.0`, `10.0.x` (*10.0/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/10.0/Dockerfile)
 -   [`snapshot` (*snapshot/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/snapshot/Dockerfile)
 
-## What is Fess ?
+## What is Fess?
 
 Fess is very powerful and easily deployable Enterprise Search Server. You can install and run Fess quickly on any platforms, which have Java runtime environment. Fess is provided under Apache license.
 
