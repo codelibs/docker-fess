@@ -4,10 +4,10 @@ ENV ES_DOWNLOAD_URL https://artifacts.elastic.co/downloads/elasticsearch
 ENV FESS_APP_TYPE docker
 
 RUN apt-get update && \
-    apt-get install -y imagemagick procps unoconv ant && \
+    apt-get install -y imagemagick procps unoconv ant xpdf && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-ARG FESS_VERSION=13.7.1
+ARG FESS_VERSION=13.7.2
 ARG ELASTIC_VERSION=7.7.1
 
 RUN groupadd -g 1000 elasticsearch && \
