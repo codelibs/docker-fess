@@ -5,7 +5,8 @@ See [https://hub.docker.com/r/codelibs/fess/](https://hub.docker.com/r/codelibs/
 
 ## Docker Images
 
--   [`latest`, `13`, `13.8`, `13.8.x` (*13.8/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.8/Dockerfile)
+-   [`latest`, `13`, `13.9`, `13.9.x` (*13.9/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.9/Dockerfile)
+-   [`13.8`, `13.8.x` (*13.8/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.8/Dockerfile)
 -   [`13.7`, `13.7.x` (*13.7/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.7/Dockerfile)
 -   [`13.6`, `13.6.x` (*13.6/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.6/Dockerfile)
 -   [`13.5`, `13.5.x` (*13.5/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.5/Dockerfile)
@@ -48,7 +49,7 @@ For more info, access [Fess official documentation](http://fess.codelibs.org/).
 You can access http://localhost:8080 from the host OS with:
 
 ```console
-$ docker run -d -p 8080:8080 --name fess codelibs/fess:latest
+$ docker run -d -p 8080:8080 --name fess ghcr.io/codelibs/fess:latest
 ```
 
 ### Run Fess with Elasticsearch Cluster and Kibana
@@ -65,7 +66,7 @@ $ sudo chown -R 1001:1001 ./data/fess
 $ sudo chown -R 1000:1000 ./data/es
 $ docker run -d -p 8080:8080 --name fess \
     -v $PWD/data/fess/config:/opt/fess \
-    -v $PWD/data/es/data:/var/lib/elasticsearch codelibs/fess:latest
+    -v $PWD/data/es/data:/var/lib/elasticsearch ghcr.io/codelibs/fess:latest
 ```
 
 You can put fess\_config.properties to fess/config directory.
@@ -75,7 +76,7 @@ You can put fess\_config.properties to fess/config directory.
 To set ES\_JAVA\_OPTS, use -e option:
 
 ```console
-$ docker run -e 'ES_JAVA_OPTS="-Xms2g -Xmx2g"' -d -p 8080:8080 codelibs/fess:snapshot
+$ docker run -e 'ES_JAVA_OPTS="-Xms2g -Xmx2g"' -d -p 8080:8080 ghcr.io/codelibs/fess:latest
 ```
 
 ## Kernel settings
