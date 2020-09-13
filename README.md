@@ -1,7 +1,7 @@
 Docker for Fess
 =====
 
-See [https://hub.docker.com/r/codelibs/fess/](https://hub.docker.com/r/codelibs/fess/).
+See [Packages](https://github.com/orgs/codelibs/packages).
 
 ## Docker Images
 
@@ -90,14 +90,14 @@ Elasticsearch needs to set vm.max\_map\_count to  at least 262144. See [Install 
 To build docker images, run as below:
 
 ```console
-$ docker build --rm -t codelibs/fess:<tag name> ./<version_dir>/
+$ docker build --rm -t ghcr.io/codelibs/fess:<tag name> ./<version_dir>/
 ```
 
 ### Elasticsearch
 
 ```console
-$ docker build --rm --build-arg ES_TYPE=elasticsearch -t codelibs/fess-elasticsearch:<tag name> ./elasticsearch/<version_dir>/
-$ docker build --rm --build-arg ES_TYPE=elasticsearch-oss -t codelibs/fess-elasticsearch-oss:<tag name> ./elasticsearch/<version_dir>/
+$ docker build --rm --build-arg ES_TYPE=elasticsearch -t ghcr.io/codelibs/fess-elasticsearch:<tag name> ./elasticsearch/<version_dir>/
+$ docker build --rm --build-arg ES_TYPE=elasticsearch-oss -t ghcr.io/codelibs/fess-elasticsearch-oss:<tag name> ./elasticsearch/<version_dir>/
 ```
 
 ## License
