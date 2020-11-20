@@ -1,7 +1,7 @@
 version: "3"
 services:
   kibana:
-    image: docker.elastic.co/kibana/kibana-oss:7.9.3
+    image: docker.elastic.co/kibana/kibana-oss:7.10.0
     container_name: kibana
     environment:
       - "ELASTICSEARCH_HOSTS=http://es01:9200"
