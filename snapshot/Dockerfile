@@ -7,7 +7,7 @@ RUN apt-get update && \
     apt-get install -y imagemagick procps unoconv ant xpdf && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-ARG FESS_VERSION=13.10.0-SNAPSHOT
+ARG FESS_VERSION=13.10.1-SNAPSHOT
 ARG ELASTIC_VERSION=7.10.0
 
 RUN groupadd -g 1000 elasticsearch && \
