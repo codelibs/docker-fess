@@ -1,6 +1,6 @@
 ARG ES_TYPE=elasticsearch
 
-FROM docker.elastic.co/elasticsearch/${ES_TYPE}:7.10.1
+FROM docker.elastic.co/elasticsearch/${ES_TYPE}:7.10.2
 
 RUN /usr/share/elasticsearch/bin/elasticsearch-plugin install org.codelibs:elasticsearch-analysis-fess:7.10.0 -b && \
     /usr/share/elasticsearch/bin/elasticsearch-plugin install org.codelibs:elasticsearch-analysis-extension:7.10.0 -b && \
