@@ -1,7 +1,7 @@
 version: "3"
 services:
   fess01:
-    image: ghcr.io/codelibs/fess:13.10.4
+    image: ghcr.io/codelibs/fess:13.11.0
     container_name: fess01
     environment:
       - RUN_ELASTICSEARCH=false

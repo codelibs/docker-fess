@@ -5,7 +5,8 @@ See [Packages](https://github.com/orgs/codelibs/packages).
 
 ## Docker Images
 
--   [`latest`, `13`, `13.10`, `13.10.x` (*13.10/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.10/Dockerfile)
+-   [`latest`, `13`, `13.11`, `13.11.x` (*13.10/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.11/Dockerfile)
+-   [`13.10`, `13.10.x` (*13.10/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.10/Dockerfile)
 -   [`13.9`, `13.9.x` (*13.9/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.9/Dockerfile)
 -   [`13.8`, `13.8.x` (*13.8/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.8/Dockerfile)
 -   [`13.7`, `13.7.x` (*13.7/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.7/Dockerfile)
@@ -50,35 +51,14 @@ For more info, access [Fess official documentation](http://fess.codelibs.org/).
 You can access http://localhost:8080 from the host OS with:
 
 ```console
-$ docker run -d -p 8080:8080 --name fess ghcr.io/codelibs/fess:latest
+$ git clone https://github.com/codelibs/docker-fess.git
+$ cd docker-fess/compose
+$ docker-compose -f docker-compose.yml -f docker-compose.standalone.yml up -d
 ```
 
 ### Run Fess with Elasticsearch Cluster and Kibana
 
 See [docker-compose.yml](https://github.com/codelibs/docker-fess/blob/master/compose/docker-compose.yml).
-
-### Run Fess with Your Data/Config
-
-To save data and config for Fess/Elasticsearch, use -v option for mount host directory:
-
-```console
-$ mkdir -p ./data/fess/config data/es/data
-$ sudo chown -R 1001:1001 ./data/fess
-$ sudo chown -R 1000:1000 ./data/es
-$ docker run -d -p 8080:8080 --name fess \
-    -v $PWD/data/fess/config:/opt/fess \
-    -v $PWD/data/es/data:/var/lib/elasticsearch ghcr.io/codelibs/fess:latest
-```
-
-You can put fess\_config.properties to fess/config directory.
-
-### Set ES\_JAVA\_OPTS
-
-To set ES\_JAVA\_OPTS, use -e option:
-
-```console
-$ docker run -e 'ES_JAVA_OPTS="-Xms2g -Xmx2g"' -d -p 8080:8080 ghcr.io/codelibs/fess:latest
-```
 
 ## Kernel settings
 
@@ -98,7 +78,6 @@ $ docker build --rm -t ghcr.io/codelibs/fess:<tag name> ./<version_dir>/
 
 ```console
 $ docker build --rm --build-arg ES_TYPE=elasticsearch -t ghcr.io/codelibs/fess-elasticsearch:<tag name> ./elasticsearch/<version_dir>/
-$ docker build --rm --build-arg ES_TYPE=elasticsearch-oss -t ghcr.io/codelibs/fess-elasticsearch-oss:<tag name> ./elasticsearch/<version_dir>/
 ```
 
 ## License
