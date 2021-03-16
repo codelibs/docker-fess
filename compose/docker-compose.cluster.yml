@@ -34,7 +34,7 @@ services:
         max-file: "5"
 
   es02:
-    image: ghcr.io/codelibs/fess-elasticsearch-oss:7.10.2
+    image: ghcr.io/codelibs/fess-elasticsearch:7.11.1
     container_name: es02
     environment:
       - node.name=es02
