@@ -6,7 +6,7 @@ RUN apt-get update && \
     apt-get install -y imagemagick procps unoconv ant xpdf && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-ARG FESS_VERSION=13.11.1
+ARG FESS_VERSION=13.11.2
 
 RUN groupadd -g 1001 fess && \
     useradd -u 1001 fess -g fess
