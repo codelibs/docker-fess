@@ -28,6 +28,12 @@ Fess with Elasticsearch cluster and Kibana:
 $ docker-compose -f docker-compose.yml -f docker-compose.cluster.yml -f docker-compose.kibana.yml up -d
 ```
 
+Fess with Elasticsearch cluster and MinIO:
+
+```
+$ docker-compose -f docker-compose.yml -f docker-compose.cluster.yml -f docker-compose.minio.yml up -d
+```
+
 ### Stop Fess
 
 ```
