@@ -1,4 +1,4 @@
-FROM amd64/adoptopenjdk:11-jre-hotspot-bionic
+FROM adoptopenjdk:11-jre-hotspot-bionic
 
 ENV FESS_APP_TYPE docker
 
