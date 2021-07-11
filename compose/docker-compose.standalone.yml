@@ -1,7 +1,7 @@
 version: "3"
 services:
   es01:
-    image: ghcr.io/codelibs/fess-elasticsearch:7.13.2
+    image: ghcr.io/codelibs/fess-elasticsearch:7.13.3
     container_name: es01
     environment:
       - node.name=es01

@@ -1,7 +1,7 @@
 version: "3"
 services:
   fess01:
-    image: ghcr.io/codelibs/fess:13.13.0
+    image: ghcr.io/codelibs/fess:13.13.1
     container_name: fess01
     environment:
       - "ES_HTTP_URL=http://es01:9200"
