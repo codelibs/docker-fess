@@ -5,8 +5,9 @@ See [Packages](https://github.com/orgs/codelibs/packages).
 
 ## Docker Images
 
--   [`latest`, `13`, `13.12`, `13.12.x` (*13.10/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.12/Dockerfile)
--   [`13.11`, `13.11.x` (*13.10/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.11/Dockerfile)
+-   [`13.13.x` (*13.13/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.13/Dockerfile)
+-   [`13.12.x` (*13.12/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.12/Dockerfile)
+-   [`13.11`, `13.11.x` (*13.11/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.11/Dockerfile)
 -   [`13.10`, `13.10.x` (*13.10/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.10/Dockerfile)
 -   [`13.9`, `13.9.x` (*13.9/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.9/Dockerfile)
 -   [`13.8`, `13.8.x` (*13.8/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.8/Dockerfile)
