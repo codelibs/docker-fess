@@ -5,6 +5,7 @@ See [Packages](https://github.com/orgs/codelibs/packages).
 
 ## Docker Images
 
+-   [`13.14.x` (*13.14/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.14/Dockerfile)
 -   [`13.13.x` (*13.13/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.13/Dockerfile)
 -   [`13.12.x` (*13.12/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.12/Dockerfile)
 -   [`13.11`, `13.11.x` (*13.11/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.11/Dockerfile)
