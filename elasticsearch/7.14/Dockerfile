@@ -1,7 +1,7 @@
-FROM docker.elastic.co/elasticsearch/elasticsearch:7.14.0
+FROM docker.elastic.co/elasticsearch/elasticsearch:7.14.1
 
 ARG ANALYSIS_EXTENSION_PLUGIN=org.codelibs:elasticsearch-analysis-extension:7.14.0
-ARG ANALYSIS_FESS_PLUGIN=org.codelibs:elasticsearch-analysis-fess:7.14.0
+ARG ANALYSIS_FESS_PLUGIN=org.codelibs:elasticsearch-analysis-fess:7.14.1
 ARG MINHASH_PLUGIN=org.codelibs:elasticsearch-minhash:7.14.0
 ARG CONFIGSYNC_URL=https://repo.maven.apache.org/maven2/org/codelibs/elasticsearch-configsync/7.14.0/elasticsearch-configsync-7.14.0.zip
 
