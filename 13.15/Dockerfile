@@ -6,7 +6,7 @@ RUN apt-get update && \
     apt-get install -y imagemagick procps unoconv ant xpdf && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-ARG FESS_VERSION=13.15.1-SNAPSHOT
+ARG FESS_VERSION=13.15.0
 
 RUN groupadd -g 1001 fess && \
     useradd -u 1001 fess -g fess
@@ -14,7 +14,7 @@ RUN groupadd -g 1001 fess && \
 ARG CACHEBUST=1
 RUN set -x && \
     curl -LfsSo /tmp/fess-${FESS_VERSION}.deb \
-      https://fess.codelibs.org/snapshot/fess-${FESS_VERSION}.deb && \
+      https://github.com/codelibs/fess/releases/download/fess-${FESS_VERSION}/fess-${FESS_VERSION}.deb && \
     dpkg -i /tmp/fess-${FESS_VERSION}.deb && \
     rm -rf /tmp/fess-${FESS_VERSION}.deb && \
     mkdir /opt/fess && \
