@@ -5,6 +5,7 @@ See [Packages](https://github.com/orgs/codelibs/packages).
 
 ## Docker Images
 
+-   [`13.15.x` (*13.15/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.15/Dockerfile)
 -   [`13.14.x` (*13.14/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.14/Dockerfile)
 -   [`13.13.x` (*13.13/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.13/Dockerfile)
 -   [`13.12.x` (*13.12/Dockerfile*)](https://github.com/codelibs/docker-fess/blob/master/13.12/Dockerfile)
@@ -49,6 +50,10 @@ For more info, access [Fess official documentation](http://fess.codelibs.org/).
 
 ## Getting Started
 
+### Kernel settings
+
+Elasticsearch needs to set vm.max\_map\_count to  at least 262144. See [Install Elasticsearch with Docker](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#docker-prod-prerequisites).
+
 ### Run Fess
 
 You can access http://localhost:8080 from the host OS with:
@@ -63,9 +68,6 @@ $ docker-compose -f docker-compose.yml -f docker-compose.standalone.yml up -d
 
 See [docker-compose.yml](https://github.com/codelibs/docker-fess/blob/master/compose/docker-compose.yml).
 
-## Kernel settings
-
-Elasticsearch needs to set vm.max\_map\_count to  at least 262144. See [Install Elasticsearch with Docker](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#docker-prod-prerequisites).
 
 ## Build
 
