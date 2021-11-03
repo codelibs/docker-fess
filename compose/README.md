@@ -8,7 +8,7 @@ This is example compose file for running Fess and Elasticsearch with Docker Comp
 
 ## Usage
 
-### Run Fess
+### Fess with Elasticsearch
 
 Fess with Elasticsearch for single node:
 
@@ -22,16 +22,24 @@ Fess with Elasticsearch cluster:
 $ docker-compose -f docker-compose.yml -f docker-compose.cluster.yml up -d
 ```
 
-Fess with Elasticsearch cluster and Kibana:
+### Fess with Elasticsearch and Kibana:
 
 ```
-$ docker-compose -f docker-compose.yml -f docker-compose.cluster.yml -f docker-compose.kibana.yml up -d
+$ docker-compose -f docker-compose.yml -f docker-compose.standalone.yml -f docker-compose.kibana.yml up -d
 ```
 
-Fess with Elasticsearch cluster and MinIO:
+### Fess with Elasticsearch cluster and MinIO
 
 ```
-$ docker-compose -f docker-compose.yml -f docker-compose.cluster.yml -f docker-compose.minio.yml up -d
+$ docker-compose -f docker-compose.yml -f docker-compose.standalone.yml -f docker-compose.minio.yml up -d
+```
+
+### Fess with OpenSearch
+
+Fess with OpenSearch for single node:
+
+```
+$ docker-compose --env-file .env.opensearch -f docker-compose.yml -f docker-compose.opensearch.yml up -d
 ```
 
 ### Stop Fess
