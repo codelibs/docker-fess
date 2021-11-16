@@ -1,9 +1,9 @@
-FROM docker.elastic.co/elasticsearch/elasticsearch:7.15.1
+FROM docker.elastic.co/elasticsearch/elasticsearch:7.15.2
 
-ARG ANALYSIS_EXTENSION_PLUGIN=org.codelibs:elasticsearch-analysis-extension:7.15.0
-ARG ANALYSIS_FESS_PLUGIN=org.codelibs:elasticsearch-analysis-fess:7.15.0
-ARG MINHASH_PLUGIN=org.codelibs:elasticsearch-minhash:7.15.0
-ARG CONFIGSYNC_URL=https://repo.maven.apache.org/maven2/org/codelibs/elasticsearch-configsync/7.15.0/elasticsearch-configsync-7.15.0.zip
+ARG ANALYSIS_EXTENSION_PLUGIN=org.codelibs:elasticsearch-analysis-extension:7.15.1
+ARG ANALYSIS_FESS_PLUGIN=org.codelibs:elasticsearch-analysis-fess:7.15.1
+ARG MINHASH_PLUGIN=org.codelibs:elasticsearch-minhash:7.15.1
+ARG CONFIGSYNC_URL=https://repo.maven.apache.org/maven2/org/codelibs/elasticsearch-configsync/7.15.1/elasticsearch-configsync-7.15.1.zip
 
 RUN /usr/share/elasticsearch/bin/elasticsearch-plugin install $ANALYSIS_FESS_PLUGIN -b  && \
     /usr/share/elasticsearch/bin/elasticsearch-plugin install $ANALYSIS_EXTENSION_PLUGIN -b && \
