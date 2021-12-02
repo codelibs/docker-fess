@@ -9,7 +9,7 @@ RUN apt-get update && \
 ARG FESS_VERSION=13.12.2
 
 RUN groupadd -g 1001 fess && \
-    useradd -u 1001 fess -g fess
+    useradd -u 1001 -g fess --system --no-create-home --home /var/lib/fess fess
 
 ARG CACHEBUST=1
 RUN set -x && \
