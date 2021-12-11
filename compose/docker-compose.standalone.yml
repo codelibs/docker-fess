@@ -9,7 +9,7 @@ services:
       - cluster.initial_master_nodes=es01
       - cluster.name=fess-es
       - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g -Dlog4j2.formatMsgNoLookups=true"
       - "FESS_DICTIONARY_PATH=/usr/share/elasticsearch/config/dictionary"
     ulimits:
       memlock:
