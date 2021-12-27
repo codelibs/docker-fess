@@ -1,9 +1,9 @@
-FROM opensearchproject/opensearch:1.1.0
+FROM opensearchproject/opensearch:1.2.3
 
-ARG ANALYSIS_EXTENSION_PLUGIN=org.codelibs.opensearch:opensearch-analysis-extension:1.1.0
-ARG ANALYSIS_FESS_PLUGIN=org.codelibs.opensearch:opensearch-analysis-fess:1.1.0
-ARG MINHASH_PLUGIN=org.codelibs.opensearch:opensearch-minhash:1.1.0
-ARG CONFIGSYNC_PLUGIN=org.codelibs.opensearch:opensearch-configsync:1.1.0
+ARG ANALYSIS_EXTENSION_PLUGIN=org.codelibs.opensearch:opensearch-analysis-extension:1.2.0
+ARG ANALYSIS_FESS_PLUGIN=org.codelibs.opensearch:opensearch-analysis-fess:1.2.0
+ARG MINHASH_PLUGIN=org.codelibs.opensearch:opensearch-minhash:1.2.0
+ARG CONFIGSYNC_PLUGIN=org.codelibs.opensearch:opensearch-configsync:1.2.1
 
 RUN /usr/share/opensearch/bin/opensearch-plugin install $ANALYSIS_FESS_PLUGIN -b  && \
     /usr/share/opensearch/bin/opensearch-plugin install $ANALYSIS_EXTENSION_PLUGIN -b && \
