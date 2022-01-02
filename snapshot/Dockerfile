@@ -1,12 +1,12 @@
-FROM adoptopenjdk:11-jre-hotspot-bionic
+FROM eclipse-temurin:17-jre-focal
 
 ENV FESS_APP_TYPE docker
 
 RUN apt-get update && \
-    apt-get install -y imagemagick procps unoconv ant xpdf && \
+    apt-get install -y imagemagick unoconv poppler-utils && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-ARG FESS_VERSION=13.16.1-SNAPSHOT
+ARG FESS_VERSION=14.0.0-SNAPSHOT
 
 RUN groupadd -g 1001 fess && \
     useradd -u 1001 -g fess --system --no-create-home --home /var/lib/fess fess
