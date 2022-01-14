@@ -11,3 +11,4 @@ services:
       - esnet
     depends_on:
       - es01
+    restart: unless-stopped
