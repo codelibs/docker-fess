@@ -35,6 +35,7 @@ if [[ "x${PING_INTERVAL}" = "x" ]] ; then
 fi
 
 start_fess() {
+  ln -s /opt/java/openjdk/bin/java /usr/bin/java
   touch /var/log/fess/fess-crawler.log \
         /var/log/fess/fess-suggest.log \
         /var/log/fess/fess-thumbnail.log \
