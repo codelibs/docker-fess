@@ -1,0 +1,24 @@
+version: "3"
+services:
+  fess01:
+    image: ghcr.io/codelibs/fess:snapshot
+    container_name: fess01
+    environment:
+      - "ES_HTTP_URL=http://es01:9200"
+      - "FESS_DICTIONARY_PATH=${FESS_DICTIONARY_PATH:-/usr/share/elasticsearch/config/dictionary/}"
+    ports:
+      - "8080:8080"
+    networks:
+      - esnet
+    depends_on:
+      - es01
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+    restart: unless-stopped
+
+networks:
+  esnet:
+    driver: bridge
