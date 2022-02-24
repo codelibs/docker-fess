@@ -1,6 +1,6 @@
 FROM alpine:3 AS builder
 
-ARG CONFIGSYNC_URL=https://repo1.maven.org/maven2/org/codelibs/elasticsearch-configsync/8.0.0/elasticsearch-configsync-8.0.0.zip
+ARG CONFIGSYNC_URL=https://repo1.maven.org/maven2/org/codelibs/elasticsearch-configsync/8.0.1/elasticsearch-configsync-8.0.1.zip
 
 RUN apk update && apk add curl && \
     curl -o /tmp/configsync.zip $CONFIGSYNC_URL && \

@@ -1,7 +1,7 @@
 version: "3"
 services:
   es01:
-    image: ghcr.io/codelibs/fess-elasticsearch:7.17.0
+    image: ghcr.io/codelibs/fess-elasticsearch:8.0.0
     container_name: es01
     environment:
       - node.name=es01
@@ -9,7 +9,8 @@ services:
       - cluster.initial_master_nodes=es01,es02
       - cluster.name=fess-es
       - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms1g -Xmx1g -Dlog4j2.formatMsgNoLookups=true"
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
       - "FESS_DICTIONARY_PATH=/usr/share/elasticsearch/config/dictionary"
     ulimits:
       memlock:
@@ -35,7 +36,7 @@ services:
     restart: unless-stopped
 
   es02:
-    image: ghcr.io/codelibs/fess-elasticsearch:7.17.0
+    image: ghcr.io/codelibs/fess-elasticsearch:8.0.0
     container_name: es02
     environment:
       - node.name=es02
@@ -43,7 +44,8 @@ services:
       - cluster.initial_master_nodes=es01,es02
       - cluster.name=fess-es
       - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms1g -Xmx1g -Dlog4j2.formatMsgNoLookups=true"
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
       - "FESS_DICTIONARY_PATH=/usr/share/elasticsearch/config/dictionary"
     ulimits:
       memlock:
