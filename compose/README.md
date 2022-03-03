@@ -42,6 +42,14 @@ Fess with OpenSearch for single node:
 $ docker-compose --env-file .env.opensearch -f docker-compose.yml -f docker-compose.opensearch.yml up -d
 ```
 
+### Fess with Elasticsearch 7.x
+
+Fess with Elasticsearch 7.x for single node:
+
+```
+$ docker-compose -f docker-compose.yml -f docker-compose.elasticsearch7.yml up -d
+```
+
 ### Stop Fess
 
 ```
