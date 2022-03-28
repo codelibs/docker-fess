@@ -1,4 +1,3 @@
-version: "3"
 services:
   fess01:
     image: ghcr.io/codelibs/fess:14.0.1

@@ -4,56 +4,53 @@ Docker Compose for Fess
 ## Description
 
 
-This is example compose file for running Fess and Elasticsearch with Docker Compose.
+This repository provides compose files for running Fess and Elasticsearch or OpenSearch with Docker Compose.
+
+Compose command is available on Docker Desktop.
+Therefore, Windows and Mac users do not need to install it.
+For Linux users, please see [Installing Compose V2](https://docs.docker.com/compose/cli-command/#installing-compose-v2).
+
 
 ## Usage
 
 ### Fess with Elasticsearch
 
-Fess with Elasticsearch for single node:
+Fess with Elasticsearch 8:
 
 ```
-$ docker-compose -f docker-compose.yml -f docker-compose.standalone.yml up -d
+$ docker compose -f compose.yaml -f compose-elasticsearch8.yaml up -d
 ```
 
-Fess with Elasticsearch cluster:
+Fess with Elasticsearch 7:
 
 ```
-$ docker-compose -f docker-compose.yml -f docker-compose.cluster.yml up -d
+$ docker compose -f compose.yaml -f compose-elasticsearch7.yaml up -d
 ```
 
 ### Fess with Elasticsearch and Kibana:
 
 ```
-$ docker-compose -f docker-compose.yml -f docker-compose.standalone.yml -f docker-compose.kibana.yml up -d
+$ docker compose -f compose.yaml -f compose-elasticsearch8.yaml -f compose-kibanas8.yaml up -d
 ```
 
 ### Fess with Elasticsearch cluster and MinIO
 
 ```
-$ docker-compose -f docker-compose.yml -f docker-compose.standalone.yml -f docker-compose.minio.yml up -d
+$ docker compose -f compose.yaml -f compose-elasticsearch8.yaml -f compose-minio.yaml up -d
 ```
 
 ### Fess with OpenSearch
 
-Fess with OpenSearch for single node:
+Fess with OpenSearch:
 
 ```
-$ docker-compose --env-file .env.opensearch -f docker-compose.yml -f docker-compose.opensearch.yml up -d
-```
-
-### Fess with Elasticsearch 7.x
-
-Fess with Elasticsearch 7.x for single node:
-
-```
-$ docker-compose -f docker-compose.yml -f docker-compose.elasticsearch7.yml up -d
+$ docker compose --env-file .env.opensearch -f compose.yaml -f compose-opensearch1.yaml up -d
 ```
 
 ### Stop Fess
 
 ```
-$ docker-compose -f docker-compose.yml -f ...(snip)... down
+$ docker compose -f compose.yaml -f ...(snip)... down
 
 ```
 
