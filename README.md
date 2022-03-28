@@ -24,13 +24,9 @@ You can access http://localhost:8080 from the host OS with:
 ```console
 $ git clone https://github.com/codelibs/docker-fess.git
 $ cd docker-fess/compose
-$ docker-compose -f docker-compose.yml -f docker-compose.standalone.yml up -d
+$ docker compose -f compose.yaml -f compose-elasticsearch8.yaml up -d
 ```
-
-### Run Fess with Elasticsearch Cluster and Kibana
-
-See [docker-compose.yml](https://github.com/codelibs/docker-fess/blob/master/compose/docker-compose.yml).
-
+For more details, please see [compose](https://github.com/codelibs/docker-fess/tree/master/compose).
 
 ## Build
 
