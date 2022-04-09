@@ -39,11 +39,13 @@ start_fess() {
   touch /var/log/fess/fess-crawler.log \
         /var/log/fess/fess-suggest.log \
         /var/log/fess/fess-thumbnail.log \
+        /var/log/fess/fess-urls.log \
         /var/log/fess/audit.log \
         /var/log/fess/fess.log
   chown fess:fess /var/log/fess/fess-crawler.log \
                   /var/log/fess/fess-suggest.log \
                   /var/log/fess/fess-thumbnail.log \
+                  /var/log/fess/fess-urls.log \
                   /var/log/fess/audit.log \
                   /var/log/fess/fess.log
   tail -f /var/log/fess/*.log &
