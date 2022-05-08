@@ -1,11 +1,11 @@
 services:
   es01:
-    image: ghcr.io/codelibs/fess-elasticsearch:8.1.0
+    image: ghcr.io/codelibs/fess-elasticsearch:8.2.0
     container_name: es01
     environment:
       - node.name=es01
-      - discovery.seed_hosts=es02
-      - cluster.initial_master_nodes=es01,es02
+      - discovery.seed_hosts=es01,es02,es03
+      - cluster.initial_master_nodes=es01,es02,es03
       - cluster.name=fess-es
       - bootstrap.memory_lock=true
       - xpack.security.enabled=false
@@ -25,8 +25,6 @@ services:
       - 9200:9200
     networks:
       - esnet
-    depends_on:
-      - es02
     logging:
       driver: "json-file"
       options:
@@ -35,12 +33,12 @@ services:
     restart: unless-stopped
 
   es02:
-    image: ghcr.io/codelibs/fess-elasticsearch:8.1.0
+    image: ghcr.io/codelibs/fess-elasticsearch:8.2.0
     container_name: es02
     environment:
       - node.name=es02
-      - discovery.seed_hosts=es01
-      - cluster.initial_master_nodes=es01,es02
+      - discovery.seed_hosts=es01,es02,es03
+      - cluster.initial_master_nodes=es01,es02,es03
       - cluster.name=fess-es
       - bootstrap.memory_lock=true
       - xpack.security.enabled=false
@@ -66,6 +64,119 @@ services:
         max-size: "10m"
         max-file: "5"
     restart: unless-stopped
+    depends_on:
+      - es01
+
+  es03:
+    image: ghcr.io/codelibs/fess-elasticsearch:8.2.0
+    container_name: es03
+    environment:
+      - node.name=es03
+      - discovery.seed_hosts=es01,es02,es03
+      - cluster.initial_master_nodes=es01,es02,es03
+      - cluster.name=fess-es
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g -Dlog4j2.formatMsgNoLookups=true"
+      - "FESS_DICTIONARY_PATH=/usr/share/elasticsearch/config/dictionary"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65535
+        hard: 65535
+    volumes:
+      - esdata03:/usr/share/elasticsearch/data
+      - esdictionary03:/usr/share/elasticsearch/config/dictionary
+    ports:
+      - 9202:9200
+    networks:
+      - esnet
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+    restart: unless-stopped
+    depends_on:
+      - es01
+      - es02
+
+  es04:
+    image: ghcr.io/codelibs/fess-elasticsearch:8.2.0
+    container_name: es04
+    environment:
+      - node.name=es04
+      - discovery.seed_hosts=es01,es02,es03
+      - cluster.initial_master_nodes=es01,es02,es03
+      - cluster.name=fess-es
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g -Dlog4j2.formatMsgNoLookups=true"
+      - "FESS_DICTIONARY_PATH=/usr/share/elasticsearch/config/dictionary"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65535
+        hard: 65535
+    volumes:
+      - esdata04:/usr/share/elasticsearch/data
+      - esdictionary04:/usr/share/elasticsearch/config/dictionary
+    ports:
+      - 9203:9200
+    networks:
+      - esnet
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+    restart: unless-stopped
+    depends_on:
+      - es01
+      - es02
+      - es03
+
+  es05:
+    image: ghcr.io/codelibs/fess-elasticsearch:8.2.0
+    container_name: es05
+    environment:
+      - node.name=es05
+      - discovery.seed_hosts=es01,es02,es03
+      - cluster.initial_master_nodes=es01,es02,es03
+      - cluster.name=fess-es
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g -Dlog4j2.formatMsgNoLookups=true"
+      - "FESS_DICTIONARY_PATH=/usr/share/elasticsearch/config/dictionary"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65535
+        hard: 65535
+    volumes:
+      - esdata05:/usr/share/elasticsearch/data
+      - esdictionary05:/usr/share/elasticsearch/config/dictionary
+    ports:
+      - 9204:9200
+    networks:
+      - esnet
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+    restart: unless-stopped
+    depends_on:
+      - es01
+      - es02
+      - es03
+      - es04
 
 volumes:
   esdata01:
@@ -75,4 +186,16 @@ volumes:
   esdata02:
     driver: local
   esdictionary02:
+    driver: local
+  esdata03:
+    driver: local
+  esdictionary03:
+    driver: local
+  esdata04:
+    driver: local
+  esdictionary04:
+    driver: local
+  esdata05:
+    driver: local
+  esdictionary05:
     driver: local
