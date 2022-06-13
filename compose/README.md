@@ -44,7 +44,7 @@ $ docker compose -f compose.yaml -f compose-elasticsearch8.yaml -f compose-minio
 Fess with OpenSearch:
 
 ```
-$ docker compose --env-file .env.opensearch -f compose.yaml -f compose-opensearch1.yaml up -d
+$ docker compose --env-file .env.opensearch -f compose.yaml -f compose-opensearch2.yaml up -d
 ```
 
 ### Stop Fess
