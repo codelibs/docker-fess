@@ -30,7 +30,7 @@ $ docker compose -f compose.yaml -f compose-elasticsearch7.yaml up -d
 ### Fess with Elasticsearch and Kibana:
 
 ```
-$ docker compose -f compose.yaml -f compose-elasticsearch8.yaml -f compose-kibanas8.yaml up -d
+$ docker compose -f compose.yaml -f compose-elasticsearch8.yaml -f compose-kibana8.yaml up -d
 ```
 
 ### Fess with Elasticsearch cluster and MinIO
