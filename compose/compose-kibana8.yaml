@@ -1,6 +1,6 @@
 services:
   kibana:
-    image: docker.elastic.co/kibana/kibana:8.2.0
+    image: docker.elastic.co/kibana/kibana:8.2.3
     container_name: kibana
     environment:
       - "ELASTICSEARCH_HOSTS=http://es01:9200"
