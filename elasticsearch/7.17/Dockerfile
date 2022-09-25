@@ -7,7 +7,7 @@ RUN apk update && apk add curl && \
     mkdir -p /tmp/configsync && \
     unzip -d /tmp/configsync /tmp/configsync.zip
 
-FROM docker.elastic.co/elasticsearch/elasticsearch:7.17.3
+FROM docker.elastic.co/elasticsearch/elasticsearch:7.17.6
 
 ARG ANALYSIS_EXTENSION_PLUGIN=org.codelibs:elasticsearch-analysis-extension:7.17.0
 ARG ANALYSIS_FESS_PLUGIN=org.codelibs:elasticsearch-analysis-fess:7.17.0
