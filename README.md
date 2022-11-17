@@ -24,7 +24,7 @@ You can access http://localhost:8080 from the host OS with:
 ```console
 $ git clone https://github.com/codelibs/docker-fess.git
 $ cd docker-fess/compose
-$ docker compose -f compose.yaml -f compose-elasticsearch8.yaml up -d
+$ docker compose --env-file .env.opensearch -f compose.yaml -f compose-opensearch2.yaml up -d
 ```
 For more details, please see [compose](https://github.com/codelibs/docker-fess/tree/master/compose).
 
@@ -38,16 +38,16 @@ To build docker images, run as below:
 $ docker build --rm -t ghcr.io/codelibs/fess:<tag name> ./fess/<version_dir>/
 ```
 
-### Elasticsearch
-
-```console
-$ docker build --rm -t ghcr.io/codelibs/fess-elasticsearch:<tag name> ./elasticsearch/<version_dir>/
-```
-
 ### OpenSearch
 
 ```console
 $ docker build --rm -t ghcr.io/codelibs/fess-opensearch:<tag name> ./opensearch/<version_dir>/
+```
+
+### Elasticsearch
+
+```console
+$ docker build --rm -t ghcr.io/codelibs/fess-elasticsearch:<tag name> ./elasticsearch/<version_dir>/
 ```
 
 ## License
