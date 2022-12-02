@@ -2,7 +2,7 @@ services:
   fess01:
     environment:
       - "ES_HTTP_URL=http://es01:9200"
-      - "FESS_DICTIONARY_PATH=/usr/share/elasticsearch/config/dictionary/"
+      - "FESS_DICTIONARY_PATH=/usr/share/opensearch/config/dictionary/"
       - "FESS_JAVA_OPTS=-Dfess.system.storage.accesskey=AKIAIOSFODNN7EXAMPLE -Dfess.system.storage.secretkey=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY -Dfess.system.storage.endpoint=http://minio01:9000 -Dfess.system.storage.bucket=fess"
 
   minio01:

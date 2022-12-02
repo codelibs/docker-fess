@@ -5,7 +5,7 @@ services:
     container_name: fess01
     environment:
       - "ES_HTTP_URL=http://es01:9200"
-      - "FESS_DICTIONARY_PATH=${FESS_DICTIONARY_PATH:-/usr/share/elasticsearch/config/dictionary/}"
+      - "FESS_DICTIONARY_PATH=${FESS_DICTIONARY_PATH:-/usr/share/opensearch/config/dictionary/}"
     ports:
       - "8080:8080"
     networks:

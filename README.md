@@ -7,7 +7,7 @@ See [Docker Images](https://github.com/codelibs/docker-fess/pkgs/container/fess/
 
 Fess is very powerful and easily deployable Enterprise Search Server. You can install and run Fess quickly on any platforms, which have Java runtime environment. Fess is provided under Apache license.
 
-Fess is Elasticsearch-based search server, but knowledge/experience about Elasticsearch is NOT needed because of All-in-One Enterprise Search Server. Fess provides Administration GUI to configure the system on your browser. Fess also contains a crawler, which can crawl documents on Web/File System/DB and support many file formats, such as MS Office, pdf and zip.
+Fess is OpenSearch/Elasticsearch-based search server, but knowledge/experience about OpenSearch/Elasticsearch is NOT needed because of All-in-One Enterprise Search Server. Fess provides Administration GUI to configure the system on your browser. Fess also contains a crawler, which can crawl documents on Web/File System/DB and support many file formats, such as MS Office, pdf and zip.
 
 For more info, access [Fess official documentation](http://fess.codelibs.org/).
 
@@ -15,7 +15,7 @@ For more info, access [Fess official documentation](http://fess.codelibs.org/).
 
 ### Kernel settings
 
-Elasticsearch needs to set vm.max\_map\_count to  at least 262144. See [Install Elasticsearch with Docker](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#docker-prod-prerequisites).
+OpenSearch/Elasticsearch needs to set vm.max\_map\_count to  at least 262144. See [Install Elasticsearch with Docker](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#docker-prod-prerequisites).
 
 ### Run Fess
 
@@ -24,7 +24,7 @@ You can access http://localhost:8080 from the host OS with:
 ```console
 $ git clone https://github.com/codelibs/docker-fess.git
 $ cd docker-fess/compose
-$ docker compose --env-file .env.opensearch -f compose.yaml -f compose-opensearch2.yaml up -d
+$ docker compose -f compose.yaml -f compose-opensearch2.yaml up -d
 ```
 For more details, please see [compose](https://github.com/codelibs/docker-fess/tree/master/compose).
 
