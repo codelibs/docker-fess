@@ -1,16 +1,16 @@
 services:
   es01:
-    image: ghcr.io/codelibs/fess-elasticsearch:8.4.1
+    image: ghcr.io/codelibs/fess-opensearch:2.4.1
     container_name: es01
     environment:
       - node.name=es01
       - discovery.seed_hosts=es01,es02,es03
-      - cluster.initial_master_nodes=es01,es02,es03
+      - cluster.initial_cluster_manager_nodes=es01,es02,es03
       - cluster.name=fess-es
       - bootstrap.memory_lock=true
-      - xpack.security.enabled=false
-      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
-      - "FESS_DICTIONARY_PATH=/usr/share/elasticsearch/config/dictionary"
+      - plugins.security.disabled=true
+      - "OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g"
+      - "FESS_DICTIONARY_PATH=/usr/share/opensearch/config/dictionary"
     ulimits:
       memlock:
         soft: -1
@@ -19,8 +19,8 @@ services:
         soft: 65535
         hard: 65535
     volumes:
-      - esdata01:/usr/share/elasticsearch/data
-      - esdictionary01:/usr/share/elasticsearch/config/dictionary
+      - esdata01:/usr/share/opensearch/data
+      - esdictionary01:/usr/share/opensearch/config/dictionary
     ports:
       - 9200:9200
     networks:
@@ -33,17 +33,17 @@ services:
     restart: unless-stopped
 
   es02:
-    image: ghcr.io/codelibs/fess-elasticsearch:8.4.1
+    image: ghcr.io/codelibs/fess-opensearch:2.4.1
     container_name: es02
     environment:
       - node.name=es02
       - discovery.seed_hosts=es01,es02,es03
-      - cluster.initial_master_nodes=es01,es02,es03
+      - cluster.initial_cluster_manager_nodes=es01,es02,es03
       - cluster.name=fess-es
       - bootstrap.memory_lock=true
-      - xpack.security.enabled=false
-      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
-      - "FESS_DICTIONARY_PATH=/usr/share/elasticsearch/config/dictionary"
+      - plugins.security.disabled=true
+      - "OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g"
+      - "FESS_DICTIONARY_PATH=/usr/share/opensearch/config/dictionary"
     ulimits:
       memlock:
         soft: -1
@@ -52,8 +52,8 @@ services:
         soft: 65535
         hard: 65535
     volumes:
-      - esdata02:/usr/share/elasticsearch/data
-      - esdictionary02:/usr/share/elasticsearch/config/dictionary
+      - esdata02:/usr/share/opensearch/data
+      - esdictionary02:/usr/share/opensearch/config/dictionary
     ports:
       - 9201:9200
     networks:
@@ -68,17 +68,17 @@ services:
       - es01
 
   es03:
-    image: ghcr.io/codelibs/fess-elasticsearch:8.4.1
+    image: ghcr.io/codelibs/fess-opensearch:2.4.1
     container_name: es03
     environment:
       - node.name=es03
       - discovery.seed_hosts=es01,es02,es03
-      - cluster.initial_master_nodes=es01,es02,es03
+      - cluster.initial_cluster_manager_nodes=es01,es02,es03
       - cluster.name=fess-es
       - bootstrap.memory_lock=true
-      - xpack.security.enabled=false
-      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
-      - "FESS_DICTIONARY_PATH=/usr/share/elasticsearch/config/dictionary"
+      - plugins.security.disabled=true
+      - "OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g"
+      - "FESS_DICTIONARY_PATH=/usr/share/opensearch/config/dictionary"
     ulimits:
       memlock:
         soft: -1
@@ -87,8 +87,8 @@ services:
         soft: 65535
         hard: 65535
     volumes:
-      - esdata03:/usr/share/elasticsearch/data
-      - esdictionary03:/usr/share/elasticsearch/config/dictionary
+      - esdata03:/usr/share/opensearch/data
+      - esdictionary03:/usr/share/opensearch/config/dictionary
     ports:
       - 9202:9200
     networks:
@@ -104,17 +104,17 @@ services:
       - es02
 
   es04:
-    image: ghcr.io/codelibs/fess-elasticsearch:8.4.1
+    image: ghcr.io/codelibs/fess-opensearch:2.4.1
     container_name: es04
     environment:
       - node.name=es04
       - discovery.seed_hosts=es01,es02,es03
-      - cluster.initial_master_nodes=es01,es02,es03
+      - cluster.initial_cluster_manager_nodes=es01,es02,es03
       - cluster.name=fess-es
       - bootstrap.memory_lock=true
-      - xpack.security.enabled=false
-      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
-      - "FESS_DICTIONARY_PATH=/usr/share/elasticsearch/config/dictionary"
+      - plugins.security.disabled=true
+      - "OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g"
+      - "FESS_DICTIONARY_PATH=/usr/share/opensearch/config/dictionary"
     ulimits:
       memlock:
         soft: -1
@@ -123,8 +123,8 @@ services:
         soft: 65535
         hard: 65535
     volumes:
-      - esdata04:/usr/share/elasticsearch/data
-      - esdictionary04:/usr/share/elasticsearch/config/dictionary
+      - esdata04:/usr/share/opensearch/data
+      - esdictionary04:/usr/share/opensearch/config/dictionary
     ports:
       - 9203:9200
     networks:
@@ -141,17 +141,17 @@ services:
       - es03
 
   es05:
-    image: ghcr.io/codelibs/fess-elasticsearch:8.4.1
+    image: ghcr.io/codelibs/fess-opensearch:2.4.1
     container_name: es05
     environment:
       - node.name=es05
       - discovery.seed_hosts=es01,es02,es03
-      - cluster.initial_master_nodes=es01,es02,es03
+      - cluster.initial_cluster_manager_nodes=es01,es02,es03
       - cluster.name=fess-es
       - bootstrap.memory_lock=true
-      - xpack.security.enabled=false
-      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
-      - "FESS_DICTIONARY_PATH=/usr/share/elasticsearch/config/dictionary"
+      - plugins.security.disabled=true
+      - "OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g"
+      - "FESS_DICTIONARY_PATH=/usr/share/opensearch/config/dictionary"
     ulimits:
       memlock:
         soft: -1
@@ -160,8 +160,8 @@ services:
         soft: 65535
         hard: 65535
     volumes:
-      - esdata05:/usr/share/elasticsearch/data
-      - esdictionary05:/usr/share/elasticsearch/config/dictionary
+      - esdata05:/usr/share/opensearch/data
+      - esdictionary05:/usr/share/opensearch/config/dictionary
     ports:
       - 9204:9200
     networks:
