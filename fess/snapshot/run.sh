@@ -84,6 +84,7 @@ download_plugin() {
 }
 
 start_fess() {
+  rm -f /usr/bin/java
   ln -s /opt/java/openjdk/bin/java /usr/bin/java
   touch /var/log/fess/fess-crawler.log \
         /var/log/fess/fess-suggest.log \
