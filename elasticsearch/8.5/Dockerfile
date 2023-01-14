@@ -1,17 +1,17 @@
 FROM alpine:3 AS builder
 
-ARG CONFIGSYNC_URL=https://repo1.maven.org/maven2/org/codelibs/elasticsearch-configsync/8.5.2.0/elasticsearch-configsync-8.5.2.0.zip
+ARG CONFIGSYNC_URL=https://repo1.maven.org/maven2/org/codelibs/elasticsearch-configsync/8.5.3.0/elasticsearch-configsync-8.5.3.0.zip
 
 RUN apk update && apk add curl && \
     curl -o /tmp/configsync.zip $CONFIGSYNC_URL && \
     mkdir -p /tmp/configsync && \
     unzip -d /tmp/configsync /tmp/configsync.zip
 
-FROM docker.elastic.co/elasticsearch/elasticsearch:8.5.2
+FROM docker.elastic.co/elasticsearch/elasticsearch:8.5.3
 
-ARG ANALYSIS_EXTENSION_PLUGIN=org.codelibs:elasticsearch-analysis-extension:8.5.2.0
-ARG ANALYSIS_FESS_PLUGIN=org.codelibs:elasticsearch-analysis-fess:8.5.2.0
-ARG MINHASH_PLUGIN=org.codelibs:elasticsearch-minhash:8.5.2.0
+ARG ANALYSIS_EXTENSION_PLUGIN=org.codelibs:elasticsearch-analysis-extension:8.5.3.0
+ARG ANALYSIS_FESS_PLUGIN=org.codelibs:elasticsearch-analysis-fess:8.5.3.0
+ARG MINHASH_PLUGIN=org.codelibs:elasticsearch-minhash:8.5.3.0
 
 RUN /usr/share/elasticsearch/bin/elasticsearch-plugin install analysis-kuromoji -b  && \
     /usr/share/elasticsearch/bin/elasticsearch-plugin install analysis-nori -b  && \
