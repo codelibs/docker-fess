@@ -7,22 +7,22 @@ if [[ "x${FESS_DICTIONARY_PATH}" != "x" ]] ; then
   sed -i -e "s|^FESS_DICTIONARY_PATH=.*|FESS_DICTIONARY_PATH=${FESS_DICTIONARY_PATH}|" /etc/default/fess
 fi
 
-if [[ "x${ES_HTTP_URL}" = "x" ]] ; then
-  ES_HTTP_URL=http://localhost:9200
+if [[ "x${SEARCH_ENGINE_HTTP_URL}" = "x" ]] ; then
+  SEARCH_ENGINE_HTTP_URL=http://localhost:9200
 else
-  sed -i -e "s|^ES_HTTP_URL=.*|ES_HTTP_URL=${ES_HTTP_URL}|" /etc/default/fess
+  sed -i -e "s|^SEARCH_ENGINE_HTTP_URL=.*|SEARCH_ENGINE_HTTP_URL=${SEARCH_ENGINE_HTTP_URL}|" /etc/default/fess
 fi
 
-if [[ "x${ES_TYPE}" != "x" ]] ; then
-  FESS_JAVA_OPTS="${FESS_JAVA_OPTS} -Dfess.config.elasticsearch.type=${ES_TYPE}"
+if [[ "x${SEARCH_ENGINE_TYPE}" != "x" ]] ; then
+  FESS_JAVA_OPTS="${FESS_JAVA_OPTS} -Dfess.config.search_engine.type=${SEARCH_ENGINE_TYPE}"
 fi
 
-if [[ "x${ES_USERNAME}" != "x" ]] ; then
-  FESS_JAVA_OPTS="${FESS_JAVA_OPTS} -Dfess.config.elasticsearch.username=${ES_USERNAME}"
+if [[ "x${SEARCH_ENGINE_USERNAME}" != "x" ]] ; then
+  FESS_JAVA_OPTS="${FESS_JAVA_OPTS} -Dfess.config.search_engine.username=${SEARCH_ENGINE_USERNAME}"
 fi
 
-if [[ "x${ES_PASSWORD}" != "x" ]] ; then
-  FESS_JAVA_OPTS="${FESS_JAVA_OPTS} -Dfess.config.elasticsearch.password=${ES_PASSWORD}"
+if [[ "x${SEARCH_ENGINE_PASSWORD}" != "x" ]] ; then
+  FESS_JAVA_OPTS="${FESS_JAVA_OPTS} -Dfess.config.search_engine.password=${SEARCH_ENGINE_PASSWORD}"
 fi
 
 if [[ "x${FESS_JAVA_OPTS}" != "x" ]] ; then
