@@ -7,22 +7,34 @@ if [[ "x${FESS_DICTIONARY_PATH}" != "x" ]] ; then
   sed -i -e "s|^FESS_DICTIONARY_PATH=.*|FESS_DICTIONARY_PATH=${FESS_DICTIONARY_PATH}|" /etc/sysconfig/fess
 fi
 
-if [[ "x${SEARCH_ENGINE_HTTP_URL}" = "x" ]] ; then
-  SEARCH_ENGINE_HTTP_URL=http://localhost:9200
-else
+if [[ "x${SEARCH_ENGINE_HTTP_URL}" != "x" ]] ; then
   sed -i -e "s|^SEARCH_ENGINE_HTTP_URL=.*|SEARCH_ENGINE_HTTP_URL=${SEARCH_ENGINE_HTTP_URL}|" /etc/sysconfig/fess
+elif [[ "x${ES_HTTP_URL}" != "x" ]] ; then
+  echo "WARNING: ES_HTTP_URL is deprecated."
+  sed -i -e "s|^SEARCH_ENGINE_HTTP_URL=.*|SEARCH_ENGINE_HTTP_URL=${ES_HTTP_URL}|" /etc/sysconfig/fess
+else
+  SEARCH_ENGINE_HTTP_URL=http://localhost:9200
 fi
 
 if [[ "x${SEARCH_ENGINE_TYPE}" != "x" ]] ; then
   FESS_JAVA_OPTS="${FESS_JAVA_OPTS} -Dfess.config.search_engine.type=${SEARCH_ENGINE_TYPE}"
+elif [[ "x${ES_TYPE}" != "x" ]] ; then
+  echo "WARNING: ES_TYPE is deprecated."
+  FESS_JAVA_OPTS="${FESS_JAVA_OPTS} -Dfess.config.search_engine.type=${ES_TYPE}"
 fi
 
 if [[ "x${SEARCH_ENGINE_USERNAME}" != "x" ]] ; then
   FESS_JAVA_OPTS="${FESS_JAVA_OPTS} -Dfess.config.search_engine.username=${SEARCH_ENGINE_USERNAME}"
+elif [[ "x${ES_USERNAME}" != "x" ]] ; then
+  echo "WARNING: ES_USERNAME is deprecated."
+  FESS_JAVA_OPTS="${FESS_JAVA_OPTS} -Dfess.config.search_engine.username=${ES_USERNAME}"
 fi
 
 if [[ "x${SEARCH_ENGINE_PASSWORD}" != "x" ]] ; then
   FESS_JAVA_OPTS="${FESS_JAVA_OPTS} -Dfess.config.search_engine.password=${SEARCH_ENGINE_PASSWORD}"
+elif [[ "x${ES_PASSWORD}" != "x" ]] ; then
+  echo "WARNING: ES_PASSWORD is deprecated."
+  FESS_JAVA_OPTS="${FESS_JAVA_OPTS} -Dfess.config.search_engine.password=${ES_PASSWORD}"
 fi
 
 if [[ "x${FESS_JAVA_OPTS}" != "x" ]] ; then
