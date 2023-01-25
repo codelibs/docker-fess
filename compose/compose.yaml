@@ -1,10 +1,10 @@
 services:
   fess01:
-    image: ghcr.io/codelibs/fess:14.5.0
+    image: ghcr.io/codelibs/fess:14.6.0
     # build: ./playwright # use Playwright
     container_name: fess01
     environment:
-      - "ES_HTTP_URL=http://es01:9200"
+      - "SEARCH_ENGINE_HTTP_URL=http://es01:9200"
       - "FESS_DICTIONARY_PATH=${FESS_DICTIONARY_PATH:-/usr/share/opensearch/config/dictionary/}"
     ports:
       - "8080:8080"
