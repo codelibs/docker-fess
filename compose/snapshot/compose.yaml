@@ -3,10 +3,10 @@ services:
     image: ghcr.io/codelibs/fess:snapshot
     container_name: fess01
     environment:
-      # - "ES_HTTP_URL=http://es01:9200,http://es02:9200,http://es03:9200,http://es04:9200,http://es05:9200"
-      - "ES_HTTP_URL=http://es01:9200"
+      # - "SEARCH_ENGINE_HTTP_URL=http://es01:9200,http://es02:9200,http://es03:9200,http://es04:9200,http://es05:9200"
+      - "SEARCH_ENGINE_HTTP_URL=http://es01:9200"
       - "FESS_DICTIONARY_PATH=${FESS_DICTIONARY_PATH:-/usr/share/opensearch/config/dictionary/}"
-      # - "FESS_PLUGINS=fess-ds-db:14.5.0\nfess-ds-csv:14.5.0"
+      # - "FESS_PLUGINS=fess-ds-db:14.6.0\nfess-ds-csv:14.6.0"
     ports:
       - "8080:8080"
     networks:
