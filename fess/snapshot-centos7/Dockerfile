@@ -16,6 +16,7 @@ RUN set -x && \
       https://fess.codelibs.org/snapshot/fess-${FESS_VERSION}.rpm && \
     rpm -i /tmp/fess-${FESS_VERSION}.rpm && \
     rm -rf /tmp/fess-${FESS_VERSION}.rpm && \
+    for f in $(find /usr/share/fess/app/WEB-INF/ -type f | grep log4j2.xml) ; do sed -i 's/[^\t]*<!-- //' $f; sed -i 's/\/> -->/\/>/' $f; done  && \
     mkdir /opt/fess && \
     chown -R fess.fess /opt/fess && \
     sed -i -e 's#FESS_CLASSPATH="$FESS_CONF_PATH:$FESS_CLASSPATH"#FESS_CLASSPATH="$FESS_OVERRIDE_CONF_PATH:$FESS_CONF_PATH:$FESS_CLASSPATH"#g' /usr/share/fess/bin/fess && \
