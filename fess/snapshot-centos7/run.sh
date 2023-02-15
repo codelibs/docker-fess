@@ -3,6 +3,12 @@
 temp_dir=/tmp
 plugin_dir=/usr/share/fess/app/WEB-INF/plugin
 
+print_log() {
+  log_level=$1
+  message=$2
+  echo '{"@timestamp":"'$(date -u "+%Y-%m-%dT%H:%M:%S.%3NZ")'","log.level": "'${log_level}'","message":"'"${message}"'", "ecs.version": "1.2.0","service.name":"fess","event.dataset":"app","process.thread.name":"bootstrap","log.logger":"run.sh"}'
+}
+
 if [[ "x${FESS_DICTIONARY_PATH}" != "x" ]] ; then
   sed -i -e "s|^FESS_DICTIONARY_PATH=.*|FESS_DICTIONARY_PATH=${FESS_DICTIONARY_PATH}|" /etc/sysconfig/fess
 fi
@@ -10,7 +16,7 @@ fi
 if [[ "x${SEARCH_ENGINE_HTTP_URL}" != "x" ]] ; then
   sed -i -e "s|^SEARCH_ENGINE_HTTP_URL=.*|SEARCH_ENGINE_HTTP_URL=${SEARCH_ENGINE_HTTP_URL}|" /etc/sysconfig/fess
 elif [[ "x${ES_HTTP_URL}" != "x" ]] ; then
-  echo "WARNING: ES_HTTP_URL is deprecated."
+  print_log WARN "ES_HTTP_URL is deprecated."
   sed -i -e "s|^SEARCH_ENGINE_HTTP_URL=.*|SEARCH_ENGINE_HTTP_URL=${ES_HTTP_URL}|" /etc/sysconfig/fess
 else
   SEARCH_ENGINE_HTTP_URL=http://localhost:9200
@@ -19,21 +25,21 @@ fi
 if [[ "x${SEARCH_ENGINE_TYPE}" != "x" ]] ; then
   FESS_JAVA_OPTS="${FESS_JAVA_OPTS} -Dfess.config.search_engine.type=${SEARCH_ENGINE_TYPE}"
 elif [[ "x${ES_TYPE}" != "x" ]] ; then
-  echo "WARNING: ES_TYPE is deprecated."
+  print_log WARN "ES_TYPE is deprecated."
   FESS_JAVA_OPTS="${FESS_JAVA_OPTS} -Dfess.config.search_engine.type=${ES_TYPE}"
 fi
 
 if [[ "x${SEARCH_ENGINE_USERNAME}" != "x" ]] ; then
   FESS_JAVA_OPTS="${FESS_JAVA_OPTS} -Dfess.config.search_engine.username=${SEARCH_ENGINE_USERNAME}"
 elif [[ "x${ES_USERNAME}" != "x" ]] ; then
-  echo "WARNING: ES_USERNAME is deprecated."
+  print_log WARN "ES_USERNAME is deprecated."
   FESS_JAVA_OPTS="${FESS_JAVA_OPTS} -Dfess.config.search_engine.username=${ES_USERNAME}"
 fi
 
 if [[ "x${SEARCH_ENGINE_PASSWORD}" != "x" ]] ; then
   FESS_JAVA_OPTS="${FESS_JAVA_OPTS} -Dfess.config.search_engine.password=${SEARCH_ENGINE_PASSWORD}"
 elif [[ "x${ES_PASSWORD}" != "x" ]] ; then
-  echo "WARNING: ES_PASSWORD is deprecated."
+  print_log WARN "ES_PASSWORD is deprecated."
   FESS_JAVA_OPTS="${FESS_JAVA_OPTS} -Dfess.config.search_engine.password=${ES_PASSWORD}"
 fi
 
@@ -64,7 +70,7 @@ download_plugin() {
       metadata_file="${temp_dir}/maven-metadata.$$"
       metadata_url="https://oss.sonatype.org/content/repositories/snapshots/org/codelibs/fess/${plugin_name}/${plugin_version}/maven-metadata.xml"
       if ! curl -fs -o "${metadata_file}" "${metadata_url}" ; then
-        echo "[ERROR] Failed to download from ${metadata_url}."
+        print_log ERROR "Failed to download from ${metadata_url}."
         return
       fi
       version_timestamp=$(cat ${metadata_file} | grep "<timestamp>" | head -n1 | sed -e "s,.*timestamp>\(.*\)</timestamp.*,\1,")
@@ -75,20 +81,20 @@ download_plugin() {
     else
       plugin_url="https://repo.maven.apache.org/maven2/org/codelibs/fess/${plugin_name}/${plugin_version}/${plugin_file}"
     fi
-    echo "Downloading from ${plugin_url}"
+    print_log INFO "Downloading from ${plugin_url}"
     if ! curl -fs -o "${temp_dir}/${plugin_file}" "${plugin_url}" > /dev/null; then
-      echo "[ERROR] Failed to download ${plugin_file}."
+      print_log ERROR "Failed to download ${plugin_file}."
       return
     fi
     if ! curl -fs -o "${temp_dir}/${plugin_file}.sha1" "${plugin_url}.sha1" > /dev/null; then
-      echo "[ERROR] Failed to download ${plugin_file}.sha1."
+      print_log ERROR "Failed to download ${plugin_file}.sha1."
       return
     fi
     if ! echo "$(cat "${temp_dir}/${plugin_file}.sha1") "${temp_dir}/${plugin_file}|sha1sum -c > /dev/null ; then
-      echo "[ERROR] Invalid checksum for ${plugin_file}."
+      print_log ERROR "Invalid checksum for ${plugin_file}."
       return
     fi
-    echo "Installing ${plugin_file}"
+    print_log INFO "Installing ${plugin_file}"
     rm -f "${temp_dir}/${plugin_file}.sha1"
     mv "${temp_dir}/${plugin_file}" "${plugin_dir}"
     chown fess:fess "${plugin_dir}/${plugin_file}"
@@ -112,8 +118,8 @@ start_fess() {
                   /var/log/fess/audit.log \
                   /var/log/fess/fess.log
   tail -qf /var/log/fess/fess-crawler.log /var/log/fess/fess-suggest.log /var/log/fess/fess-thumbnail.log /var/log/fess/fess.log &
-
-  /etc/init.d/fess start
+  print_log INFO "Starting Fess service."
+  /etc/init.d/fess start > /dev/null 2>&1
 }
 
 wait_app() {
@@ -130,7 +136,7 @@ wait_app() {
       error_count=$((error_count + 1))
     fi
     if [[ ${error_count} -ge ${PING_RETRIES} ]] ; then
-      echo "[ERROR] Fess is not available."
+      print_log ERROR "Fess is not available."
       exit 1
     fi
     sleep ${PING_INTERVAL}
