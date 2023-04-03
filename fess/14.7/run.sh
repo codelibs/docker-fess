@@ -116,7 +116,7 @@ start_fess() {
                   /var/log/fess/fess-urls.log \
                   /var/log/fess/audit.log \
                   /var/log/fess/fess.log
-  tail -qf /var/log/fess/fess-crawler.log /var/log/fess/fess-suggest.log /var/log/fess/fess-thumbnail.log /var/log/fess/fess.log &
+  tail -qF /var/log/fess/fess-crawler.log /var/log/fess/fess-suggest.log /var/log/fess/fess-thumbnail.log /var/log/fess/fess.log &
   print_log INFO "Starting Fess service."
   /etc/init.d/fess start > /dev/null 2>&1
 }
