@@ -8,7 +8,6 @@ services:
   minio01:
     image: minio/minio
     container_name: minio01
-    restart: always
     ports:
       - "9000:9000"
     environment:
