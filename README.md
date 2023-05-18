@@ -15,7 +15,7 @@ For more info, access [Fess official documentation](http://fess.codelibs.org/).
 
 ### Kernel settings
 
-OpenSearch/Elasticsearch needs to set vm.max\_map\_count to  at least 262144. See [Install Elasticsearch with Docker](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#docker-prod-prerequisites).
+OpenSearch/Elasticsearch needs to set vm.max\_map\_count to  at least 262144. See [Important settings](https://opensearch.org/docs/latest/install-and-configure/install-opensearch/index/#important-settings).
 
 ### Run Fess
 
