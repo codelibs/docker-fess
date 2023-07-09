@@ -1,6 +1,6 @@
 services:
   es01:
-    image: ghcr.io/codelibs/fess-opensearch:2.5.0
+    image: ghcr.io/codelibs/fess-opensearch:2.8.0
     container_name: es01
     environment:
       - node.name=es01
@@ -8,7 +8,9 @@ services:
       - cluster.initial_cluster_manager_nodes=es01
       - cluster.name=fess-es
       - bootstrap.memory_lock=true
+      - node.roles=cluster_manager,data,ingest,ml
       - plugins.security.disabled=true
+      - plugins.ml_commons.allow_registering_model_via_url=true
       - "OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g"
       - "FESS_DICTIONARY_PATH=/usr/share/opensearch/config/dictionary"
     ulimits:
