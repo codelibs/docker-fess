@@ -5,7 +5,7 @@ ENV FESS_APP_TYPE docker
 RUN yum install -y ImageMagick unoconv poppler-utils initscripts \
     && yum clean all
 
-ARG FESS_VERSION=14.9.1-SNAPSHOT
+ARG FESS_VERSION=14.9.2-SNAPSHOT
 
 RUN groupadd -g 1001 fess && \
     useradd -u 1001 -g fess --system --no-create-home --home /var/lib/fess fess
