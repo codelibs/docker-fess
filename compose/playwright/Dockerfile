@@ -1,4 +1,4 @@
-FROM ghcr.io/codelibs/fess:snapshot
+FROM ghcr.io/codelibs/fess:14.11.1
 
 RUN apt-get update && \
     apt-get install -y \
