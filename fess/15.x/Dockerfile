@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21-jre-focal
+FROM eclipse-temurin:21-jre-jammy
 
 ENV FESS_APP_TYPE docker
 
