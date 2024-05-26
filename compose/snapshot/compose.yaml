@@ -7,7 +7,7 @@ services:
       # - "SEARCH_ENGINE_HTTP_URL=http://es01:9200,http://es02:9200,http://es03:9200,http://es04:9200,http://es05:9200"
       - "SEARCH_ENGINE_HTTP_URL=http://es01:9200"
       - "FESS_DICTIONARY_PATH=${FESS_DICTIONARY_PATH:-/usr/share/opensearch/config/dictionary/}"
-      # - "FESS_PLUGINS=fess-webapp-semantic-search:14.9.0-SNAPSHOT"
+      # - "FESS_PLUGINS=fess-webapp-semantic-search:14.14.0-SNAPSHOT"
     ports:
       - "8080:8080"
     networks:
