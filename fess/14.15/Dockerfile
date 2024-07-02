@@ -1,12 +1,12 @@
 FROM eclipse-temurin:17-jre-focal
 
-ENV FESS_APP_TYPE=docker
+ENV FESS_APP_TYPE docker
 
 RUN apt-get update && \
     apt-get install -y imagemagick unoconv poppler-utils && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-ARG FESS_VERSION=14.15.1-SNAPSHOT
+ARG FESS_VERSION=14.15.0
 
 RUN groupadd -g 1001 fess && \
     useradd -u 1001 -g fess --system --no-create-home --home /var/lib/fess fess
@@ -14,7 +14,7 @@ RUN groupadd -g 1001 fess && \
 ARG CACHEBUST=1
 RUN set -x && \
     curl -LfsSo /tmp/fess-${FESS_VERSION}.deb \
-      https://fess.codelibs.org/snapshot/fess-${FESS_VERSION}.deb && \
+      https://github.com/codelibs/fess/releases/download/fess-${FESS_VERSION}/fess-${FESS_VERSION}.deb && \
     dpkg -i /tmp/fess-${FESS_VERSION}.deb && \
     rm -rf /tmp/fess-${FESS_VERSION}.deb && \
     for f in $(find /usr/share/fess/app/WEB-INF/ -type f | grep log4j2.xml) ; do sed -i 's/[^\t]*<!-- //' $f; sed -i 's/\/> -->/\/>/' $f; done  && \
@@ -30,4 +30,4 @@ EXPOSE 8080
 
 USER root
 COPY run.sh /usr/share/fess/run.sh
-ENTRYPOINT ["/usr/share/fess/run.sh"]
+ENTRYPOINT /usr/share/fess/run.sh

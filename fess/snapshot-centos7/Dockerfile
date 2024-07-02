@@ -1,11 +1,11 @@
 FROM eclipse-temurin:17-jre-centos7
 
-ENV FESS_APP_TYPE docker
+ENV FESS_APP_TYPE=docker
 
 RUN yum install -y ImageMagick unoconv poppler-utils initscripts \
     && yum clean all
 
-ARG FESS_VERSION=14.15.0-SNAPSHOT
+ARG FESS_VERSION=14.15.1-SNAPSHOT
 
 RUN groupadd -g 1001 fess && \
     useradd -u 1001 -g fess --system --no-create-home --home /var/lib/fess fess
@@ -29,4 +29,4 @@ EXPOSE 8080
 
 USER root
 COPY run.sh /usr/share/fess/run.sh
-ENTRYPOINT /usr/share/fess/run.sh
+ENTRYPOINT ["/usr/share/fess/run.sh"]
