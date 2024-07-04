@@ -1,6 +1,6 @@
 FROM eclipse-temurin:21-jre-jammy
 
-ENV FESS_APP_TYPE docker
+ENV FESS_APP_TYPE=docker
 
 RUN apt-get update && \
     apt-get install -y imagemagick unoconv poppler-utils && \
@@ -30,4 +30,4 @@ EXPOSE 8080
 
 USER root
 COPY run.sh /usr/share/fess/run.sh
-ENTRYPOINT /usr/share/fess/run.sh
+ENTRYPOINT ["/usr/share/fess/run.sh"]

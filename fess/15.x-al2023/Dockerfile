@@ -1,6 +1,6 @@
 FROM amazoncorretto:21-al2023
 
-ENV FESS_APP_TYPE docker
+ENV FESS_APP_TYPE=docker
 
 RUN dnf install -y ImageMagick poppler-utils initscripts \
     && dnf clean all
@@ -30,4 +30,4 @@ EXPOSE 8080
 
 USER root
 COPY run.sh /usr/share/fess/run.sh
-ENTRYPOINT /usr/share/fess/run.sh
+ENTRYPOINT ["/usr/share/fess/run.sh"]

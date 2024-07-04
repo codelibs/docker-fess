@@ -1,11 +1,12 @@
-FROM eclipse-temurin:17-jre-centos7
+FROM amazoncorretto:17-al2023
 
 ENV FESS_APP_TYPE=docker
 
-RUN yum install -y ImageMagick unoconv poppler-utils initscripts \
-    && yum clean all
+RUN dnf install -y ImageMagick poppler-utils initscripts \
+    && dnf clean all
+#   unoconv
 
-ARG FESS_VERSION=14.15.1-SNAPSHOT
+ARG FESS_VERSION=14.16.0-SNAPSHOT
 
 RUN groupadd -g 1001 fess && \
     useradd -u 1001 -g fess --system --no-create-home --home /var/lib/fess fess
@@ -22,7 +23,7 @@ RUN set -x && \
     sed -i -e 's#FESS_CLASSPATH="$FESS_CONF_PATH:$FESS_CLASSPATH"#FESS_CLASSPATH="$FESS_OVERRIDE_CONF_PATH:$FESS_CONF_PATH:$FESS_CLASSPATH"#g' /usr/share/fess/bin/fess && \
     echo "export FESS_APP_TYPE=$FESS_APP_TYPE" >>  /usr/share/fess/bin/fess.in.sh && \
     echo "export FESS_OVERRIDE_CONF_PATH=/opt/fess" >>  /usr/share/fess/bin/fess.in.sh && \
-    yum clean all
+    dnf clean all
 
 WORKDIR /usr/share/fess
 EXPOSE 8080
