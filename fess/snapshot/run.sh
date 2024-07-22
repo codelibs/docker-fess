@@ -13,6 +13,14 @@ if [[ "x${FESS_DICTIONARY_PATH}" != "x" ]] ; then
   sed -i -e "s|^FESS_DICTIONARY_PATH=.*|FESS_DICTIONARY_PATH=${FESS_DICTIONARY_PATH}|" /etc/default/fess
 fi
 
+if [[ "x${FESS_PORT}" != "x" ]] ; then
+  sed -i -e "s|^FESS_PORT=.*|FESS_PORT=${FESS_PORT}|" /etc/default/fess
+fi
+
+if [[ "x${FESS_HEAP_SIZE}" != "x" ]] ; then
+  sed -i -e "s|^FESS_HEAP_SIZE=.*|FESS_HEAP_SIZE=${FESS_HEAP_SIZE}|" /etc/default/fess
+fi
+
 if [[ "x${SEARCH_ENGINE_HTTP_URL}" != "x" ]] ; then
   sed -i -e "s|^SEARCH_ENGINE_HTTP_URL=.*|SEARCH_ENGINE_HTTP_URL=${SEARCH_ENGINE_HTTP_URL}|" /etc/default/fess
 elif [[ "x${ES_HTTP_URL}" != "x" ]] ; then
