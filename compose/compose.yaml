@@ -1,6 +1,6 @@
 services:
   fess01:
-    image: ghcr.io/codelibs/fess:14.15.0
+    image: ghcr.io/codelibs/fess:14.16.0
     # build: ./playwright # use Playwright
     container_name: fess01
     environment:
