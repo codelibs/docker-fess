@@ -1,0 +1,21 @@
+services:
+  fess01:
+    image: ghcr.io/codelibs/fess:snapshot
+    container_name: fess01
+    environment:
+      - "SEARCH_ENGINE_HTTP_URL=http://search01:9200"
+      - "FESS_DICTIONARY_PATH=${FESS_DICTIONARY_PATH:-/usr/share/opensearch/config/dictionary/}"
+      - "FESS_JAVA_OPTS=-Dfess.config.index.document.search.index=fess01.search -Dfess.config.index.document.update.index=fess01.update -Dfess.config.index.document.suggest.index=fess01 -Dfess.config.index.document.crawler.index=fess01_crawler -Dfess.config.index.config.index=fess01_config -Dfess.config.index.user.index=fess01_user -Dfess.config.index.log.index=fess01_log -Dfess.config.index.dictionary.prefix=fess01"
+    ports:
+      - "8080:8080"
+    networks:
+      - search_net
+    depends_on:
+      - search01
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+    restart: unless-stopped
+
