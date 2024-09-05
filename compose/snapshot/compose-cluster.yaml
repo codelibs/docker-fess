@@ -1,15 +1,17 @@
 services:
-  es01:
-    image: ghcr.io/codelibs/fess-opensearch:2.4.1
-    container_name: es01
+  search01:
+    image: ghcr.io/codelibs/fess-opensearch:2.16.0
+    container_name: search01
     environment:
-      - node.name=es01
-      - discovery.seed_hosts=es01,es02,es03
-      - cluster.initial_cluster_manager_nodes=es01,es02,es03
-      - cluster.name=fess-es
+      - node.name=search01
+      - discovery.seed_hosts=search01,search02,search03
+      - cluster.initial_cluster_manager_nodes=search01,search02,search03
+      - cluster.name=fess-search
       - bootstrap.memory_lock=true
-      - plugins.security.disabled=true
+      - node.roles=cluster_manager,data,ingest,ml
       - "OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g"
+      - "DISABLE_INSTALL_DEMO_CONFIG=true"
+      - "DISABLE_SECURITY_PLUGIN=true"
       - "FESS_DICTIONARY_PATH=/usr/share/opensearch/config/dictionary"
     ulimits:
       memlock:
@@ -19,12 +21,12 @@ services:
         soft: 65535
         hard: 65535
     volumes:
-      - esdata01:/usr/share/opensearch/data
-      - esdictionary01:/usr/share/opensearch/config/dictionary
+      - search01_data:/usr/share/opensearch/data
+      - search01_dictionary:/usr/share/opensearch/config/dictionary
     ports:
       - 9200:9200
     networks:
-      - esnet
+      - search_net
     logging:
       driver: "json-file"
       options:
@@ -32,17 +34,19 @@ services:
         max-file: "5"
     restart: unless-stopped
 
-  es02:
-    image: ghcr.io/codelibs/fess-opensearch:2.4.1
-    container_name: es02
+  search02:
+    image: ghcr.io/codelibs/fess-opensearch:2.16.0
+    container_name: search02
     environment:
-      - node.name=es02
-      - discovery.seed_hosts=es01,es02,es03
-      - cluster.initial_cluster_manager_nodes=es01,es02,es03
-      - cluster.name=fess-es
+      - node.name=search02
+      - discovery.seed_hosts=search01,search02,search03
+      - cluster.initial_cluster_manager_nodes=search01,search02,search03
+      - cluster.name=fess-search
       - bootstrap.memory_lock=true
-      - plugins.security.disabled=true
+      - node.roles=cluster_manager,data,ingest,ml
       - "OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g"
+      - "DISABLE_INSTALL_DEMO_CONFIG=true"
+      - "DISABLE_SECURITY_PLUGIN=true"
       - "FESS_DICTIONARY_PATH=/usr/share/opensearch/config/dictionary"
     ulimits:
       memlock:
@@ -52,12 +56,12 @@ services:
         soft: 65535
         hard: 65535
     volumes:
-      - esdata02:/usr/share/opensearch/data
-      - esdictionary02:/usr/share/opensearch/config/dictionary
+      - search02_data:/usr/share/opensearch/data
+      - search02_dictionary:/usr/share/opensearch/config/dictionary
     ports:
       - 9201:9200
     networks:
-      - esnet
+      - search_net
     logging:
       driver: "json-file"
       options:
@@ -65,19 +69,21 @@ services:
         max-file: "5"
     restart: unless-stopped
     depends_on:
-      - es01
+      - search01
 
-  es03:
-    image: ghcr.io/codelibs/fess-opensearch:2.4.1
-    container_name: es03
+  search03:
+    image: ghcr.io/codelibs/fess-opensearch:2.16.0
+    container_name: search03
     environment:
-      - node.name=es03
-      - discovery.seed_hosts=es01,es02,es03
-      - cluster.initial_cluster_manager_nodes=es01,es02,es03
-      - cluster.name=fess-es
+      - node.name=search03
+      - discovery.seed_hosts=search01,search02,search03
+      - cluster.initial_cluster_manager_nodes=search01,search02,search03
+      - cluster.name=fess-search
       - bootstrap.memory_lock=true
-      - plugins.security.disabled=true
+      - node.roles=cluster_manager,data,ingest,ml
       - "OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g"
+      - "DISABLE_INSTALL_DEMO_CONFIG=true"
+      - "DISABLE_SECURITY_PLUGIN=true"
       - "FESS_DICTIONARY_PATH=/usr/share/opensearch/config/dictionary"
     ulimits:
       memlock:
@@ -87,12 +93,12 @@ services:
         soft: 65535
         hard: 65535
     volumes:
-      - esdata03:/usr/share/opensearch/data
-      - esdictionary03:/usr/share/opensearch/config/dictionary
+      - search03_data:/usr/share/opensearch/data
+      - search03_dictionary:/usr/share/opensearch/config/dictionary
     ports:
       - 9202:9200
     networks:
-      - esnet
+      - search_net
     logging:
       driver: "json-file"
       options:
@@ -100,20 +106,22 @@ services:
         max-file: "5"
     restart: unless-stopped
     depends_on:
-      - es01
-      - es02
+      - search01
+      - search02
 
-  es04:
-    image: ghcr.io/codelibs/fess-opensearch:2.4.1
-    container_name: es04
+  search04:
+    image: ghcr.io/codelibs/fess-opensearch:2.16.0
+    container_name: search04
     environment:
-      - node.name=es04
-      - discovery.seed_hosts=es01,es02,es03
-      - cluster.initial_cluster_manager_nodes=es01,es02,es03
-      - cluster.name=fess-es
+      - node.name=search04
+      - discovery.seed_hosts=search01,search02,search03
+      - cluster.initial_cluster_manager_nodes=search01,search02,search03
+      - cluster.name=fess-search
       - bootstrap.memory_lock=true
-      - plugins.security.disabled=true
+      - node.roles=data,ingest,ml
       - "OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g"
+      - "DISABLE_INSTALL_DEMO_CONFIG=true"
+      - "DISABLE_SECURITY_PLUGIN=true"
       - "FESS_DICTIONARY_PATH=/usr/share/opensearch/config/dictionary"
     ulimits:
       memlock:
@@ -123,12 +131,12 @@ services:
         soft: 65535
         hard: 65535
     volumes:
-      - esdata04:/usr/share/opensearch/data
-      - esdictionary04:/usr/share/opensearch/config/dictionary
+      - search04_data:/usr/share/opensearch/data
+      - search04_dictionary:/usr/share/opensearch/config/dictionary
     ports:
       - 9203:9200
     networks:
-      - esnet
+      - search_net
     logging:
       driver: "json-file"
       options:
@@ -136,21 +144,23 @@ services:
         max-file: "5"
     restart: unless-stopped
     depends_on:
-      - es01
-      - es02
-      - es03
+      - search01
+      - search02
+      - search03
 
-  es05:
-    image: ghcr.io/codelibs/fess-opensearch:2.4.1
-    container_name: es05
+  search05:
+    image: ghcr.io/codelibs/fess-opensearch:2.16.0
+    container_name: search05
     environment:
-      - node.name=es05
-      - discovery.seed_hosts=es01,es02,es03
-      - cluster.initial_cluster_manager_nodes=es01,es02,es03
-      - cluster.name=fess-es
+      - node.name=search05
+      - discovery.seed_hosts=search01,search02,search03
+      - cluster.initial_cluster_manager_nodes=search01,search02,search03
+      - cluster.name=fess-search
       - bootstrap.memory_lock=true
-      - plugins.security.disabled=true
+      - node.roles=data,ingest,ml
       - "OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g"
+      - "DISABLE_INSTALL_DEMO_CONFIG=true"
+      - "DISABLE_SECURITY_PLUGIN=true"
       - "FESS_DICTIONARY_PATH=/usr/share/opensearch/config/dictionary"
     ulimits:
       memlock:
@@ -160,12 +170,12 @@ services:
         soft: 65535
         hard: 65535
     volumes:
-      - esdata05:/usr/share/opensearch/data
-      - esdictionary05:/usr/share/opensearch/config/dictionary
+      - search05_data:/usr/share/opensearch/data
+      - search05_dictionary:/usr/share/opensearch/config/dictionary
     ports:
       - 9204:9200
     networks:
-      - esnet
+      - search_net
     logging:
       driver: "json-file"
       options:
@@ -173,29 +183,28 @@ services:
         max-file: "5"
     restart: unless-stopped
     depends_on:
-      - es01
-      - es02
-      - es03
-      - es04
+      - search01
+      - search02
+      - search03
 
 volumes:
-  esdata01:
+  search01_data:
     driver: local
-  esdictionary01:
+  search01_dictionary:
     driver: local
-  esdata02:
+  search02_data:
     driver: local
-  esdictionary02:
+  search02_dictionary:
     driver: local
-  esdata03:
+  search03_data:
     driver: local
-  esdictionary03:
+  search03_dictionary:
     driver: local
-  esdata04:
+  search04_data:
     driver: local
-  esdictionary04:
+  search04_dictionary:
     driver: local
-  esdata05:
+  search05_data:
     driver: local
-  esdictionary05:
+  search05_dictionary:
     driver: local

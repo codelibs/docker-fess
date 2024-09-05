@@ -3,7 +3,7 @@ Docker Compose for Fess
 
 ## Description
 
-This repository provides compose files for running Fess and Elasticsearch or OpenSearch with Docker Compose.
+This repository provides compose files for running Fess and OpenSearch with Docker Compose.
 
 Compose command is available on Docker Desktop.
 Therefore, Windows and Mac users do not need to install it.
@@ -17,10 +17,10 @@ For Linux users, please see [Installing Compose V2](https://docs.docker.com/comp
 $ docker compose -f compose.yaml -f compose-opensearch2.yaml up -d
 ```
 
-### Fess with Elasticsearch
+### Fess with OpenSearch and Dashboards
 
 ```
-$ docker compose --env-file .env.elasticsearch -f compose.yaml -f compose-elasticsearch8.yaml up -d
+$ docker compose -f compose.yaml -f compose-opensearch2.yaml -f compose-dashboards2.yaml up -d
 ```
 
 ### Fess with OpenSearch and MinIO
@@ -33,12 +33,11 @@ $ docker compose -f compose.yaml -f compose-opensearch2.yaml -f compose-minio.ya
 
 ```
 $ docker compose -f compose.yaml -f ...(snip)... down
-
 ```
 
 ### Remove Local Volumes
 
 ```
-$ docker volume rm compose_esdata01 compose_esdictionary01 compose_esdata02 compose_esdictionary02
-
+$ docker volume rm compose_search01_data compose_search01_dictionary
 ```
+

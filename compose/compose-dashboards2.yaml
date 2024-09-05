@@ -1,0 +1,13 @@
+services:
+  dashboards:
+    build:
+      context: ./dashboards
+      dockerfile: Dockerfile
+    environment:
+      OPENSEARCH_HOSTS: '["http://search01:9200"]' # must be a string with no spaces when specified as an environment variable
+    ports:
+      - 5601:5601
+    networks:
+      - search_net
+    depends_on:
+      - search01

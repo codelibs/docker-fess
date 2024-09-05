@@ -4,15 +4,15 @@ services:
     # build: ./playwright # use Playwright
     container_name: fess01
     environment:
-      - "SEARCH_ENGINE_HTTP_URL=http://es01:9200"
+      - "SEARCH_ENGINE_HTTP_URL=http://search01:9200"
       - "FESS_DICTIONARY_PATH=${FESS_DICTIONARY_PATH:-/usr/share/opensearch/config/dictionary/}"
-      # - "FESS_PLUGINS=fess-webapp-semantic-search:14.14.0 fess-ds-wikipedia:14.14.0"
+      # - "FESS_PLUGINS=fess-webapp-semantic-search:14.16.0 fess-ds-wikipedia:14.16.0"
     ports:
       - "8080:8080"
     networks:
-      - esnet
+      - search_net
     depends_on:
-      - es01
+      - search01
     logging:
       driver: "json-file"
       options:
@@ -21,5 +21,5 @@ services:
     restart: unless-stopped
 
 networks:
-  esnet:
+  search_net:
     driver: bridge
