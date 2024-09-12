@@ -2,7 +2,7 @@ FROM amazoncorretto:17-al2023
 
 ENV FESS_APP_TYPE=docker
 
-RUN dnf install -y ImageMagick poppler-utils initscripts \
+RUN dnf install -y ImageMagick poppler-utils initscripts glibc-langpack-en \
     && dnf clean all
 #   unoconv
 
