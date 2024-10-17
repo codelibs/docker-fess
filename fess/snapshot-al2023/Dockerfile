@@ -1,4 +1,4 @@
-FROM amazoncorretto:17-al2023
+FROM amazoncorretto:21-al2023
 
 ENV FESS_APP_TYPE=docker
 
@@ -6,7 +6,7 @@ RUN dnf install -y ImageMagick poppler-utils initscripts glibc-langpack-en \
     && dnf clean all
 #   unoconv
 
-ARG FESS_VERSION=14.18.0-SNAPSHOT
+ARG FESS_VERSION=15.0.0-SNAPSHOT
 
 RUN groupadd -g 1001 fess && \
     useradd -u 1001 -g fess --system --no-create-home --home /var/lib/fess fess
