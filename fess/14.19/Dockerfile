@@ -6,7 +6,7 @@ RUN apt-get update && \
     apt-get install -y imagemagick unoconv poppler-utils && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-ARG FESS_VERSION=14.19.0
+ARG FESS_VERSION=14.19.1
 
 RUN groupadd -g 1001 fess && \
     useradd -u 1001 -g fess --system --no-create-home --home /var/lib/fess fess
