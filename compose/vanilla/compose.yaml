@@ -1,0 +1,25 @@
+services:
+  fess01:
+    image: ghcr.io/codelibs/fess:14.19.2
+    container_name: fess01
+    environment:
+      - "SEARCH_ENGINE_HTTP_URL=http://search01:9200"
+      - "SEARCH_ENGINE_TYPE=cloud"
+      - "FESS_DICTIONARY_PATH=${FESS_DICTIONARY_PATH:-/usr/share/opensearch/config/dictionary/}"
+      # - "FESS_PLUGINS=fess-webapp-semantic-search:14.19.2 fess-ds-wikipedia:14.19.2"
+    ports:
+      - "8080:8080"
+    networks:
+      - search_net
+    depends_on:
+      - search01
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+    restart: unless-stopped
+
+networks:
+  search_net:
+    driver: bridge
