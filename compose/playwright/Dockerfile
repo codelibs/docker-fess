@@ -1,4 +1,4 @@
-FROM ghcr.io/codelibs/fess:14.19.2
+FROM ghcr.io/codelibs/fess:15.0.0
 
 RUN apt-get update && \
     apt-get install -y \

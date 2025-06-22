@@ -1,6 +1,6 @@
 services:
   search01:
-    image: ghcr.io/codelibs/fess-opensearch:2.19.1
+    image: ghcr.io/codelibs/fess-opensearch:3.0.0
     container_name: search01
     environment:
       - node.name=search01
