@@ -51,6 +51,7 @@ EXPOSE 8080
 # This script requires root privileges to run.
 USER root
 COPY run.sh /usr/share/fess/run.sh
+RUN chmod +x /usr/share/fess/run.sh
 
 # The entrypoint script `run.sh` performs setup tasks that require root.
 # Therefore, the container must be started as root.
