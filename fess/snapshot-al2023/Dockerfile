@@ -5,7 +5,7 @@ FROM amazoncorretto:21-al2023
 ENV FESS_APP_TYPE=docker
 
 # Set Fess version as a build argument
-ARG FESS_VERSION=15.0.0-SNAPSHOT
+ARG FESS_VERSION=15.1.0-SNAPSHOT
 
 # This ARG is used to bust the cache when needed
 ARG CACHEBUST=1
