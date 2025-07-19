@@ -126,7 +126,8 @@ start_fess() {
                   /var/log/fess/fess.log
   tail -qF /var/log/fess/fess-crawler.log /var/log/fess/fess-suggest.log /var/log/fess/fess-thumbnail.log /var/log/fess/fess.log /var/log/fess/audit.log 2>/dev/null &
   print_log INFO "Starting Fess service."
-  /etc/init.d/fess start > /dev/null 2>&1
+  # Start Fess directly since Alpine doesn't have init.d
+  su -s /bin/bash -c "source /etc/default/fess && cd /usr/share/fess && ./bin/fess" fess &
 }
 
 wait_app() {
