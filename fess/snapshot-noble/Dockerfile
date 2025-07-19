@@ -1,5 +1,5 @@
-# Base image with Java 21 JRE on Ubuntu Jammy
-FROM eclipse-temurin:21-jre-jammy
+# Base image with Java 21 JRE on Ubuntu Noble
+FROM eclipse-temurin:21-jre-noble
 
 # Metadata labels for better container management
 LABEL maintainer="CodeLibs" \
