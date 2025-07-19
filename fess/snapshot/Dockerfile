@@ -1,5 +1,14 @@
-# Base image with Java 21 JRE on Ubuntu Jammy
-FROM eclipse-temurin:21-jre-jammy
+# Base image with Java 21 JRE on Alpine
+FROM eclipse-temurin:21-jre-alpine
+
+# Metadata labels for better container management
+LABEL maintainer="CodeLibs" \
+      org.opencontainers.image.title="Fess" \
+      org.opencontainers.image.description="Enterprise search server powered by OpenSearch" \
+      org.opencontainers.image.url="https://fess.codelibs.org/" \
+      org.opencontainers.image.source="https://github.com/codelibs/docker-fess" \
+      org.opencontainers.image.vendor="CodeLibs" \
+      org.opencontainers.image.licenses="Apache-2.0"
 
 # Set environment variable for Fess application type
 ENV FESS_APP_TYPE=docker
@@ -12,35 +21,56 @@ ARG CACHEBUST=1
 
 # Combine RUN instructions to reduce image layers and size
 RUN set -x && \
-    # 1. Update package list and install dependencies without recommended packages
-    apt-get update && \
-    apt-get install -y --no-install-recommends \
-        imagemagick \
-        unoconv \
-        poppler-utils && \
+    # 1. Install minimal dependencies (including unzip for extraction)
+    apk add --no-cache \
+        bash \
+        curl \
+        coreutils \
+        unzip && \
     # 2. Create a dedicated user and group for Fess
-    groupadd -g 1001 fess && \
-    useradd -u 1001 -g fess --system --no-create-home --home /var/lib/fess fess && \
-    # 3. Download Fess package
-    curl -LfsSo /tmp/fess-${FESS_VERSION}.deb \
-      https://fess.codelibs.org/snapshot/fess-${FESS_VERSION}.deb && \
-    # 4. Install Fess from the deb package
-    dpkg -i /tmp/fess-${FESS_VERSION}.deb && \
-    rm -f /tmp/fess-${FESS_VERSION}.deb && \
-    # 5. Uncomment logging configurations in log4j2.xml files for console output
-    find /usr/share/fess/app/WEB-INF/ -type f -name "*log4j2.xml" \
-      -exec sed -i -E 's/^[ \t]*<!--(.*)-->/\1/' {} + && \
-    # 6. Create directory for custom configurations
-    mkdir /opt/fess && \
-    chown -R fess:fess /opt/fess && \
-    # 7. Configure Fess to load custom configurations from /opt/fess
+    addgroup -g 1001 fess && \
+    adduser -u 1001 -G fess -S -h /var/lib/fess fess && \
+    # 3. Download and verify Fess package (zip version)
+    curl -LfsSo /tmp/fess-${FESS_VERSION}.zip \
+      https://fess.codelibs.org/snapshot/fess-${FESS_VERSION}.zip && \
+    # Note: Checksum verification would be ideal but snapshot builds may not have published checksums
+    # Verify download by checking file size is reasonable (>10MB for a valid Fess distribution)
+    [ $(stat -c%s /tmp/fess-${FESS_VERSION}.zip) -gt 10485760 ] || (echo "Downloaded file too small, likely corrupted" && exit 1) && \
+    # 4. Extract Fess archive
+    unzip -q /tmp/fess-${FESS_VERSION}.zip -d /opt && \
+    mv /opt/fess-${FESS_VERSION} /usr/share/fess && \
+    rm -f /tmp/fess-${FESS_VERSION}.zip && \
+    # 5. Remove unzip after use to keep image minimal
+    apk del unzip && \
+    # 6. Create necessary directories
+    mkdir -p /etc/default /etc/fess /opt/fess /var/tmp/fess /var/log/fess /var/lib/fess && \
+    # 7. Uncomment logging configurations in log4j2.xml files for console output
+    for f in $(find /usr/share/fess/app/WEB-INF/ -type f | grep log4j2.xml) ; do \
+      sed -i 's/[^\t]*<!-- //' $f; sed -i 's/\/> -->/\/>/' $f; done  && \
+    # 8. Configure Fess to load custom configurations from /opt/fess
     sed -i -e 's#FESS_CLASSPATH="$FESS_CONF_PATH:$FESS_CLASSPATH"#FESS_CLASSPATH="$FESS_OVERRIDE_CONF_PATH:$FESS_CONF_PATH:$FESS_CLASSPATH"#g' /usr/share/fess/bin/fess && \
-    # 8. Set Fess environment variables
-    echo "export FESS_APP_TYPE=$FESS_APP_TYPE" >> /usr/share/fess/bin/fess.in.sh && \
-    echo "export FESS_OVERRIDE_CONF_PATH=/opt/fess" >> /usr/share/fess/bin/fess.in.sh && \
-    # 9. Clean up apt cache to reduce image size
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    # 9. Create /etc/default/fess
+    echo "FESS_CONF_PATH=/etc/fess" >> /etc/default/fess && \
+    echo "FESS_OVERRIDE_CONF_PATH=/opt/fess" >> /etc/default/fess && \
+    echo "FESS_TEMP_PATH=/var/tmp/fess" >> /etc/default/fess && \
+    echo "FESS_LOG_PATH=/var/log/fess" >> /etc/default/fess && \
+    echo "FESS_VAR_PATH=/var/lib/fess" >> /etc/default/fess && \
+    echo "FESS_PORT=8080" >> /etc/default/fess && \
+    echo "FESS_HEAP_SIZE=512m" >> /etc/default/fess && \
+    echo "FESS_DICTIONARY_PATH=/var/lib/opensearch/config/" >> /etc/default/fess && \
+    echo "SEARCH_ENGINE_HOME=/usr/share/opensearch/" >> /etc/default/fess && \
+    echo "SEARCH_ENGINE_HTTP_URL=http://localhost:9200" >> /etc/default/fess && \
+    echo "export FESS_CONF_PATH FESS_OVERRIDE_CONF_PATH FESS_TEMP_PATH FESS_LOG_PATH FESS_VAR_PATH FESS_PORT FESS_HEAP_SIZE FESS_DICTIONARY_PATH SEARCH_ENGINE_HOME SEARCH_ENGINE_HTTP_URL" >> /etc/default/fess && \
+    # 10. Create and copy configuration files
+    touch /etc/fess/system.properties && \
+    mv /usr/share/fess/lib/classes/tomcat_config.properties \
+       /usr/share/fess/lib/classes/logging.properties \
+       /usr/share/fess/app/WEB-INF/classes/fess_config.properties \
+       /usr/share/fess/app/WEB-INF/classes/fess_env_*.properties \
+       /usr/share/fess/app/WEB-INF/classes/tika.xml \
+       /etc/fess && \
+    # 11. Set proper ownership for all Fess-related directories and files
+    chown -R fess:fess /usr/share/fess /etc/default/fess /etc/fess /opt/fess /var/tmp/fess /var/log/fess /var/lib/fess
 
 # Set working directory
 WORKDIR /usr/share/fess
@@ -48,9 +78,9 @@ WORKDIR /usr/share/fess
 # Expose Fess port
 EXPOSE 8080
 
-# Copy the startup script into the container.
-# This script requires root privileges to run.
+# Copy the startup script into the container and set permissions
 COPY run.sh /usr/share/fess/run.sh
+RUN chmod +x /usr/share/fess/run.sh
 
 # The entrypoint script `run.sh` performs setup tasks that require root.
 # Therefore, the container must be started as root.
