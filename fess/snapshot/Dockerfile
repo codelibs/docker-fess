@@ -61,7 +61,7 @@ RUN set -x && \
     echo "SEARCH_ENGINE_HOME=/usr/share/opensearch/" >> /etc/default/fess && \
     echo "SEARCH_ENGINE_HTTP_URL=http://localhost:9200" >> /etc/default/fess && \
     echo "export FESS_CONF_PATH FESS_OVERRIDE_CONF_PATH FESS_TEMP_PATH FESS_LOG_PATH FESS_VAR_PATH FESS_PORT FESS_HEAP_SIZE FESS_DICTIONARY_PATH SEARCH_ENGINE_HOME SEARCH_ENGINE_HTTP_URL" >> /etc/default/fess && \
-    # 10. Creat and copy configuration files
+    # 10. Create and copy configuration files
     touch /etc/fess/system.properties && \
     mv /usr/share/fess/lib/classes/tomcat_config.properties \
        /usr/share/fess/lib/classes/logging.properties \
