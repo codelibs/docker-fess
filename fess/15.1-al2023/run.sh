@@ -10,22 +10,22 @@ print_log() {
 }
 
 if [[ "x${FESS_DICTIONARY_PATH}" != "x" ]] ; then
-  sed -i -e "s|^FESS_DICTIONARY_PATH=.*|FESS_DICTIONARY_PATH=${FESS_DICTIONARY_PATH}|" /etc/default/fess
+  sed -i -e "s|^FESS_DICTIONARY_PATH=.*|FESS_DICTIONARY_PATH=${FESS_DICTIONARY_PATH}|" /etc/sysconfig/fess
 fi
 
 if [[ "x${FESS_PORT}" != "x" ]] ; then
-  sed -i -e "s|^FESS_PORT=.*|FESS_PORT=${FESS_PORT}|" /etc/default/fess
+  sed -i -e "s|^FESS_PORT=.*|FESS_PORT=${FESS_PORT}|" /etc/sysconfig/fess
 fi
 
 if [[ "x${FESS_HEAP_SIZE}" != "x" ]] ; then
-  sed -i -e "s|^FESS_HEAP_SIZE=.*|FESS_HEAP_SIZE=${FESS_HEAP_SIZE}|" /etc/default/fess
+  sed -i -e "s|^FESS_HEAP_SIZE=.*|FESS_HEAP_SIZE=${FESS_HEAP_SIZE}|" /etc/sysconfig/fess
 fi
 
 if [[ "x${SEARCH_ENGINE_HTTP_URL}" != "x" ]] ; then
-  sed -i -e "s|^SEARCH_ENGINE_HTTP_URL=.*|SEARCH_ENGINE_HTTP_URL=${SEARCH_ENGINE_HTTP_URL}|" /etc/default/fess
+  sed -i -e "s|^SEARCH_ENGINE_HTTP_URL=.*|SEARCH_ENGINE_HTTP_URL=${SEARCH_ENGINE_HTTP_URL}|" /etc/sysconfig/fess
 elif [[ "x${ES_HTTP_URL}" != "x" ]] ; then
   print_log WARN "ES_HTTP_URL is deprecated."
-  sed -i -e "s|^SEARCH_ENGINE_HTTP_URL=.*|SEARCH_ENGINE_HTTP_URL=${ES_HTTP_URL}|" /etc/default/fess
+  sed -i -e "s|^SEARCH_ENGINE_HTTP_URL=.*|SEARCH_ENGINE_HTTP_URL=${ES_HTTP_URL}|" /etc/sysconfig/fess
 else
   SEARCH_ENGINE_HTTP_URL=http://localhost:9200
 fi
@@ -52,7 +52,7 @@ elif [[ "x${ES_PASSWORD}" != "x" ]] ; then
 fi
 
 if [[ "x${FESS_JAVA_OPTS}" != "x" ]] ; then
-  echo "FESS_JAVA_OPTS=\"${FESS_JAVA_OPTS}\"" >> /etc/default/fess
+  echo "FESS_JAVA_OPTS=\"${FESS_JAVA_OPTS}\"" >> /etc/sysconfig/fess
 fi
 
 if [[ "x${PING_RETRIES}" = "x" ]] ; then
@@ -110,8 +110,9 @@ download_plugin() {
 }
 
 start_fess() {
+  . /etc/init.d/functions
   rm -f /usr/bin/java
-  ln -s /opt/java/openjdk/bin/java /usr/bin/java
+  ln -s /usr/lib/jvm/java/bin/java /usr/bin/java
   touch /var/log/fess/fess-crawler.log \
         /var/log/fess/fess-suggest.log \
         /var/log/fess/fess-thumbnail.log \
@@ -126,8 +127,7 @@ start_fess() {
                   /var/log/fess/fess.log
   tail -qF /var/log/fess/fess-crawler.log /var/log/fess/fess-suggest.log /var/log/fess/fess-thumbnail.log /var/log/fess/fess.log /var/log/fess/audit.log 2>/dev/null &
   print_log INFO "Starting Fess service."
-  # Start Fess directly since Alpine doesn't have init.d
-  su -s /bin/bash -c "source /etc/default/fess && cd /usr/share/fess && ./bin/fess" fess &
+  /etc/init.d/fess start > /dev/null 2>&1
 }
 
 wait_app() {
