@@ -1,6 +1,6 @@
 services:
   fess01:
-    image: ghcr.io/codelibs/fess:15.0.0
+    image: ghcr.io/codelibs/fess:15.1.0
     container_name: fess01
     environment:
       - "SEARCH_ENGINE_HTTP_URL=http://search01:9200"

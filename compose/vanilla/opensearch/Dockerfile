@@ -1,4 +1,4 @@
-FROM opensearchproject/opensearch:2.19.2
+FROM opensearchproject/opensearch:3.1.0
 
 # Install S3 repository plugin for snapshot support (not bundled by default)
 RUN bin/opensearch-plugin install --batch repository-s3
