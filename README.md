@@ -24,7 +24,7 @@ You can access http://localhost:8080 from the host OS with:
 ```console
 $ git clone https://github.com/codelibs/docker-fess.git
 $ cd docker-fess/compose
-$ docker compose -f compose.yaml -f compose-opensearch2.yaml up -d
+$ docker compose -f compose.yaml -f compose-opensearch3.yaml up -d
 ```
 For more details, please see [compose](https://github.com/codelibs/docker-fess/tree/master/compose).
 
