@@ -1,6 +1,5 @@
 # Docker for Fess
 
-[![Docker Images](https://ghcr-badge.deta.dev/codelibs/fess/latest_tag?trim=major&label=latest)](https://github.com/codelibs/docker-fess/pkgs/container/fess/versions)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/codelibs/docker-fess/blob/master/LICENSE)
 
 The official Docker repository for Fess - a powerful, easily deployable Enterprise Search Server built on OpenSearch.
