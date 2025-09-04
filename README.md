@@ -28,7 +28,7 @@ For more information, visit the [official Fess documentation](http://fess.codeli
 
 ## Tech Stack
 
-- **Search Engine**: OpenSearch 3.1+
+- **Search Engine**: OpenSearch 3.0+
 - **Application Server**: Apache Tomcat (embedded)
 - **Runtime**: Java 21 (Eclipse Temurin)
 - **Base Images**: Alpine Linux (production), Amazon Linux 2023, Ubuntu Noble
@@ -122,7 +122,7 @@ environment:
   - FESS_JAVA_OPTS=-server -Xms1g -Xmx1g
   
   # Plugin installation
-  - FESS_PLUGINS=fess-webapp-semantic-search:15.1.0 fess-ds-wikipedia:15.1.0
+  - FESS_PLUGINS=fess-webapp-semantic-search:15.2.0 fess-ds-wikipedia:15.2.0
 ```
 
 ### Multi-Instance Deployment
@@ -159,10 +159,10 @@ Each instance uses separate indices for data isolation.
 **Fess Application:**
 ```bash
 # Build specific version
-docker build --rm -t ghcr.io/codelibs/fess:15.1.0 ./fess/15.1/
+docker build --rm -t ghcr.io/codelibs/fess:15.2.0 ./fess/15.1/
 
 # Build with custom args
-docker build --build-arg FESS_VERSION=15.1.0 -t my-fess ./fess/15.1/
+docker build --build-arg FESS_VERSION=15.2.0 -t my-fess ./fess/15.1/
 ```
 
 **OpenSearch with Fess Plugins:**
@@ -212,8 +212,8 @@ FESS_JAVA_OPTS="-Dfess.config.index.document.search.index=myapp.search \
 
 | Fess Version | OpenSearch | Elasticsearch | Java | Base Image |
 |--------------|------------|---------------|------|------------|
-| 15.1.0 | 3.1.0+ | - | 21 | Alpine/Ubuntu Noble |
-| 15.0.0 | 2.15+ | 8.10+ | 17 | Alpine |
+| 15.2.0 | 3.2.0 | - | 21 | Alpine/Ubuntu Noble |
+| 15.0.0 | 2.15 | 8.10+ | 17 | Alpine |
 | 14.x | 2.x | 7.17/8.x | 11 | Alpine |
 
 ## Troubleshooting
@@ -279,7 +279,7 @@ Install additional Fess plugins:
 
 ```yaml
 environment:
-  - FESS_PLUGINS=fess-webapp-semantic-search:15.1.0 fess-ds-wikipedia:15.1.0
+  - FESS_PLUGINS=fess-webapp-semantic-search:15.2.0 fess-ds-wikipedia:15.2.0
 ```
 
 ### SSL/TLS Configuration
