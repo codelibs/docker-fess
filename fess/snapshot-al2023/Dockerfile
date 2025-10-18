@@ -36,7 +36,7 @@ RUN set -x && \
     # Verify download by checking file size is reasonable (>5MB for a valid Fess rpm package)
     [ $(stat -c%s /tmp/fess-${FESS_VERSION}.rpm) -gt 5242880 ] || (echo "Downloaded file too small, likely corrupted" && exit 1) && \
     # 4. Install Fess from the rpm package
-    rpm -i /tmp/fess-${FESS_VERSION}.rpm && \
+    rpm -i --nodeps /tmp/fess-${FESS_VERSION}.rpm && \
     rm -f /tmp/fess-${FESS_VERSION}.rpm && \
     # 5. Uncomment logging configurations in log4j2.xml files for console output
     for f in $(find /usr/share/fess/app/WEB-INF/ -type f | grep log4j2.xml) ; do \
