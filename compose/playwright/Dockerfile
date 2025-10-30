@@ -1,4 +1,4 @@
-FROM ghcr.io/codelibs/fess:15.1.0-noble
+FROM ghcr.io/codelibs/fess:15.3.0-noble
 
 RUN apt-get update && \
     apt-get install -y \
