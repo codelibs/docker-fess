@@ -98,7 +98,7 @@ download_plugin() {
       print_log ERROR "Failed to download ${plugin_file}.sha1."
       return
     fi
-    if ! echo "$(cat "${temp_dir}/${plugin_file}.sha1") "${temp_dir}/${plugin_file}|sha1sum -c > /dev/null ; then
+    if ! echo "$(cat "${temp_dir}/${plugin_file}.sha1") ${temp_dir}/${plugin_file}" | sha1sum -c > /dev/null ; then
       print_log ERROR "Invalid checksum for ${plugin_file}."
       return
     fi

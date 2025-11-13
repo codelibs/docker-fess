@@ -66,6 +66,10 @@ EXPOSE 8080
 COPY run.sh /usr/share/fess/run.sh
 RUN chmod +x /usr/share/fess/run.sh
 
+# Add health check to monitor container health
+HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=3 \
+    CMD curl -f http://localhost:8080/api/v1/health || exit 1
+
 # The entrypoint script `run.sh` performs setup tasks that require root.
 # Therefore, the container must be started as root.
 # The script itself is responsible for starting the Fess process.
