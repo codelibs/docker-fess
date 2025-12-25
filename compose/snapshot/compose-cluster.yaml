@@ -1,6 +1,6 @@
 services:
   search01:
-    image: ghcr.io/codelibs/fess-opensearch:3.3.0
+    image: ghcr.io/codelibs/fess-opensearch:3.4.0
     container_name: search01
     environment:
       - node.name=search01
@@ -35,7 +35,7 @@ services:
     restart: unless-stopped
 
   search02:
-    image: ghcr.io/codelibs/fess-opensearch:3.3.0
+    image: ghcr.io/codelibs/fess-opensearch:3.4.0
     container_name: search02
     environment:
       - node.name=search02
@@ -72,7 +72,7 @@ services:
       - search01
 
   search03:
-    image: ghcr.io/codelibs/fess-opensearch:3.3.0
+    image: ghcr.io/codelibs/fess-opensearch:3.4.0
     container_name: search03
     environment:
       - node.name=search03
@@ -110,7 +110,7 @@ services:
       - search02
 
   search04:
-    image: ghcr.io/codelibs/fess-opensearch:3.3.0
+    image: ghcr.io/codelibs/fess-opensearch:3.4.0
     container_name: search04
     environment:
       - node.name=search04
@@ -149,7 +149,7 @@ services:
       - search03
 
   search05:
-    image: ghcr.io/codelibs/fess-opensearch:3.3.0
+    image: ghcr.io/codelibs/fess-opensearch:3.4.0
     container_name: search05
     environment:
       - node.name=search05
