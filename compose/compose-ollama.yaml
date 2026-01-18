@@ -1,0 +1,25 @@
+# Ollama LLM service for Fess AI mode (RAG Chat)
+# Usage:
+#   docker compose -f compose.yaml -f compose-opensearch3.yaml -f compose-ollama.yaml up -d
+#   docker exec -it ollama01 ollama pull gemma3:4b
+services:
+  fess01:
+    environment:
+      - "FESS_JAVA_OPTS=-Dfess.config.rag.chat.enabled=true -Dfess.config.rag.llm.ollama.api.url=http://ollama01:11434"
+    depends_on:
+      - ollama01
+
+  ollama01:
+    image: ollama/ollama:latest
+    container_name: ollama01
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    networks:
+      - search_net
+    restart: unless-stopped
+
+volumes:
+  ollama-data:
+    driver: local
