@@ -18,6 +18,7 @@ For Linux users, please see [Installing Compose V2](https://docs.docker.com/comp
 | `compose-dashboards3.yaml` | OpenSearch Dashboards for visualization |
 | `compose-minio.yaml` | MinIO object storage integration |
 | `compose-ollama.yaml` | Ollama LLM service for AI/RAG Chat |
+| `compose-ollama-gpu.yaml` | Ollama LLM service with NVIDIA GPU support |
 
 ## Usage
 
@@ -49,6 +50,21 @@ After starting, pull an LLM model:
 
 ```bash
 docker exec -it ollama01 ollama pull gemma3:4b
+```
+
+### Fess with OpenSearch and Ollama with GPU (AI/RAG Chat)
+
+GPU support requires [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html).
+
+```bash
+docker compose -f compose.yaml -f compose-opensearch3.yaml -f compose-ollama-gpu.yaml up -d
+```
+
+After starting, pull a model optimized for GPU:
+
+```bash
+# For 16GB VRAM (e.g., RTX 5060 Ti)
+docker exec -it ollama01 ollama pull gpt-oss:20b
 ```
 
 ### Stop Fess
