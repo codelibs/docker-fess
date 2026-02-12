@@ -67,6 +67,10 @@ After starting, pull a model optimized for GPU:
 docker exec -it ollama01 ollama pull gpt-oss:20b
 ```
 
+### Tips: Using a Local Directory for Ollama Model Data
+
+By default, Ollama model data is stored in a Docker volume. If you prefer to use a local directory (e.g., for sharing models across environments or easier backups), see the comments in `compose-ollama.yaml` or `compose-ollama-gpu.yaml` for instructions on switching the volume configuration.
+
 ### Stop Fess
 
 ```bash

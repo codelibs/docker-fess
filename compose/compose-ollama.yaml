@@ -16,6 +16,8 @@ services:
       - "11434:11434"
     volumes:
       - ollama-data:/root/.ollama
+      ## To use a local directory instead of a Docker volume, comment out the line above and uncomment the following:
+      #- ./ollama-data:/root/.ollama
     networks:
       - search_net
     restart: unless-stopped
@@ -23,3 +25,4 @@ services:
 volumes:
   ollama-data:
     driver: local
+  ## When using a local directory mount, the volume definition above is not required.
