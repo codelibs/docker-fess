@@ -1,7 +1,8 @@
-# Ollama LLM service for Fess AI mode (RAG Chat)
+# Ollama LLM service with NVIDIA GPU support for Fess AI mode (RAG Chat)
+# Requirements: NVIDIA Container Toolkit installed
 # Usage:
-#   docker compose -f compose.yaml -f compose-opensearch3.yaml -f compose-ollama.yaml up -d
-#   docker exec -it ollama01 ollama pull gemma3:4b
+#   docker compose -f compose.yaml -f compose-opensearch3.yaml -f compose-ollama-gpu.yaml up -d
+#   docker exec -it ollama01 ollama pull gpt-oss:20b
 services:
   fess01:
     environment:
@@ -21,6 +22,13 @@ services:
     networks:
       - search_net
     restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
 
 volumes:
   ollama-data:
