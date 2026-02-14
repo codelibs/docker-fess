@@ -8,7 +8,7 @@ The official Docker repository for Fess - a powerful, easily deployable Enterpri
 
 Fess is an enterprise search server that makes it easy to deploy powerful search capabilities across your organization. Built on OpenSearch, Fess provides:
 
-- **All-in-One Solution**: No OpenSearchexpertise required
+- **All-in-One Solution**: No OpenSearch expertise required
 - **Web-based Administration**: Configure everything through an intuitive GUI  
 - **Multi-format Support**: Index MS Office, PDF, ZIP and many other file formats
 - **Flexible Crawling**: Web pages, file systems, databases, and more
@@ -28,7 +28,7 @@ For more information, visit the [official Fess documentation](http://fess.codeli
 
 ## Tech Stack
 
-- **Search Engine**: OpenSearch 3.0+
+- **Search Engine**: OpenSearch 3.x
 - **Application Server**: Apache Tomcat (embedded)
 - **Runtime**: Java 21 (Eclipse Temurin)
 - **Base Images**: Alpine Linux (production), Amazon Linux 2023, Ubuntu Noble
@@ -122,7 +122,7 @@ environment:
   - FESS_JAVA_OPTS=-server -Xms1g -Xmx1g
   
   # Plugin installation
-  - FESS_PLUGINS=fess-webapp-semantic-search:15.2.0 fess-ds-wikipedia:15.2.0
+  - FESS_PLUGINS=fess-webapp-semantic-search:15.5.0 fess-ds-wikipedia:15.5.0
 ```
 
 ### Multi-Instance Deployment
@@ -159,16 +159,16 @@ Each instance uses separate indices for data isolation.
 **Fess Application:**
 ```bash
 # Build specific version
-docker build --rm -t ghcr.io/codelibs/fess:15.2.0 ./fess/15.1/
+docker build --rm -t ghcr.io/codelibs/fess:15.5.0 ./fess/15.5/
 
 # Build with custom args
-docker build --build-arg FESS_VERSION=15.2.0 -t my-fess ./fess/15.1/
+docker build --build-arg FESS_VERSION=15.5.0 -t my-fess ./fess/15.5/
 ```
 
 **OpenSearch with Fess Plugins:**
 ```bash
 # Build OpenSearch image
-docker build --rm -t ghcr.io/codelibs/fess-opensearch:3.2.0 ./opensearch/3.2/
+docker build --rm -t ghcr.io/codelibs/fess-opensearch:3.5.0 ./opensearch/3.5/
 ```
 
 ### Project Structure
@@ -176,12 +176,12 @@ docker build --rm -t ghcr.io/codelibs/fess-opensearch:3.2.0 ./opensearch/3.2/
 ```
 docker-fess/
 ├── fess/                    # Fess Docker images
-│   ├── 15.1/               # Latest stable version
-│   ├── 15.0/               # Previous versions
+│   ├── 15.5/               # Latest stable version
+│   ├── 15.4/               # Previous versions
 │   └── snapshot/           # Development builds
 ├── opensearch/             # OpenSearch images with Fess plugins
-│   ├── 3.2/               # Latest OpenSearch
-│   └── 2.x/               # Previous versions
+│   ├── 3.5/               # Latest OpenSearch
+│   └── 3.4/               # Previous versions
 ├── elasticsearch/          # Elasticsearch images (legacy)
 ├── compose/                # Docker Compose configurations
 │   ├── compose.yaml        # Base Fess service
@@ -212,6 +212,7 @@ FESS_JAVA_OPTS="-Dfess.config.index.document.search.index=myapp.search \
 
 | Fess Version | OpenSearch | Elasticsearch | Java | Base Image |
 |--------------|------------|---------------|------|------------|
+| 15.5.0 | 3.5.0 | - | 21 | Alpine/Ubuntu Noble |
 | 15.2.0 | 3.2.0 | - | 21 | Alpine/Ubuntu Noble |
 | 15.0.0 | 2.15 | 8.10+ | 17 | Alpine |
 | 14.x | 2.x | 7.17/8.x | 11 | Alpine |
@@ -279,7 +280,7 @@ Install additional Fess plugins:
 
 ```yaml
 environment:
-  - FESS_PLUGINS=fess-webapp-semantic-search:15.2.0 fess-ds-wikipedia:15.2.0
+  - FESS_PLUGINS=fess-webapp-semantic-search:15.5.0 fess-ds-wikipedia:15.5.0
 ```
 
 ### SSL/TLS Configuration
@@ -309,4 +310,4 @@ docker run --rm -v compose_search01_data:/data -v $(pwd):/backup alpine tar xzf 
 
 [Apache License 2.0](LICENSE)
 
-Copyright 2016-2024 CodeLibs Project and the Others.
+Copyright 2016-2026 CodeLibs Project and the Others.
