@@ -14,7 +14,7 @@ LABEL maintainer="CodeLibs" \
 ENV FESS_APP_TYPE=docker
 
 # Set Fess version as a build argument
-ARG FESS_VERSION=15.5.0
+ARG FESS_VERSION=15.5.1
 
 # This ARG is used to bust the cache when needed
 ARG CACHEBUST=1
