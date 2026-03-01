@@ -159,10 +159,10 @@ Each instance uses separate indices for data isolation.
 **Fess Application:**
 ```bash
 # Build specific version
-docker build --rm -t ghcr.io/codelibs/fess:15.5.0 ./fess/15.5/
+docker build --rm -t ghcr.io/codelibs/fess:15.5.1 ./fess/15.5/
 
 # Build with custom args
-docker build --build-arg FESS_VERSION=15.5.0 -t my-fess ./fess/15.5/
+docker build --build-arg FESS_VERSION=15.5.1 -t my-fess ./fess/15.5/
 ```
 
 **OpenSearch with Fess Plugins:**
@@ -212,7 +212,7 @@ FESS_JAVA_OPTS="-Dfess.config.index.document.search.index=myapp.search \
 
 | Fess Version | OpenSearch | Elasticsearch | Java | Base Image |
 |--------------|------------|---------------|------|------------|
-| 15.5.0 | 3.5.0 | - | 21 | Alpine/Ubuntu Noble |
+| 15.5.1 | 3.5.0 | - | 21 | Alpine/Ubuntu Noble |
 | 15.2.0 | 3.2.0 | - | 21 | Alpine/Ubuntu Noble |
 | 15.0.0 | 2.15 | 8.10+ | 17 | Alpine |
 | 14.x | 2.x | 7.17/8.x | 11 | Alpine |
