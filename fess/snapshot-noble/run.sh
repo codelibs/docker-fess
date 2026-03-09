@@ -70,6 +70,7 @@ download_plugin() {
   if [[ ${plugin_name} == fess-ds-* ]] \
     || [[ ${plugin_name} == fess-ingest-* ]] \
     || [[ ${plugin_name} == fess-script-* ]] \
+    || [[ ${plugin_name} == fess-llm-* ]] \
     || [[ ${plugin_name} == fess-theme-* ]] \
     || [[ ${plugin_name} == fess-webapp-* ]] \
     ; then
@@ -113,18 +114,20 @@ start_fess() {
   rm -f /usr/bin/java
   ln -s /opt/java/openjdk/bin/java /usr/bin/java
   touch /var/log/fess/fess-crawler.log \
+        /var/log/fess/fess-llm.log \
         /var/log/fess/fess-suggest.log \
         /var/log/fess/fess-thumbnail.log \
         /var/log/fess/fess-urls.log \
         /var/log/fess/audit.log \
         /var/log/fess/fess.log
   chown fess:fess /var/log/fess/fess-crawler.log \
+                  /var/log/fess/fess-llm.log \
                   /var/log/fess/fess-suggest.log \
                   /var/log/fess/fess-thumbnail.log \
                   /var/log/fess/fess-urls.log \
                   /var/log/fess/audit.log \
                   /var/log/fess/fess.log
-  tail -qF /var/log/fess/fess-crawler.log /var/log/fess/fess-suggest.log /var/log/fess/fess-thumbnail.log /var/log/fess/fess.log /var/log/fess/audit.log 2>/dev/null &
+  tail -qF /var/log/fess/fess-crawler.log /var/log/fess/fess-llm.log /var/log/fess/fess-suggest.log /var/log/fess/fess-thumbnail.log /var/log/fess/fess.log /var/log/fess/audit.log 2>/dev/null &
   print_log INFO "Starting Fess service."
   /etc/init.d/fess start > /dev/null 2>&1
 }
