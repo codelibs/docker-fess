@@ -49,7 +49,7 @@ docker compose -f compose.yaml -f compose-opensearch3.yaml -f compose-ollama.yam
 After starting, pull an LLM model:
 
 ```bash
-docker exec -it ollama01 ollama pull gemma3:4b
+docker exec -it ollama01 ollama pull gemma4:e4b
 ```
 
 ### Fess with OpenSearch and Ollama with GPU (AI/RAG Chat)
