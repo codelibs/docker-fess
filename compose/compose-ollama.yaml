@@ -1,7 +1,7 @@
 # Ollama LLM service for Fess AI mode (RAG Chat)
 # Usage:
 #   docker compose -f compose.yaml -f compose-opensearch3.yaml -f compose-ollama.yaml up -d
-#   docker exec -it ollama01 ollama pull gemma3:4b
+#   docker exec -it ollama01 ollama pull gemma4:e4b
 services:
   fess01:
     environment:
