@@ -19,6 +19,8 @@ For Linux users, please see [Installing Compose V2](https://docs.docker.com/comp
 | `compose-minio.yaml` | MinIO object storage integration |
 | `compose-ollama.yaml` | Ollama LLM service for AI/RAG Chat |
 | `compose-ollama-gpu.yaml` | Ollama LLM service with NVIDIA GPU support |
+| `compose-gemini.yaml` | Google Gemini LLM (cloud API) for AI/RAG Chat |
+| `compose-openai.yaml` | OpenAI LLM (cloud API) for AI/RAG Chat |
 
 ## Usage
 
@@ -67,6 +69,28 @@ After starting, pull a model optimized for GPU:
 docker exec -it ollama01 ollama pull gpt-oss:20b
 ```
 
+### Fess with OpenSearch and Google Gemini (AI/RAG Chat)
+
+```bash
+export GEMINI_API_KEY="AIzaSy..."  # Get one at https://aistudio.google.com/apikey
+docker compose -f compose.yaml -f compose-opensearch3.yaml -f compose-gemini.yaml up -d
+```
+
+The Gemini overlay installs the `fess-llm-gemini` plugin via `FESS_PLUGINS`,
+sets `rag.chat.enabled=true` and `rag.llm.name=gemini`, and forwards the API key.
+Override the model with `GEMINI_MODEL` (default: `gemini-2.5-flash`).
+
+### Fess with OpenSearch and OpenAI (AI/RAG Chat)
+
+```bash
+export OPENAI_API_KEY="sk-..."  # Get one at https://platform.openai.com/api-keys
+docker compose -f compose.yaml -f compose-opensearch3.yaml -f compose-openai.yaml up -d
+```
+
+The OpenAI overlay installs the `fess-llm-openai` plugin via `FESS_PLUGINS`,
+sets `rag.chat.enabled=true` and `rag.llm.name=openai`, and forwards the API key.
+Override the model with `OPENAI_MODEL` (default: `gpt-5-mini`).
+
 ### Tips: Using a Local Directory for Ollama Model Data
 
 By default, Ollama model data is stored in a Docker volume. If you prefer to use a local directory (e.g., for sharing models across environments or easier backups), see the comments in `compose-ollama.yaml` or `compose-ollama-gpu.yaml` for instructions on switching the volume configuration.
@@ -92,6 +116,8 @@ docker volume rm compose_search01_data compose_search01_dictionary
 | OpenSearch Dashboards | http://localhost:5601 | Data visualization (when enabled) |
 | MinIO Console | http://localhost:9000 | Object storage (when enabled) |
 | Ollama API | http://localhost:11434 | LLM API (when enabled) |
+| Google Gemini | https://generativelanguage.googleapis.com | Cloud LLM API (when `compose-gemini.yaml` is used) |
+| OpenAI | https://api.openai.com | Cloud LLM API (when `compose-openai.yaml` is used) |
 
 ## Environment Variables
 
@@ -140,3 +166,31 @@ services:
     environment:
       - "FESS_JAVA_OPTS=-Dfess.system.storage.accesskey=... -Dfess.system.storage.secretkey=... -Dfess.system.storage.endpoint=http://minio01:9000 -Dfess.system.storage.bucket=fess -Drag.llm.ollama.api.url=http://ollama01:11434"
 ```
+
+### Behind an HTTP Proxy (Cloud LLMs)
+
+When the Fess container reaches the Internet through a corporate proxy
+(typical for `compose-gemini.yaml` / `compose-openai.yaml`), append the
+proxy options to `FESS_JAVA_OPTS` in your overlay file:
+
+```yaml
+services:
+  fess01:
+    environment:
+      - "FESS_JAVA_OPTS=-Dfess.config.rag.chat.enabled=true -Dfess.config.rag.llm.gemini.api.key=${GEMINI_API_KEY} -Dfess.system.rag.llm.name=gemini -Dhttps.proxyHost=proxy.example.com -Dhttps.proxyPort=8080"
+```
+
+### Why `FESS_JAVA_OPTS` Instead of Bare Environment Variables?
+
+Fess does not auto-map shell-style environment variables such as
+`RAG_CHAT_ENABLED` or `RAG_LLM_GEMINI_API_KEY` to internal properties.
+All RAG / LLM settings must be passed as JVM options:
+
+| Setting kind | Prefix | Example |
+|---|---|---|
+| `fess_config.properties` keys (`rag.chat.enabled`, `rag.llm.gemini.api.key`, ...) | `-Dfess.config.` | `-Dfess.config.rag.chat.enabled=true` |
+| `system.properties` keys (`rag.llm.name`) | `-Dfess.system.` | `-Dfess.system.rag.llm.name=gemini` |
+
+`rag.llm.name` is also editable from the admin UI ("System > General"),
+which persists the value in OpenSearch. The `-Dfess.system.*` form only
+acts as the initial default before that value is written.

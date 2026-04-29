@@ -1,0 +1,11 @@
+# OpenAI LLM for Fess AI mode (RAG Chat)
+# Usage:
+#   export OPENAI_API_KEY="sk-..."
+#   docker compose -f compose.yaml -f compose-opensearch3.yaml -f compose-openai.yaml up -d
+# API key:
+#   https://platform.openai.com/api-keys
+services:
+  fess01:
+    environment:
+      - "FESS_PLUGINS=fess-llm-openai:15.6.0"
+      - "FESS_JAVA_OPTS=-Dfess.config.rag.chat.enabled=true -Dfess.config.rag.llm.openai.api.key=${OPENAI_API_KEY:-} -Dfess.config.rag.llm.openai.model=${OPENAI_MODEL:-gpt-5-mini} -Dfess.system.rag.llm.name=openai"
