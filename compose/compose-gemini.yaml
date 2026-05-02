@@ -7,5 +7,5 @@
 services:
   fess01:
     environment:
-      - "FESS_PLUGINS=fess-llm-gemini:15.6.0"
+      - "FESS_PLUGINS=fess-llm-gemini:15.6.1"
       - "FESS_JAVA_OPTS=-Dfess.config.rag.chat.enabled=true -Dfess.config.rag.llm.gemini.api.key=${GEMINI_API_KEY:-} -Dfess.config.rag.llm.gemini.model=${GEMINI_MODEL:-gemini-2.5-flash} -Dfess.system.rag.llm.name=gemini"
