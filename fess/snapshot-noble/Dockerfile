@@ -68,7 +68,7 @@ RUN chmod +x /usr/share/fess/run.sh
 
 # Add health check to monitor container health
 HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=3 \
-    CMD curl -f http://localhost:8080/api/v1/health || exit 1
+    CMD curl -f http://localhost:8080/api/v2/health || exit 1
 
 # The entrypoint script `run.sh` performs setup tasks that require root.
 # Therefore, the container must be started as root.

@@ -134,9 +134,9 @@ start_fess() {
 
 wait_app() {
   if [[ "x${FESS_CONTEXT_PATH}" = "x" ]] ; then
-    ping_path=/api/v1/health
+    ping_path=/api/v2/health
   else
-    ping_path=${FESS_CONTEXT_PATH}/api/v1/health
+    ping_path=${FESS_CONTEXT_PATH}/api/v2/health
   fi
   while true ; do
     status=$(curl -w '%{http_code}\n' -s -o /dev/null "http://localhost:8080${ping_path}")
