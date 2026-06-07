@@ -1,4 +1,4 @@
-FROM opensearchproject/opensearch:2.1.0
+FROM public.ecr.aws/opensearchproject/opensearch:2.1.0
 
 ARG ANALYSIS_EXTENSION_PLUGIN=org.codelibs.opensearch:opensearch-analysis-extension:2.1.0
 ARG ANALYSIS_FESS_PLUGIN=org.codelibs.opensearch:opensearch-analysis-fess:2.1.0

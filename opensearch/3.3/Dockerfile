@@ -1,4 +1,4 @@
-FROM opensearchproject/opensearch:3.3.2
+FROM public.ecr.aws/opensearchproject/opensearch:3.3.2
 
 # Metadata labels for better container management
 LABEL maintainer="CodeLibs" \
