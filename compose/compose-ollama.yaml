@@ -6,7 +6,7 @@
 services:
   fess01:
     environment:
-      - "FESS_PLUGINS=fess-llm-ollama:15.6.0"
+      - "FESS_PLUGINS=fess-llm-ollama:15.7.0"
       - "FESS_JAVA_OPTS=-Dfess.config.rag.chat.enabled=true -Dfess.config.rag.llm.ollama.api.url=http://ollama01:11434"
     depends_on:
       - ollama01
