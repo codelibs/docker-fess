@@ -60,7 +60,7 @@ To add more Fess instances, create a new `compose-fessXX.yaml` file with a uniqu
 ```yaml
 services:
   fess03:
-    image: ghcr.io/codelibs/fess:snapshot
+    image: ghcr.io/codelibs/fess:15.8.0
     container_name: fess03
     environment:
       - "SEARCH_ENGINE_HTTP_URL=http://search01:9200"
