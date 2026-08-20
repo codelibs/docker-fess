@@ -1,6 +1,8 @@
 services:
   fess01:
-    image: ghcr.io/codelibs/fess:15.8.0
+    # Noble is used because SEARCH_ENGINE_TYPE is only honored by the init.d
+    # based images. Switch back to the Alpine image once 15.9.0 is released.
+    image: ghcr.io/codelibs/fess:15.8.0-noble
     container_name: fess01
     environment:
       - "SEARCH_ENGINE_HTTP_URL=http://search01:9200"
@@ -12,7 +14,8 @@ services:
     networks:
       - search_net
     depends_on:
-      - search01
+      search01:
+        condition: service_healthy
     logging:
       driver: "json-file"
       options:

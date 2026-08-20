@@ -49,18 +49,19 @@ RUN set -x && \
       sed -i 's/[^\t]*<!-- //' $f; sed -i 's/\/> -->/\/>/' $f; done  && \
     # 8. Configure Fess to load custom configurations from /opt/fess
     sed -i -e 's#FESS_CLASSPATH="$FESS_CONF_PATH:$FESS_CLASSPATH"#FESS_CLASSPATH="$FESS_OVERRIDE_CONF_PATH:$FESS_CONF_PATH:$FESS_CLASSPATH"#g' /usr/share/fess/bin/fess && \
-    # 9. Create /etc/default/fess
-    echo "FESS_CONF_PATH=/etc/fess" >> /etc/default/fess && \
-    echo "FESS_OVERRIDE_CONF_PATH=/opt/fess" >> /etc/default/fess && \
-    echo "FESS_TEMP_PATH=/var/tmp/fess" >> /etc/default/fess && \
-    echo "FESS_LOG_PATH=/var/log/fess" >> /etc/default/fess && \
-    echo "FESS_VAR_PATH=/var/lib/fess" >> /etc/default/fess && \
-    echo "FESS_PORT=8080" >> /etc/default/fess && \
-    echo "FESS_HEAP_SIZE=512m" >> /etc/default/fess && \
-    echo "FESS_DICTIONARY_PATH=/var/lib/opensearch/config/" >> /etc/default/fess && \
-    echo "SEARCH_ENGINE_HOME=/usr/share/opensearch/" >> /etc/default/fess && \
-    echo "SEARCH_ENGINE_HTTP_URL=http://localhost:9200" >> /etc/default/fess && \
-    echo "export FESS_CONF_PATH FESS_OVERRIDE_CONF_PATH FESS_TEMP_PATH FESS_LOG_PATH FESS_VAR_PATH FESS_PORT FESS_HEAP_SIZE FESS_DICTIONARY_PATH SEARCH_ENGINE_HOME SEARCH_ENGINE_HTTP_URL" >> /etc/default/fess && \
+    # 9. Create /etc/default/fess. These are container defaults only: each entry
+    #    keeps a value already present in the environment, so every one of them
+    #    can be overridden with `docker run -e` / compose `environment:`.
+    echo 'export FESS_CONF_PATH="${FESS_CONF_PATH:-/etc/fess}"' >> /etc/default/fess && \
+    echo 'export FESS_OVERRIDE_CONF_PATH="${FESS_OVERRIDE_CONF_PATH:-/opt/fess}"' >> /etc/default/fess && \
+    echo 'export FESS_TEMP_PATH="${FESS_TEMP_PATH:-/var/tmp/fess}"' >> /etc/default/fess && \
+    echo 'export FESS_LOG_PATH="${FESS_LOG_PATH:-/var/log/fess}"' >> /etc/default/fess && \
+    echo 'export FESS_VAR_PATH="${FESS_VAR_PATH:-/var/lib/fess}"' >> /etc/default/fess && \
+    echo 'export FESS_PORT="${FESS_PORT:-8080}"' >> /etc/default/fess && \
+    echo 'export FESS_HEAP_SIZE="${FESS_HEAP_SIZE:-512m}"' >> /etc/default/fess && \
+    echo 'export FESS_DICTIONARY_PATH="${FESS_DICTIONARY_PATH:-/var/lib/opensearch/config/}"' >> /etc/default/fess && \
+    echo 'export SEARCH_ENGINE_HOME="${SEARCH_ENGINE_HOME:-/usr/share/opensearch/}"' >> /etc/default/fess && \
+    echo 'export SEARCH_ENGINE_HTTP_URL="${SEARCH_ENGINE_HTTP_URL:-http://localhost:9200}"' >> /etc/default/fess && \
     # 10. Create and copy configuration files
     touch /etc/fess/system.properties && \
     mv /usr/share/fess/lib/classes/tomcat_config.properties \
