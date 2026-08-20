@@ -9,51 +9,47 @@ print_log() {
   echo '{"@timestamp":"'$(date -u "+%Y-%m-%dT%H:%M:%S.%3NZ")'","log.level": "'${log_level}'","message":"'"${message}"'", "ecs.version": "1.2.0","service.name":"fess","event.dataset":"app","process.thread.name":"bootstrap","log.logger":"run.sh"}'
 }
 
-if [[ "x${FESS_DICTIONARY_PATH}" != "x" ]] ; then
-  sed -i -e "s|^FESS_DICTIONARY_PATH=.*|FESS_DICTIONARY_PATH=${FESS_DICTIONARY_PATH}|" /etc/default/fess
-fi
+# Container defaults live in /etc/default/fess and keep whatever the environment
+# already provides, so FESS_DICTIONARY_PATH, FESS_PORT, FESS_HEAP_SIZE and the
+# rest only need to be present in the environment to take effect.
 
-if [[ "x${FESS_PORT}" != "x" ]] ; then
-  sed -i -e "s|^FESS_PORT=.*|FESS_PORT=${FESS_PORT}|" /etc/default/fess
-fi
-
-if [[ "x${FESS_HEAP_SIZE}" != "x" ]] ; then
-  sed -i -e "s|^FESS_HEAP_SIZE=.*|FESS_HEAP_SIZE=${FESS_HEAP_SIZE}|" /etc/default/fess
-fi
-
-if [[ "x${SEARCH_ENGINE_HTTP_URL}" != "x" ]] ; then
-  sed -i -e "s|^SEARCH_ENGINE_HTTP_URL=.*|SEARCH_ENGINE_HTTP_URL=${SEARCH_ENGINE_HTTP_URL}|" /etc/default/fess
-elif [[ "x${ES_HTTP_URL}" != "x" ]] ; then
+# Deprecated aliases: fold them into the canonical variable when it is unset.
+if [[ "x${SEARCH_ENGINE_HTTP_URL}" = "x" && "x${ES_HTTP_URL}" != "x" ]] ; then
   print_log WARN "ES_HTTP_URL is deprecated."
-  sed -i -e "s|^SEARCH_ENGINE_HTTP_URL=.*|SEARCH_ENGINE_HTTP_URL=${ES_HTTP_URL}|" /etc/default/fess
-else
-  SEARCH_ENGINE_HTTP_URL=http://localhost:9200
+  export SEARCH_ENGINE_HTTP_URL="${ES_HTTP_URL}"
 fi
 
+if [[ "x${SEARCH_ENGINE_TYPE}" = "x" && "x${ES_TYPE}" != "x" ]] ; then
+  print_log WARN "ES_TYPE is deprecated."
+  SEARCH_ENGINE_TYPE="${ES_TYPE}"
+fi
+
+if [[ "x${SEARCH_ENGINE_USERNAME}" = "x" && "x${ES_USERNAME}" != "x" ]] ; then
+  print_log WARN "ES_USERNAME is deprecated."
+  SEARCH_ENGINE_USERNAME="${ES_USERNAME}"
+fi
+
+if [[ "x${SEARCH_ENGINE_PASSWORD}" = "x" && "x${ES_PASSWORD}" != "x" ]] ; then
+  print_log WARN "ES_PASSWORD is deprecated."
+  SEARCH_ENGINE_PASSWORD="${ES_PASSWORD}"
+fi
+
+# These have no FESS_* equivalent, so they are passed as JVM options.
 if [[ "x${SEARCH_ENGINE_TYPE}" != "x" ]] ; then
   FESS_JAVA_OPTS="${FESS_JAVA_OPTS} -Dfess.config.search_engine.type=${SEARCH_ENGINE_TYPE}"
-elif [[ "x${ES_TYPE}" != "x" ]] ; then
-  print_log WARN "ES_TYPE is deprecated."
-  FESS_JAVA_OPTS="${FESS_JAVA_OPTS} -Dfess.config.search_engine.type=${ES_TYPE}"
 fi
 
 if [[ "x${SEARCH_ENGINE_USERNAME}" != "x" ]] ; then
   FESS_JAVA_OPTS="${FESS_JAVA_OPTS} -Dfess.config.search_engine.username=${SEARCH_ENGINE_USERNAME}"
-elif [[ "x${ES_USERNAME}" != "x" ]] ; then
-  print_log WARN "ES_USERNAME is deprecated."
-  FESS_JAVA_OPTS="${FESS_JAVA_OPTS} -Dfess.config.search_engine.username=${ES_USERNAME}"
 fi
 
 if [[ "x${SEARCH_ENGINE_PASSWORD}" != "x" ]] ; then
   FESS_JAVA_OPTS="${FESS_JAVA_OPTS} -Dfess.config.search_engine.password=${SEARCH_ENGINE_PASSWORD}"
-elif [[ "x${ES_PASSWORD}" != "x" ]] ; then
-  print_log WARN "ES_PASSWORD is deprecated."
-  FESS_JAVA_OPTS="${FESS_JAVA_OPTS} -Dfess.config.search_engine.password=${ES_PASSWORD}"
 fi
 
-if [[ "x${FESS_JAVA_OPTS}" != "x" ]] ; then
-  echo "export FESS_JAVA_OPTS=\"${FESS_JAVA_OPTS}\"" >> /etc/default/fess
-fi
+# bin/fess runs as a child process, so this has to be exported rather than
+# written back into /etc/default/fess.
+export FESS_JAVA_OPTS
 
 if [[ "x${PING_RETRIES}" = "x" ]] ; then
   PING_RETRIES=3

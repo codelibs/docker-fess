@@ -52,7 +52,7 @@ elif [[ "x${ES_PASSWORD}" != "x" ]] ; then
 fi
 
 if [[ "x${FESS_JAVA_OPTS}" != "x" ]] ; then
-  echo "export FESS_JAVA_OPTS=\"${FESS_JAVA_OPTS}\"" >> /etc/default/fess
+  echo "FESS_JAVA_OPTS=\"${FESS_JAVA_OPTS}\"" >> /etc/default/fess
 fi
 
 if [[ "x${PING_RETRIES}" = "x" ]] ; then
