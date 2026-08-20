@@ -113,7 +113,7 @@ environment:
   - FESS_JAVA_OPTS=-server -Xms1g -Xmx1g
   
   # Plugin installation
-  - FESS_PLUGINS=fess-webapp-semantic-search:15.7.0 fess-ds-wikipedia:15.7.0
+  - FESS_PLUGINS=fess-webapp-semantic-search:15.8.0 fess-ds-wikipedia:15.8.0
 ```
 
 ### Multi-Instance Deployment
@@ -150,10 +150,10 @@ Each instance uses separate indices for data isolation.
 **Fess Application:**
 ```bash
 # Build specific version
-docker build --rm -t ghcr.io/codelibs/fess:15.7.0 ./fess/15.7/
+docker build --rm -t ghcr.io/codelibs/fess:15.8.0 ./fess/15.8/
 
 # Build with custom args
-docker build --build-arg FESS_VERSION=15.7.0 -t my-fess ./fess/15.7/
+docker build --build-arg FESS_VERSION=15.8.0 -t my-fess ./fess/15.8/
 ```
 
 **OpenSearch with Fess Plugins:**
@@ -167,8 +167,8 @@ docker build --rm -t ghcr.io/codelibs/fess-opensearch:3.7.0 ./opensearch/3.7/
 ```
 docker-fess/
 ├── fess/                    # Fess Docker images
-│   ├── 15.7/               # Latest stable version
-│   ├── 15.6/               # Previous versions
+│   ├── 15.8/               # Latest stable version
+│   ├── 15.7/               # Previous versions
 │   └── snapshot/           # Development builds
 ├── opensearch/             # OpenSearch images with Fess plugins
 │   ├── 3.7/               # Latest OpenSearch
@@ -203,6 +203,7 @@ FESS_JAVA_OPTS="-Dfess.config.index.document.search.index=myapp.search \
 
 | Fess Version | OpenSearch | Elasticsearch | Java | Base Image |
 |--------------|------------|---------------|------|------------|
+| 15.8.0 | 3.8.0 | - | 21 | Alpine/Ubuntu Noble/Amazon Linux 2023 |
 | 15.7.0 | 3.7.0 | - | 21 | Alpine/Ubuntu Noble/Amazon Linux 2023 |
 | 15.6.0 | 3.6.0 | - | 21 | Alpine/Ubuntu Noble/Amazon Linux 2023 |
 | 15.5.1 | 3.5.0 | - | 21 | Alpine/Ubuntu Noble/Amazon Linux 2023 |
@@ -276,7 +277,7 @@ Install additional Fess plugins:
 
 ```yaml
 environment:
-  - FESS_PLUGINS=fess-webapp-semantic-search:15.7.0 fess-ds-wikipedia:15.7.0
+  - FESS_PLUGINS=fess-webapp-semantic-search:15.8.0 fess-ds-wikipedia:15.8.0
 ```
 
 ### SSL/TLS Configuration
