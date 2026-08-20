@@ -13,13 +13,13 @@ As a result, Fess’s built-in dictionary management features will *not* be avai
 ### Fess with OpenSearch:
 
 ```
-$ docker compose -f compose.yaml -f compose-opensearch2.yaml up -d
+$ docker compose -f compose.yaml -f compose-opensearch3.yaml up -d
 ```
 
 ### Stop Fess
 
 ```
-$ docker compose -f compose.yaml -f compose-opensearch2.yaml down
+$ docker compose -f compose.yaml -f compose-opensearch3.yaml down
 ```
 
 ### Remove Local Volumes

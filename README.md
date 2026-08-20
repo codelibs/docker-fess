@@ -159,7 +159,7 @@ docker build --build-arg FESS_VERSION=15.8.0 -t my-fess ./fess/15.8/
 **OpenSearch with Fess Plugins:**
 ```bash
 # Build OpenSearch image
-docker build --rm -t ghcr.io/codelibs/fess-opensearch:3.7.0 ./opensearch/3.7/
+docker build --rm -t ghcr.io/codelibs/fess-opensearch:3.8.0 ./opensearch/3.8/
 ```
 
 ### Project Structure
@@ -171,16 +171,15 @@ docker-fess/
 │   ├── 15.7/               # Previous versions
 │   └── snapshot/           # Development builds
 ├── opensearch/             # OpenSearch images with Fess plugins
-│   ├── 3.7/               # Latest OpenSearch
-│   └── 3.6/               # Previous versions
+│   ├── 3.8/               # Latest OpenSearch
+│   └── 3.7/               # Previous versions
 ├── elasticsearch/          # Elasticsearch images (legacy)
-├── compose/                # Docker Compose configurations
-│   ├── compose.yaml        # Base Fess service
-│   ├── compose-opensearch3.yaml  # OpenSearch 3.x
-│   ├── compose-dashboards3.yaml  # OpenSearch Dashboards
-│   ├── compose-minio.yaml  # MinIO object storage
-│   └── multi-instance/     # Multi-instance setup
-└── archive/                # Archived older versions
+└── compose/                # Docker Compose configurations
+    ├── compose.yaml        # Base Fess service
+    ├── compose-opensearch3.yaml  # OpenSearch 3.x
+    ├── compose-dashboards3.yaml  # OpenSearch Dashboards
+    ├── compose-minio.yaml  # MinIO object storage
+    └── multi-instance/     # Multi-instance setup
 ```
 
 ### Configuration Files

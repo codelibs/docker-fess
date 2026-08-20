@@ -1,3 +1,3 @@
-FROM public.ecr.aws/opensearchproject/opensearch-dashboards:3.6.0
+FROM public.ecr.aws/opensearchproject/opensearch-dashboards:3.8.0
 RUN /usr/share/opensearch-dashboards/bin/opensearch-dashboards-plugin remove securityDashboards
 COPY --chown=opensearch-dashboards:opensearch-dashboards opensearch_dashboards.yml /usr/share/opensearch-dashboards/config/
