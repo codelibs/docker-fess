@@ -25,7 +25,7 @@ $ docker compose -f compose.yaml -f compose-opensearch3.yaml down
 ### Remove Local Volumes
 
 ```
-$ docker volume rm compose_search01_data 
+$ docker volume rm vanilla_search01_data 
 ```
 
 

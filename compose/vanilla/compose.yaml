@@ -12,7 +12,8 @@ services:
     networks:
       - search_net
     depends_on:
-      - search01
+      search01:
+        condition: service_healthy
     logging:
       driver: "json-file"
       options:
