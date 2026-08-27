@@ -77,7 +77,7 @@ download_plugin() {
     plugin_file="${plugin_name}-${plugin_version}.jar"
     if [[ ${plugin_version} == *-SNAPSHOT ]] ; then
       metadata_file="${temp_dir}/maven-metadata.$$"
-      metadata_url="https://oss.sonatype.org/content/repositories/snapshots/org/codelibs/fess/${plugin_name}/${plugin_version}/maven-metadata.xml"
+      metadata_url="https://maven.codelibs.org/snapshot/org/codelibs/fess/${plugin_name}/${plugin_version}/maven-metadata.xml"
       if ! curl -fs -o "${metadata_file}" "${metadata_url}" ; then
         print_log ERROR "Failed to download from ${metadata_url}."
         return
@@ -86,9 +86,9 @@ download_plugin() {
       version_buildnum=$(cat ${metadata_file} | grep "<buildNumber>" | head -n1 | sed -e "s,.*buildNumber>\(.*\)</buildNumber.*,\1,")
       rm -f ${metadata_file}
       plugin_file=$(echo ${plugin_file} | sed -e "s/SNAPSHOT/${version_timestamp}-${version_buildnum}/")
-      plugin_url="https://oss.sonatype.org/content/repositories/snapshots/org/codelibs/fess/${plugin_name}/${plugin_version}/${plugin_file}"
+      plugin_url="https://maven.codelibs.org/snapshot/org/codelibs/fess/${plugin_name}/${plugin_version}/${plugin_file}"
     else
-      plugin_url="https://repo.maven.apache.org/maven2/org/codelibs/fess/${plugin_name}/${plugin_version}/${plugin_file}"
+      plugin_url="https://maven.codelibs.org/release/org/codelibs/fess/${plugin_name}/${plugin_version}/${plugin_file}"
     fi
     print_log INFO "Downloading from ${plugin_url}"
     if ! curl -fs -o "${temp_dir}/${plugin_file}" "${plugin_url}" > /dev/null; then
