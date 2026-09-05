@@ -133,13 +133,12 @@ start_fess() {
 }
 
 wait_app() {
-  if [[ "x${FESS_CONTEXT_PATH}" = "x" ]] ; then
-    ping_path=/api/v2/health
-  else
-    ping_path=${FESS_CONTEXT_PATH}/api/v2/health
-  fi
+  # Same variables Fess itself uses to bind the connector, so the supervisor
+  # follows a relocated port or context path. A bare "/" context path is the
+  # Fess default and must not become a double slash.
+  ping_url="http://localhost:${FESS_PORT:-8080}${FESS_CONTEXT_PATH%/}/api/v2/health"
   while true ; do
-    status=$(curl -w '%{http_code}\n' -s -o /dev/null "http://localhost:8080${ping_path}")
+    status=$(curl -w '%{http_code}\n' -s -o /dev/null "${ping_url}")
     if [[ x"${status}" = x200 ]] ; then
       error_count=0
     else
