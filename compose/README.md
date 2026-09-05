@@ -21,6 +21,14 @@ For Linux users, please see [Installing Compose V2](https://docs.docker.com/comp
 | `compose-gemini.yaml` | Google Gemini LLM (cloud API) for AI/RAG Chat |
 | `compose-openai.yaml` | OpenAI LLM (cloud API) for AI/RAG Chat |
 
+Three further stacks live in their own directories and are run from there:
+
+| Directory | Description |
+|-----------|-------------|
+| `snapshot/` | The in-development Fess build (`compose.yaml` plus a backend, or `compose-cluster.yaml` for five OpenSearch nodes) |
+| `multi-instance/` | Several Fess instances over one OpenSearch cluster |
+| `vanilla/` | Stock OpenSearch without the Fess plugins |
+
 ## Usage
 
 ### Fess with OpenSearch
@@ -76,6 +84,17 @@ docker compose -f compose.yaml -f compose-opensearch3.yaml -f compose-openai.yam
 The OpenAI overlay installs the `fess-llm-openai` plugin via `FESS_PLUGINS`,
 sets `rag.chat.enabled=true` and `rag.llm.name=openai`, and forwards the API key.
 Override the model with `OPENAI_MODEL` (default: `gpt-5-mini`).
+
+### Fess Snapshot Builds
+
+`snapshot/compose.yaml` defines only the Fess service, exactly like `compose.yaml`, so it has to be combined with a backend. Run it from `snapshot/`:
+
+```bash
+cd snapshot
+docker compose -f compose.yaml -f ../compose-opensearch3.yaml up -d
+```
+
+Use `compose-cluster.yaml` instead of `../compose-opensearch3.yaml` for a five-node OpenSearch cluster.
 
 ### Tips: Using a Local Directory for Ollama Model Data
 

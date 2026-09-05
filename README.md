@@ -46,38 +46,47 @@ echo 'vm.max_map_count=262144' | sudo tee -a /etc/sysctl.conf
 
 ### Standard Deployment
 
+The Compose files live in the `compose/` directory, so clone the repository and move there first. The commands that follow assume that working directory unless they change it themselves.
+
 ```bash
 # Clone the repository
 git clone https://github.com/codelibs/docker-fess.git
-cd docker-fess
+cd docker-fess/compose
 
 # Start Fess with OpenSearch
 docker compose -f compose.yaml -f compose-opensearch3.yaml up -d
-
-# Access Fess web interface
-open http://localhost:8080
 ```
+
+Fess is then available at http://localhost:8080.
 
 ### With OpenSearch Dashboards
 
 ```bash
-# Start with visualization dashboard
 docker compose -f compose.yaml -f compose-opensearch3.yaml -f compose-dashboards3.yaml up -d
-
-# Access services
-open http://localhost:8080  # Fess
-open http://localhost:5601  # OpenSearch Dashboards
 ```
+
+Fess is at http://localhost:8080 and OpenSearch Dashboards at http://localhost:5601.
 
 ### With Object Storage (MinIO)
 
 ```bash
-# Start with MinIO for file storage
 docker compose -f compose.yaml -f compose-opensearch3.yaml -f compose-minio.yaml up -d
+```
 
-# Access services
-open http://localhost:8080  # Fess
-open http://localhost:9001  # MinIO Console
+Fess is at http://localhost:8080 and the MinIO console at http://localhost:9001.
+
+### Development Snapshots
+
+The snapshot stack runs the in-development Fess build. `compose/snapshot/compose.yaml` only defines the Fess service, so it has to be combined with a backend, exactly like `compose.yaml`:
+
+```bash
+cd docker-fess/compose/snapshot
+
+# Single OpenSearch node
+docker compose -f compose.yaml -f ../compose-opensearch3.yaml up -d
+
+# Five-node OpenSearch cluster
+docker compose -f compose.yaml -f compose-cluster.yaml up -d
 ```
 
 ## Usage
@@ -115,8 +124,27 @@ environment:
   - FESS_JAVA_OPTS=-Djavax.net.ssl.trustStore=/opt/fess/truststore.jks
 
   # Plugin installation
-  - FESS_PLUGINS=fess-webapp-semantic-search:15.8.0 fess-ds-wikipedia:15.8.0
+  - FESS_PLUGINS=fess-ds-wikipedia:15.8.0 fess-ds-git:15.8.0
 ```
+
+The full set the images understand:
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `SEARCH_ENGINE_HTTP_URL` | `http://localhost:9200` | Backend search engine URL |
+| `FESS_DICTIONARY_PATH` | `/var/lib/opensearch/config/` | Dictionary directory shared with OpenSearch |
+| `FESS_PORT` | `8080` | Port Fess listens on inside the container |
+| `FESS_CONTEXT_PATH` | `/` | Context path Fess is served under, e.g. `/fess` |
+| `FESS_HEAP_SIZE` | `512m` | Heap size; see Memory Settings below |
+| `FESS_MIN_MEM` / `FESS_MAX_MEM` | (none) | Asymmetric heap bounds; see Memory Settings below |
+| `FESS_JAVA_OPTS` | (none) | Extra JVM options, mainly `-Dfess.config.*` and `-Dfess.system.*` |
+| `FESS_PLUGINS` | (none) | Space-separated `plugin-name:version` list to install at startup |
+| `FESS_CONF_PATH` | `/etc/fess` | Configuration directory |
+| `FESS_OVERRIDE_CONF_PATH` | `/opt/fess` | Extra configuration directory placed ahead of `FESS_CONF_PATH` on the classpath, so a file mounted here replaces the packaged one |
+| `PING_INTERVAL` | `60` | Seconds between the entrypoint's health probes |
+| `PING_RETRIES` | `3` | Consecutive failed probes before the entrypoint gives up and the container exits |
+
+The health check builds its URL from `FESS_PORT` and `FESS_CONTEXT_PATH`, so moving Fess to another port or context path does not make the container report unhealthy.
 
 #### Memory Settings
 
@@ -138,17 +166,13 @@ Do not pass `-Xms` or `-Xmx` through `FESS_JAVA_OPTS`. Fess appends the pair it 
 Run multiple Fess instances sharing one OpenSearch cluster:
 
 ```bash
-cd compose/multi-instance
+cd docker-fess/compose/multi-instance
 
 # Start OpenSearch + 2 Fess instances
 docker compose -f compose.yaml -f compose-fess01.yaml -f compose-fess02.yaml up -d
-
-# Access instances
-open http://localhost:8080  # Fess instance 1
-open http://localhost:8081  # Fess instance 2
 ```
 
-Each instance uses separate indices for data isolation.
+Instance 1 is at http://localhost:8080 and instance 2 at http://localhost:8081. Each instance uses separate indices for data isolation.
 
 ### Service URLs
 
@@ -196,7 +220,9 @@ docker-fess/
     ├── compose-opensearch3.yaml  # OpenSearch 3.x
     ├── compose-dashboards3.yaml  # OpenSearch Dashboards
     ├── compose-minio.yaml  # MinIO object storage
-    └── multi-instance/     # Multi-instance setup
+    ├── multi-instance/     # Multi-instance setup
+    ├── snapshot/           # Development snapshot builds
+    └── vanilla/            # Stock OpenSearch, without the Fess plugins
 ```
 
 ### Configuration Files
@@ -219,6 +245,7 @@ FESS_JAVA_OPTS="-Dfess.config.index.document.search.index=myapp.search \
 
 | Fess Version | OpenSearch | Elasticsearch | Java | Base Image |
 |--------------|------------|---------------|------|------------|
+| 15.9.0-SNAPSHOT (`snapshot` tag) | 3.8.0 | - | 21 | Alpine/Ubuntu Noble/Amazon Linux 2023 |
 | 15.8.0 | 3.8.0 | - | 21 | Alpine/Ubuntu Noble/Amazon Linux 2023 |
 | 15.7.0 | 3.7.0 | - | 21 | Alpine/Ubuntu Noble/Amazon Linux 2023 |
 | 15.6.0 | 3.6.0 | - | 21 | Alpine/Ubuntu Noble/Amazon Linux 2023 |
@@ -299,21 +326,29 @@ Install additional Fess plugins:
 
 ```yaml
 environment:
-  - FESS_PLUGINS=fess-webapp-semantic-search:15.8.0 fess-ds-wikipedia:15.8.0
+  - FESS_PLUGINS=fess-ds-wikipedia:15.8.0 fess-ds-git:15.8.0
 ```
 
-### SSL/TLS Configuration
+Entries are `plugin-name:version` pairs separated by spaces, and the name has to start with one of `fess-ds-`, `fess-ingest-`, `fess-llm-`, `fess-script-`, `fess-theme-` or `fess-webapp-`. A name that is not recognized, or a version that cannot be downloaded, is skipped and does not stop the container from starting, so check the boot log after adding a plugin.
 
-Configure HTTPS for production:
+Semantic search no longer needs a plugin. It became part of Fess in 15.8, and `fess-webapp-semantic-search` is not published for 15.8 or later.
 
-```bash
-# Mount certificate volumes
-volumes:
-  - ./certs/keystore.jks:/usr/share/fess/keystore.jks:ro
-  
-environment:
-  - FESS_JAVA_OPTS=-Dserver.ssl.key-store=/usr/share/fess/keystore.jks
+### Running Behind a Reverse Proxy
+
+When TLS is terminated at a proxy in front of Fess, the container still speaks plain HTTP, and two settings have to be told about the public origin.
+
+```yaml
+services:
+  fess01:
+    environment:
+      - "FESS_JAVA_OPTS=-Dfess.config.session.cookie.secure=true -Dfess.config.theme.api.csrf.server.origins=https://fess.example.com"
 ```
+
+`session.cookie.secure` ships blank, which leaves the `Secure` attribute to Tomcat, and Tomcat only adds it when the request it sees is HTTPS. Behind a TLS-terminating proxy that request is HTTP, so `JSESSIONID` goes out without `Secure` unless this is set to `true`. Keep it blank for plain-HTTP development, because the browser will not send the cookie back over HTTP once it is set.
+
+`theme.api.csrf.server.origins` is the list of origins the v2 API treats as its own. It also ships blank, and the API then reconstructs the expected origin from the request, which does not match the proxy's public origin. `POST /api/v2/login` through a proxy is rejected with `cross-site request blocked` until the public origin is listed here.
+
+Fess has no key store option of its own, so terminate TLS at the proxy rather than in the container.
 
 ### Backup and Recovery
 
