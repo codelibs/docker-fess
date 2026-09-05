@@ -19,6 +19,11 @@ fi
 
 if [[ "x${FESS_HEAP_SIZE}" != "x" ]] ; then
   sed -i -e "s|^FESS_HEAP_SIZE=.*|FESS_HEAP_SIZE=${FESS_HEAP_SIZE}|" /etc/default/fess
+elif [[ "x${FESS_MIN_MEM}${FESS_MAX_MEM}" != "x" ]] ; then
+  # The packaged defaults file pins FESS_HEAP_SIZE and bin/fess.in.sh lets it
+  # win over FESS_MIN_MEM/FESS_MAX_MEM. Clear it so the pair is honored; the
+  # pair itself already reaches the JVM through the environment.
+  sed -i -e "s|^FESS_HEAP_SIZE=.*|FESS_HEAP_SIZE=|" /etc/default/fess
 fi
 
 if [[ "x${SEARCH_ENGINE_HTTP_URL}" != "x" ]] ; then

@@ -108,13 +108,30 @@ environment:
   # Dictionary and data paths
   - FESS_DICTIONARY_PATH=/usr/share/opensearch/config/dictionary/
   
-  # Performance tuning
+  # Heap size (see Memory Settings below)
   - FESS_HEAP_SIZE=1g
-  - FESS_JAVA_OPTS=-server -Xms1g -Xmx1g
-  
+
+  # Extra JVM options. Do not put -Xms / -Xmx here.
+  - FESS_JAVA_OPTS=-Djavax.net.ssl.trustStore=/opt/fess/truststore.jks
+
   # Plugin installation
   - FESS_PLUGINS=fess-webapp-semantic-search:15.8.0 fess-ds-wikipedia:15.8.0
 ```
+
+#### Memory Settings
+
+The heap comes from `FESS_HEAP_SIZE`, or from the `FESS_MIN_MEM` / `FESS_MAX_MEM` pair when you want an asymmetric heap:
+
+| Variables | Resulting JVM flags |
+|-----------|---------------------|
+| `FESS_HEAP_SIZE=1g` | `-Xms1g -Xmx1g` |
+| `FESS_MIN_MEM=512m` and `FESS_MAX_MEM=2g` | `-Xms512m -Xmx2g` |
+| both of the above | `-Xms1g -Xmx1g`; `FESS_HEAP_SIZE` wins |
+| none of them | `-Xms512m -Xmx512m`, the container default |
+
+Set both halves of the pair. An unset half falls back to the Fess default (`256m` for the minimum, `2g` for the maximum), not to the container default.
+
+Do not pass `-Xms` or `-Xmx` through `FESS_JAVA_OPTS`. Fess appends the pair it derives from the variables above *after* everything in `FESS_JAVA_OPTS`, and the JVM keeps the last value it is given, so heap flags placed there are discarded without a warning.
 
 ### Multi-Instance Deployment
 
@@ -228,11 +245,17 @@ docker compose logs search01
 ```
 
 **Out of memory errors:**
-```bash
-# Increase heap size
-export FESS_HEAP_SIZE=2g
-docker compose up -d
+
+Raise the heap in the `environment:` block of the Fess service. Exporting the variable in your shell has no effect, because `compose.yaml` does not pass the host environment through:
+
+```yaml
+services:
+  fess01:
+    environment:
+      - "FESS_HEAP_SIZE=2g"
 ```
+
+Recreate the container afterwards so the new value is applied.
 
 **Search not working:**
 ```bash

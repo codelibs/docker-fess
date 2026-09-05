@@ -58,7 +58,9 @@ RUN set -x && \
     echo 'export FESS_LOG_PATH="${FESS_LOG_PATH:-/var/log/fess}"' >> /etc/default/fess && \
     echo 'export FESS_VAR_PATH="${FESS_VAR_PATH:-/var/lib/fess}"' >> /etc/default/fess && \
     echo 'export FESS_PORT="${FESS_PORT:-8080}"' >> /etc/default/fess && \
-    echo 'export FESS_HEAP_SIZE="${FESS_HEAP_SIZE:-512m}"' >> /etc/default/fess && \
+    #    bin/fess.in.sh lets FESS_HEAP_SIZE override FESS_MIN_MEM/FESS_MAX_MEM,
+    #    so the heap default is only applied when neither of the pair is given.
+    echo 'if [ -z "${FESS_MIN_MEM}${FESS_MAX_MEM}" ] ; then export FESS_HEAP_SIZE="${FESS_HEAP_SIZE:-512m}" ; fi' >> /etc/default/fess && \
     echo 'export FESS_DICTIONARY_PATH="${FESS_DICTIONARY_PATH:-/var/lib/opensearch/config/}"' >> /etc/default/fess && \
     echo 'export SEARCH_ENGINE_HOME="${SEARCH_ENGINE_HOME:-/usr/share/opensearch/}"' >> /etc/default/fess && \
     echo 'export SEARCH_ENGINE_HTTP_URL="${SEARCH_ENGINE_HTTP_URL:-http://localhost:9200}"' >> /etc/default/fess && \
