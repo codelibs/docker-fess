@@ -107,6 +107,8 @@ download_plugin() {
     rm -f "${temp_dir}/${plugin_file}.sha1"
     mv "${temp_dir}/${plugin_file}" "${plugin_dir}"
     chown fess:fess "${plugin_dir}/${plugin_file}"
+  else
+    print_log ERROR "Unrecognized plugin ${plugin_id} in FESS_PLUGINS. Expected <name>:<version>, where <name> starts with fess-ds-, fess-ingest-, fess-llm-, fess-script-, fess-theme- or fess-webapp-. Skipping it."
   fi
 }
 
