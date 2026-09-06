@@ -142,9 +142,14 @@ The full set the images understand:
 | `FESS_CONF_PATH` | `/etc/fess` | Configuration directory |
 | `FESS_OVERRIDE_CONF_PATH` | `/opt/fess` | Extra configuration directory placed ahead of `FESS_CONF_PATH` on the classpath, so a file mounted here replaces the packaged one |
 | `PING_INTERVAL` | `60` | Seconds between the entrypoint's health probes |
-| `PING_RETRIES` | `3` | Consecutive failed probes before the entrypoint gives up and the container exits |
+| `PING_RETRIES` | `5` | Consecutive failed probes, once Fess has answered at least once, before the entrypoint gives up and the container exits |
+| `PING_STARTUP_RETRIES` | `10` | Failed probes allowed before Fess has answered for the first time |
 
 The health check builds its URL from `FESS_PORT` and `FESS_CONTEXT_PATH`, so moving Fess to another port or context path does not make the container report unhealthy.
+
+Startup is counted separately from an outage. Fess has not answered yet while it is still starting, and on a loaded host that takes longer than a running instance ever goes unanswered; counting those probes against `PING_RETRIES` used to kill a container that was only slow to come up. With the defaults, Fess has ten minutes to answer for the first time, and five consecutive failed probes after that end the container.
+
+`FESS_JAVA_OPTS` is split on whitespace, so an option whose value contains a space breaks the JVM command line: the container fails with `Could not find or load main class` and then exits. Options with such a value belong in `/opt/fess/fess_config.properties` (see `FESS_OVERRIDE_CONF_PATH`) instead.
 
 #### Memory Settings
 
