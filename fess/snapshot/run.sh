@@ -52,7 +52,15 @@ fi
 export FESS_JAVA_OPTS
 
 if [[ "x${PING_RETRIES}" = "x" ]] ; then
-  PING_RETRIES=3
+  PING_RETRIES=5
+fi
+
+# Fess has not answered yet while it is still starting, and on a loaded host that
+# takes longer than a running instance ever goes unanswered. Counting those
+# probes against PING_RETRIES let the supervisor kill a container that was only
+# slow to come up.
+if [[ "x${PING_STARTUP_RETRIES}" = "x" ]] ; then
+  PING_STARTUP_RETRIES=10
 fi
 
 if [[ "x${PING_INTERVAL}" = "x" ]] ; then
@@ -136,16 +144,28 @@ wait_app() {
   # follows a relocated port or context path. A bare "/" context path is the
   # Fess default and must not become a double slash.
   ping_url="http://localhost:${FESS_PORT:-8080}${FESS_CONTEXT_PATH%/}/api/v2/health"
+  error_count=0
+  started=false
   while true ; do
     status=$(curl -w '%{http_code}\n' -s -o /dev/null "${ping_url}")
     if [[ x"${status}" = x200 ]] ; then
+      started=true
       error_count=0
     else
       error_count=$((error_count + 1))
-    fi
-    if [[ ${error_count} -ge ${PING_RETRIES} ]] ; then
-      print_log ERROR "Fess is not available."
-      exit 1
+      if [[ "${started}" = "true" ]] ; then
+        retries=${PING_RETRIES}
+      else
+        retries=${PING_STARTUP_RETRIES}
+      fi
+      if [[ ${error_count} -ge ${retries} ]] ; then
+        if [[ "${started}" = "true" ]] ; then
+          print_log ERROR "Fess is not available."
+        else
+          print_log ERROR "Fess did not start within ${PING_STARTUP_RETRIES} health probes."
+        fi
+        exit 1
+      fi
     fi
     sleep ${PING_INTERVAL}
   done

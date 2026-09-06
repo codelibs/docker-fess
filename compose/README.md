@@ -27,7 +27,7 @@ Three further stacks live in their own directories and are run from there:
 |-----------|-------------|
 | `snapshot/` | The in-development Fess build (`compose.yaml` plus a backend, or `compose-cluster.yaml` for five OpenSearch nodes) |
 | `multi-instance/` | Several Fess instances over one OpenSearch cluster |
-| `vanilla/` | Stock OpenSearch without the Fess plugins |
+| `vanilla/` | Stock OpenSearch without the Fess plugins (`compose.yaml` plus `compose-opensearch3.yaml`) |
 
 ## Usage
 
