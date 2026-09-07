@@ -62,7 +62,6 @@ RUN set -x && \
     #    so the heap default is only applied when neither of the pair is given.
     echo 'if [ -z "${FESS_MIN_MEM}${FESS_MAX_MEM}" ] ; then export FESS_HEAP_SIZE="${FESS_HEAP_SIZE:-512m}" ; fi' >> /etc/default/fess && \
     echo 'export FESS_DICTIONARY_PATH="${FESS_DICTIONARY_PATH:-/var/lib/opensearch/config/}"' >> /etc/default/fess && \
-    echo 'export SEARCH_ENGINE_HOME="${SEARCH_ENGINE_HOME:-/usr/share/opensearch/}"' >> /etc/default/fess && \
     echo 'export SEARCH_ENGINE_HTTP_URL="${SEARCH_ENGINE_HTTP_URL:-http://localhost:9200}"' >> /etc/default/fess && \
     # 10. Create and copy configuration files
     touch /etc/fess/system.properties && \

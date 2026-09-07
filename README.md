@@ -6,7 +6,7 @@ Official Docker images and Docker Compose configurations for [Fess](https://fess
 
 ## About
 
-Fess bundles the search engine and a web-based administration UI, so you can index and search web sites, file systems, and databases without setting up or operating OpenSearch yourself. For full documentation, see the [official Fess site](https://fess.codelibs.org/).
+Fess is an enterprise search server with a web-based administration UI, indexing web sites, file systems, and databases. It searches through OpenSearch, which runs as its own container here -- the compose files start both, so you do not have to install or operate OpenSearch by hand. For full documentation, see the [official Fess site](https://fess.codelibs.org/).
 
 ## Features
 
@@ -132,6 +132,9 @@ The full set the images understand:
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `SEARCH_ENGINE_HTTP_URL` | `http://localhost:9200` | Backend search engine URL |
+| `SEARCH_ENGINE_TYPE` | (none) | Set to `cloud` for a plain OpenSearch without the Fess plugins. That mode loses the Japanese analyzers, minhash near-duplicate detection and the dictionary admin UI |
+| `SEARCH_ENGINE_USERNAME` | (none) | Username, when the search engine requires authentication |
+| `SEARCH_ENGINE_PASSWORD` | (none) | Password, when the search engine requires authentication |
 | `FESS_DICTIONARY_PATH` | `/var/lib/opensearch/config/` | Dictionary directory shared with OpenSearch |
 | `FESS_PORT` | `8080` | Port Fess listens on inside the container |
 | `FESS_CONTEXT_PATH` | `/` | Context path Fess is served under, e.g. `/fess` |
@@ -261,6 +264,20 @@ FESS_JAVA_OPTS="-Dfess.config.index.document.search.index=myapp.search \
 | 15.1.0 | 3.1.0 | - | 21 | Alpine/Ubuntu Noble/Amazon Linux 2023 |
 | 15.0.0 | 2.15 | 8.10+ | 17 | Alpine |
 | 14.x | 2.x | 7.17/8.x | 11 | Alpine |
+
+### Upgrading to 15.9
+
+Fess 15.9 removed the embedded search engine, so a Fess container always needs an OpenSearch to
+talk to. The compose files here already start one, so nothing changes for them, but three
+behaviours differ:
+
+- **A search engine older than OpenSearch 3 now stops startup** instead of logging an error and
+  continuing. Earlier engines do not implement the `_shard_doc` sort that document export, purge,
+  backup and suggest dictionary builds rely on, and over HTTP those requests hang rather than
+  fail, so the mismatch is refused up front.
+- **`SEARCH_ENGINE_HOME` no longer does anything.** It pointed at the bundled engine's directory.
+- **The legacy `elasticsearch.*` configuration keys are gone.** The `ES_*` environment variables
+  these images accept are unaffected; the entrypoint translates them to `SEARCH_ENGINE_*`.
 
 ## Troubleshooting
 
