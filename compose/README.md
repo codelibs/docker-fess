@@ -131,6 +131,9 @@ docker volume rm compose_search01_data compose_search01_dictionary
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `SEARCH_ENGINE_HTTP_URL` | `http://search01:9200` | Backend search engine URL |
+| `SEARCH_ENGINE_TYPE` | (none) | Set to `cloud` for a plain OpenSearch without the Fess plugins, as `vanilla/` does. That mode loses the Japanese analyzers, minhash near-duplicate detection and the dictionary admin UI |
+| `SEARCH_ENGINE_USERNAME` | (none) | Username, when the search engine requires authentication |
+| `SEARCH_ENGINE_PASSWORD` | (none) | Password, when the search engine requires authentication |
 | `FESS_DICTIONARY_PATH` | `/usr/share/opensearch/config/dictionary/` | Path to dictionary files |
 | `FESS_PLUGINS` | (none) | Space-separated list of plugins (format: `plugin-name:version`) |
 
