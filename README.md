@@ -1,6 +1,6 @@
 # Docker for Fess
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/codelibs/docker-fess/blob/master/LICENSE)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/codelibs/docker-fess/blob/main/LICENSE)
 
 Official Docker images and Docker Compose configurations for [Fess](https://fess.codelibs.org/), an open-source enterprise search server built on OpenSearch.
 
