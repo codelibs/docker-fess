@@ -279,6 +279,24 @@ behaviours differ:
 - **The legacy `elasticsearch.*` configuration keys are gone.** The `ES_*` environment variables
   these images accept are unaffected; the entrypoint translates them to `SEARCH_ENGINE_*`.
 
+15.9 also moved several features out of the war and into plugins. **The images install all seven
+at build time** with `bin/fess-setup install plugin`, so they behave as the 15.8 images did and
+none of these belongs in `FESS_PLUGINS`:
+
+| What stops working without it | Plugin |
+|-------------------------------|--------|
+| `script_type=groovy` -- and any data store, job or crawler script that leaves `script_type` unset, which still resolves to groovy | `fess-script-groovy` |
+| `s3:` crawling and the S3 storage backend | `fess-storage-s3` |
+| `gcs:` crawling and the GCS storage backend | `fess-storage-gcs` |
+| `sso.type=saml` | `fess-sso-saml` |
+| `sso.type=spnego` | `fess-sso-spnego` |
+| `sso.type=entraid`, and the legacy `aad` | `fess-sso-entraid` |
+| `sso.type=oic` -- the one name that differs from its plugin's | `fess-sso-oidc` |
+
+To drop one from an image, run `bin/fess-setup remove plugin <name>` in a derived image. Keep a
+plugin on the same line as the Fess it runs in: a 15.9 SSO plugin in a 15.8 Fess registers a
+second copy of an authenticator that war already declares, and `/sso/` then fails.
+
 ## Troubleshooting
 
 ### Common Issues
@@ -351,7 +369,7 @@ environment:
   - FESS_PLUGINS=fess-ds-wikipedia:15.8.0 fess-ds-git:15.8.0
 ```
 
-Entries are `plugin-name:version` pairs separated by spaces, and the name has to start with one of `fess-ds-`, `fess-ingest-`, `fess-llm-`, `fess-script-`, `fess-theme-` or `fess-webapp-`. A name that is not recognized, or a version that cannot be downloaded, is skipped and does not stop the container from starting, so check the boot log after adding a plugin.
+Entries are `plugin-name:version` pairs separated by spaces, and the name has to start with one of `fess-ds-`, `fess-ingest-`, `fess-llm-`, `fess-script-`, `fess-sso-`, `fess-storage-`, `fess-theme-`, `fess-thumbnail-` or `fess-webapp-`. A name that is not recognized, or a version that cannot be downloaded, is skipped and does not stop the container from starting, so check the boot log after adding a plugin.
 
 Semantic search no longer needs a plugin. It became part of Fess in 15.8, and `fess-webapp-semantic-search` is not published for 15.8 or later.
 

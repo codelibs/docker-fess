@@ -71,7 +71,23 @@ RUN set -x && \
        /usr/share/fess/app/WEB-INF/classes/fess_env_*.properties \
        /usr/share/fess/app/WEB-INF/classes/tika.xml \
        /etc/fess && \
-    # 11. Set proper ownership for all Fess-related directories and files
+    # 11. Install the plugins that carry what the distribution used to bundle. 15.9 moved the
+    #     Groovy script engine, the S3 and GCS storage backends and the four SSO authenticators
+    #     out of the war, so leaving them out would drop behaviour the 15.8 image had: a data
+    #     store, job or crawler script with no script_type still resolves to groovy, and s3:,
+    #     gcs: and every sso.type would stop working. bin/fess-setup resolves the version that
+    #     fits this build, taking the latest timestamped build from the snapshot repository for
+    #     a -SNAPSHOT, and checks every jar against the SHA-1 the repository publishes, so a
+    #     plugin that cannot be resolved fails the build instead of leaving the image short.
+    /usr/share/fess/bin/fess-setup install plugin \
+      fess-script-groovy \
+      fess-storage-gcs \
+      fess-storage-s3 \
+      fess-sso-saml \
+      fess-sso-spnego \
+      fess-sso-entraid \
+      fess-sso-oidc && \
+    # 12. Set proper ownership for all Fess-related directories and files
     chown -R fess:fess /usr/share/fess /etc/default/fess /etc/fess /opt/fess /var/tmp/fess /var/log/fess /var/lib/fess
 
 # Set working directory
