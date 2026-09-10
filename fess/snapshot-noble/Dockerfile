@@ -56,19 +56,22 @@ RUN set -x && \
     #    Groovy script engine, the S3 and GCS storage backends and the four SSO authenticators
     #    out of the war, so leaving them out would drop behaviour the 15.8 image had: a data
     #    store, job or crawler script with no script_type still resolves to groovy, and s3:,
-    #    gcs: and every sso.type would stop working. bin/fess-setup resolves the version that
-    #    fits this build, taking the latest timestamped build from the snapshot repository for
-    #    a -SNAPSHOT, and checks every jar against the SHA-1 the repository publishes, so a
-    #    plugin that cannot be resolved fails the build instead of leaving the image short.
+    #    gcs: and every sso.type would stop working. Every plugin names its own version
+    #    rather than letting bin/fess-setup pick one, so that the image can be rebuilt from
+    #    the jars it was built with: the plugins of a Fess line are released separately, so
+    #    one shared version would be wrong as soon as one of them ships a fix of its own.
+    #    A -SNAPSHOT still resolves to the latest timestamped build of that line. Every jar
+    #    is checked against the SHA-1 the repository publishes, and a version that cannot be
+    #    resolved fails the build instead of leaving the image short.
     #    The package installs the tree as fess:fess, so the jars are chowned to match.
     /usr/share/fess/bin/fess-setup install plugin \
-      fess-script-groovy \
-      fess-storage-gcs \
-      fess-storage-s3 \
-      fess-sso-saml \
-      fess-sso-spnego \
-      fess-sso-entraid \
-      fess-sso-oidc && \
+      fess-script-groovy:15.9.0-SNAPSHOT \
+      fess-storage-gcs:15.9.0-SNAPSHOT \
+      fess-storage-s3:15.9.0-SNAPSHOT \
+      fess-sso-saml:15.9.0-SNAPSHOT \
+      fess-sso-spnego:15.9.0-SNAPSHOT \
+      fess-sso-entraid:15.9.0-SNAPSHOT \
+      fess-sso-oidc:15.9.0-SNAPSHOT && \
     chown -R fess:fess /usr/share/fess/app/WEB-INF/plugin && \
     # 10. Clean up apt cache to reduce image size
     apt-get clean && \
