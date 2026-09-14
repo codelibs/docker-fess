@@ -21,8 +21,8 @@ Fess is an enterprise search server with a web-based administration UI, indexing
 
 - **Search Engine**: OpenSearch 3.x
 - **Application Server**: Apache Tomcat (embedded)
-- **Runtime**: Java 21 (Eclipse Temurin)
-- **Base Images**: Alpine Linux (production), Amazon Linux 2023, Ubuntu Noble
+- **Runtime**: Java 21 (Eclipse Temurin; Amazon Corretto on Amazon Linux 2023)
+- **Base Images**: Alpine Linux (production), Amazon Linux 2023, Ubuntu Noble, each also as a slim variant (see [Image Variants](#image-variants))
 - **Containerization**: Docker & Docker Compose
 - **Optional Services**: OpenSearch Dashboards, MinIO object storage
 
@@ -104,6 +104,29 @@ docker compose -f compose.yaml -f compose-cluster.yaml up -d
 3. **Configure Search**:
    - Set crawl schedules, filters, and permissions
    - Monitor crawl status and logs
+
+### Image Variants
+
+Each Fess line is built on three bases, and from 15.9 each base also comes as a slim variant:
+
+| Snapshot tag | Base | Thumbnail tools | Plugins installed at build time |
+|--------------|------|-----------------|---------------------------------|
+| `snapshot` | Alpine, Eclipse Temurin 21 JRE | none | the seven listed under [Upgrading to 15.9](#upgrading-to-159) |
+| `snapshot-noble` | Ubuntu Noble, Eclipse Temurin 21 JRE | ImageMagick, poppler-utils, unoconv | the seven |
+| `snapshot-al2023` | Amazon Linux 2023, Amazon Corretto 21 | ImageMagick, poppler-utils | the seven |
+| `snapshot-slim` | Alpine, Eclipse Temurin 21 JRE | none | none |
+| `snapshot-slim-noble` | Ubuntu Noble, Eclipse Temurin 21 JRE | none | none |
+| `snapshot-slim-al2023` | Amazon Linux 2023, Amazon Corretto 21 headless | none | none |
+
+Release images put the same suffixes after the version, as in `15.8.0-noble`. The slim variants start with the 15.9 line, so until 15.9.0 is released only the `snapshot-slim*` tags exist.
+
+A slim image is the Fess distribution and nothing else, which leaves out:
+
+- **Groovy.** A data store, job or crawler script with `script_type=groovy`, or with no `script_type` at all, which still resolves to groovy, fails with `groovy is not found`. Set `script_type=javascript` on it, or add `fess-script-groovy`.
+- **`s3:` and `gcs:`** crawling and storage, and **every `sso.type`**.
+- **Thumbnails of images, PDF and Office documents.** `bin/generate-thumbnail` makes them with the tools above, so only HTML pages get thumbnails, and each failure is logged at WARN.
+
+Add a plugin back at startup with `FESS_PLUGINS` (for example `FESS_PLUGINS=fess-sso-saml:15.9.0`), or at build time in a derived image with `bin/fess-setup install plugin`.
 
 ### Environment Variables
 
@@ -203,6 +226,9 @@ docker build --rm -t ghcr.io/codelibs/fess:15.8.0 ./fess/15.8/
 
 # Build with custom args
 docker build --build-arg FESS_VERSION=15.8.0 -t my-fess ./fess/15.8/
+
+# Build the slim variant of the snapshot image
+docker build --rm -t ghcr.io/codelibs/fess:snapshot-slim ./fess/snapshot-slim/
 ```
 
 **OpenSearch with Fess Plugins:**
@@ -218,7 +244,8 @@ docker-fess/
 ├── fess/                    # Fess Docker images
 │   ├── 15.8/               # Latest stable version
 │   ├── 15.7/               # Previous versions
-│   └── snapshot/           # Development builds
+│   ├── snapshot/           # Development builds
+│   └── snapshot-slim/      # Development builds, slim variant
 ├── opensearch/             # OpenSearch images with Fess plugins
 │   ├── 3.8/               # Latest OpenSearch
 │   └── 3.7/               # Previous versions
@@ -253,7 +280,7 @@ FESS_JAVA_OPTS="-Dfess.config.index.document.search.index=myapp.search \
 
 | Fess Version | OpenSearch | Elasticsearch | Java | Base Image |
 |--------------|------------|---------------|------|------------|
-| 15.9.0-SNAPSHOT (`snapshot` tag) | 3.8.0 | - | 21 | Alpine/Ubuntu Noble/Amazon Linux 2023 |
+| 15.9.0-SNAPSHOT (`snapshot` tag) | 3.8.0 | - | 21 | Alpine/Ubuntu Noble/Amazon Linux 2023, each also slim |
 | 15.8.0 | 3.8.0 | - | 21 | Alpine/Ubuntu Noble/Amazon Linux 2023 |
 | 15.7.0 | 3.7.0 | - | 21 | Alpine/Ubuntu Noble/Amazon Linux 2023 |
 | 15.6.0 | 3.6.0 | - | 21 | Alpine/Ubuntu Noble/Amazon Linux 2023 |
@@ -281,7 +308,9 @@ behaviours differ:
 
 15.9 also moved several features out of the war and into plugins. **The images install all seven
 at build time** with `bin/fess-setup install plugin`, so they behave as the 15.8 images did and
-none of these belongs in `FESS_PLUGINS`:
+none of these belongs in `FESS_PLUGINS`. The slim variants are the exception: they install none
+of them (see [Image Variants](#image-variants)), and on those this table is the list of what to
+add back:
 
 | What stops working without it | Plugin |
 |-------------------------------|--------|
