@@ -1,5 +1,7 @@
-# Base image with the headless Java 21 runtime on Amazon Linux 2023
-FROM amazoncorretto:21-al2023-headless
+# Base image: the minimal Amazon Linux 2023 image, which the headless Corretto 21 runtime is
+# installed onto below. The amazoncorretto images are built on the standard Amazon Linux image,
+# which adds dnf with its Python runtime.
+FROM public.ecr.aws/amazonlinux/amazonlinux:2023-minimal
 
 # The slim variant of fess/snapshot-al2023. It leaves out the plugins that 15.9 moved out of the
 # war (fess-script-groovy, fess-storage-s3, fess-storage-gcs and the four fess-sso-* authenticators),
@@ -7,8 +9,8 @@ FROM amazoncorretto:21-al2023-headless
 # s3: and gcs: and every sso.type do not work until one is added back, at startup with
 # FESS_PLUGINS or in a derived image with `bin/fess-setup install plugin`. It also leaves out the
 # tools bin/generate-thumbnail calls (ImageMagick and poppler-utils), so only HTML pages get
-# thumbnails. It is built on the headless runtime rather than the full JDK the other variant uses;
-# that image has no /usr/lib/jvm/java, which is why run.sh links java through JAVA_HOME.
+# thumbnails. It installs the headless runtime rather than the full JDK the other variant is built
+# on, so there is no /usr/lib/jvm/java, which is why run.sh links java through JAVA_HOME.
 
 # Metadata labels for better container management
 LABEL maintainer="CodeLibs" \
@@ -18,6 +20,9 @@ LABEL maintainer="CodeLibs" \
       org.opencontainers.image.source="https://github.com/codelibs/docker-fess" \
       org.opencontainers.image.vendor="CodeLibs" \
       org.opencontainers.image.licenses="Apache-2.0"
+
+# The minimal image does not set it; this is the value the amazoncorretto images use.
+ENV JAVA_HOME=/usr/lib/jvm/java-21-amazon-corretto
 
 # Set environment variables for Fess application
 ENV FESS_APP_TYPE=docker
@@ -30,14 +35,20 @@ ARG CACHEBUST=1
 
 # Combine RUN instructions to reduce image layers and size
 RUN set -x && \
-    # 1. Install dependencies without weak dependencies. The base image has neither groupadd and
-    #    useradd (shadow-utils) nor find (findutils). initscripts pulls both in today, but the
-    #    steps below call them directly, so they are named rather than left to its dependencies.
-    dnf install -y --setopt=install_weak_deps=false \
+    # 1. Install Java and the dependencies without weak dependencies. dnf is microdnf in the
+    #    minimal image, which only takes 0 or 1 for install_weak_deps. The steps below call
+    #    groupadd, useradd and find, which the minimal image does not have, so shadow-utils and
+    #    findutils are named.
+    dnf install -y --setopt=install_weak_deps=0 \
+        java-21-amazon-corretto-headless \
         initscripts \
         glibc-langpack-en \
         shadow-utils \
         findutils && \
+    #    The Java package also installs lib/src.zip, the 52 MB JDK source archive, which nothing
+    #    reads at runtime and which the amazoncorretto images delete as well. It is already
+    #    compressed, so leaving it in would cost as much in a pull as on disk.
+    rm -f /usr/lib/jvm/java-21-amazon-corretto/lib/src.zip && \
     # 2. Create a dedicated user and group for Fess
     groupadd -g 1001 fess && \
     useradd -u 1001 -g fess --system --no-create-home --home /var/lib/fess fess && \
@@ -62,6 +73,13 @@ RUN set -x && \
     echo "export FESS_OVERRIDE_CONF_PATH=/opt/fess" >> /usr/share/fess/bin/fess.in.sh && \
     # 9. Clean up dnf cache to reduce image size
     dnf clean all
+
+# The locale the other images use, which glibc-langpack-en above provides. It is set only after
+# that package is installed, so the build does not run under a locale that does not exist yet.
+# Without a UTF-8 locale Java falls back to ASCII for file names.
+ENV LANG=en_US.UTF-8 \
+    LANGUAGE=en_US:en \
+    LC_ALL=en_US.UTF-8
 
 # Set working directory
 WORKDIR /usr/share/fess
