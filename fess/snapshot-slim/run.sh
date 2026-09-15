@@ -1,0 +1,191 @@
+#!/bin/bash
+
+temp_dir=/tmp
+plugin_dir=/usr/share/fess/app/WEB-INF/plugin
+
+print_log() {
+  log_level=$1
+  message=$2
+  echo '{"@timestamp":"'$(date -u "+%Y-%m-%dT%H:%M:%S.%3NZ")'","log.level": "'${log_level}'","message":"'"${message}"'", "ecs.version": "1.2.0","service.name":"fess","event.dataset":"app","process.thread.name":"bootstrap","log.logger":"run.sh"}'
+}
+
+# Container defaults live in /etc/default/fess and keep whatever the environment
+# already provides, so FESS_DICTIONARY_PATH, FESS_PORT, FESS_HEAP_SIZE and the
+# rest only need to be present in the environment to take effect.
+
+# Deprecated aliases: fold them into the canonical variable when it is unset.
+if [[ "x${SEARCH_ENGINE_HTTP_URL}" = "x" && "x${ES_HTTP_URL}" != "x" ]] ; then
+  print_log WARN "ES_HTTP_URL is deprecated."
+  export SEARCH_ENGINE_HTTP_URL="${ES_HTTP_URL}"
+fi
+
+if [[ "x${SEARCH_ENGINE_TYPE}" = "x" && "x${ES_TYPE}" != "x" ]] ; then
+  print_log WARN "ES_TYPE is deprecated."
+  SEARCH_ENGINE_TYPE="${ES_TYPE}"
+fi
+
+if [[ "x${SEARCH_ENGINE_USERNAME}" = "x" && "x${ES_USERNAME}" != "x" ]] ; then
+  print_log WARN "ES_USERNAME is deprecated."
+  SEARCH_ENGINE_USERNAME="${ES_USERNAME}"
+fi
+
+if [[ "x${SEARCH_ENGINE_PASSWORD}" = "x" && "x${ES_PASSWORD}" != "x" ]] ; then
+  print_log WARN "ES_PASSWORD is deprecated."
+  SEARCH_ENGINE_PASSWORD="${ES_PASSWORD}"
+fi
+
+# These have no FESS_* equivalent, so they are passed as JVM options.
+if [[ "x${SEARCH_ENGINE_TYPE}" != "x" ]] ; then
+  FESS_JAVA_OPTS="${FESS_JAVA_OPTS} -Dfess.config.search_engine.type=${SEARCH_ENGINE_TYPE}"
+fi
+
+if [[ "x${SEARCH_ENGINE_USERNAME}" != "x" ]] ; then
+  FESS_JAVA_OPTS="${FESS_JAVA_OPTS} -Dfess.config.search_engine.username=${SEARCH_ENGINE_USERNAME}"
+fi
+
+if [[ "x${SEARCH_ENGINE_PASSWORD}" != "x" ]] ; then
+  FESS_JAVA_OPTS="${FESS_JAVA_OPTS} -Dfess.config.search_engine.password=${SEARCH_ENGINE_PASSWORD}"
+fi
+
+# bin/fess runs as a child process, so this has to be exported rather than
+# written back into /etc/default/fess.
+export FESS_JAVA_OPTS
+
+if [[ "x${PING_RETRIES}" = "x" ]] ; then
+  PING_RETRIES=5
+fi
+
+# Fess has not answered yet while it is still starting, and on a loaded host that
+# takes longer than a running instance ever goes unanswered. Counting those
+# probes against PING_RETRIES let the supervisor kill a container that was only
+# slow to come up.
+if [[ "x${PING_STARTUP_RETRIES}" = "x" ]] ; then
+  PING_STARTUP_RETRIES=10
+fi
+
+if [[ "x${PING_INTERVAL}" = "x" ]] ; then
+  PING_INTERVAL=60
+fi
+
+download_plugin() {
+  plugin_id=$1
+  plugin_name=$(echo ${plugin_id} | sed -e "s/:.*//")
+  plugin_version=$(echo ${plugin_id} | sed -e "s/.*://")
+  # The prefixes Fess itself loads, which is PluginHelper.ArtifactType. fess-sso- and
+  # fess-storage- arrived in 15.9, when the SSO authenticators and the S3 and GCS storage
+  # backends left the war; fess-thumbnail- was missing before that. Keep the message below
+  # in step with this list.
+  if [[ ${plugin_name} == fess-ds-* ]] \
+    || [[ ${plugin_name} == fess-ingest-* ]] \
+    || [[ ${plugin_name} == fess-script-* ]] \
+    || [[ ${plugin_name} == fess-llm-* ]] \
+    || [[ ${plugin_name} == fess-theme-* ]] \
+    || [[ ${plugin_name} == fess-webapp-* ]] \
+    || [[ ${plugin_name} == fess-sso-* ]] \
+    || [[ ${plugin_name} == fess-storage-* ]] \
+    || [[ ${plugin_name} == fess-thumbnail-* ]] \
+    ; then
+    plugin_file="${plugin_name}-${plugin_version}.jar"
+    if [[ ${plugin_version} == *-SNAPSHOT ]] ; then
+      metadata_file="${temp_dir}/maven-metadata.$$"
+      metadata_url="https://maven.codelibs.org/snapshot/org/codelibs/fess/${plugin_name}/${plugin_version}/maven-metadata.xml"
+      if ! curl -fs -o "${metadata_file}" "${metadata_url}" ; then
+        print_log ERROR "Failed to download from ${metadata_url}."
+        return
+      fi
+      version_timestamp=$(cat ${metadata_file} | grep "<timestamp>" | head -n1 | sed -e "s,.*timestamp>\(.*\)</timestamp.*,\1,")
+      version_buildnum=$(cat ${metadata_file} | grep "<buildNumber>" | head -n1 | sed -e "s,.*buildNumber>\(.*\)</buildNumber.*,\1,")
+      rm -f ${metadata_file}
+      plugin_file=$(echo ${plugin_file} | sed -e "s/SNAPSHOT/${version_timestamp}-${version_buildnum}/")
+      plugin_url="https://maven.codelibs.org/snapshot/org/codelibs/fess/${plugin_name}/${plugin_version}/${plugin_file}"
+    else
+      plugin_url="https://maven.codelibs.org/release/org/codelibs/fess/${plugin_name}/${plugin_version}/${plugin_file}"
+    fi
+    print_log INFO "Downloading from ${plugin_url}"
+    if ! curl -fs -o "${temp_dir}/${plugin_file}" "${plugin_url}" > /dev/null; then
+      print_log ERROR "Failed to download ${plugin_file}."
+      return
+    fi
+    if ! curl -fs -o "${temp_dir}/${plugin_file}.sha1" "${plugin_url}.sha1" > /dev/null; then
+      print_log ERROR "Failed to download ${plugin_file}.sha1."
+      return
+    fi
+    if ! echo "$(cat "${temp_dir}/${plugin_file}.sha1") ${temp_dir}/${plugin_file}" | sha1sum -c > /dev/null ; then
+      print_log ERROR "Invalid checksum for ${plugin_file}."
+      return
+    fi
+    print_log INFO "Installing ${plugin_file}"
+    rm -f "${temp_dir}/${plugin_file}.sha1"
+    mv "${temp_dir}/${plugin_file}" "${plugin_dir}"
+    chown fess:fess "${plugin_dir}/${plugin_file}"
+  else
+    print_log ERROR "Unrecognized plugin ${plugin_id} in FESS_PLUGINS. Expected <name>:<version>, where <name> starts with fess-ds-, fess-ingest-, fess-llm-, fess-script-, fess-sso-, fess-storage-, fess-theme-, fess-thumbnail- or fess-webapp-. Skipping it."
+  fi
+}
+
+start_fess() {
+  rm -f /usr/bin/java
+  ln -s /opt/java/openjdk/bin/java /usr/bin/java
+  touch /var/log/fess/fess-crawler.log \
+        /var/log/fess/fess-llm.log \
+        /var/log/fess/fess-suggest.log \
+        /var/log/fess/fess-thumbnail.log \
+        /var/log/fess/fess-urls.log \
+        /var/log/fess/audit.log \
+        /var/log/fess/fess.log
+  chown fess:fess /var/log/fess/fess-crawler.log \
+                  /var/log/fess/fess-llm.log \
+                  /var/log/fess/fess-suggest.log \
+                  /var/log/fess/fess-thumbnail.log \
+                  /var/log/fess/fess-urls.log \
+                  /var/log/fess/audit.log \
+                  /var/log/fess/fess.log
+  tail -qF /var/log/fess/fess-crawler.log /var/log/fess/fess-llm.log /var/log/fess/fess-suggest.log /var/log/fess/fess-thumbnail.log /var/log/fess/fess.log /var/log/fess/audit.log 2>/dev/null &
+  print_log INFO "Starting Fess service."
+  # Start Fess directly since Alpine doesn't have init.d
+  su -s /bin/bash -c "source /etc/default/fess && cd /usr/share/fess && ./bin/fess" fess &
+}
+
+wait_app() {
+  # Same variables Fess itself uses to bind the connector, so the supervisor
+  # follows a relocated port or context path. A bare "/" context path is the
+  # Fess default and must not become a double slash.
+  ping_url="http://localhost:${FESS_PORT:-8080}${FESS_CONTEXT_PATH%/}/api/v2/health"
+  error_count=0
+  started=false
+  while true ; do
+    status=$(curl -w '%{http_code}\n' -s -o /dev/null "${ping_url}")
+    if [[ x"${status}" = x200 ]] ; then
+      started=true
+      error_count=0
+    else
+      error_count=$((error_count + 1))
+      if [[ "${started}" = "true" ]] ; then
+        retries=${PING_RETRIES}
+      else
+        retries=${PING_STARTUP_RETRIES}
+      fi
+      if [[ ${error_count} -ge ${retries} ]] ; then
+        if [[ "${started}" = "true" ]] ; then
+          print_log ERROR "Fess is not available."
+        else
+          print_log ERROR "Fess did not start within ${PING_STARTUP_RETRIES} health probes."
+        fi
+        exit 1
+      fi
+    fi
+    sleep ${PING_INTERVAL}
+  done
+}
+
+for plugin_id in $FESS_PLUGINS ; do
+  download_plugin $(echo ${plugin_id} | sed -e "s,/,,g")
+done
+
+start_fess
+
+if [[ "x${RUN_SHELL}" = "xtrue" ]] ; then
+  /bin/bash
+else
+  wait_app
+fi
