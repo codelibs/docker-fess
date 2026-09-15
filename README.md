@@ -114,9 +114,9 @@ Each Fess line is built on three bases, and from 15.9 each base also comes as a 
 | `snapshot` | Alpine, Eclipse Temurin 21 JRE | none | the seven listed under [Upgrading to 15.9](#upgrading-to-159) |
 | `snapshot-noble` | Ubuntu Noble, Eclipse Temurin 21 JRE | ImageMagick, poppler-utils, unoconv | the seven |
 | `snapshot-al2023` | Amazon Linux 2023, Amazon Corretto 21 | ImageMagick, poppler-utils | the seven |
-| `snapshot-slim` | Alpine, Eclipse Temurin 21 JRE | none | none |
+| `snapshot-slim` | Alpine 3.24, Eclipse Temurin 21 JRE | none | none |
 | `snapshot-slim-noble` | Ubuntu Noble, Eclipse Temurin 21 JRE | none | none |
-| `snapshot-slim-al2023` | Amazon Linux 2023, Amazon Corretto 21 headless | none | none |
+| `snapshot-slim-al2023` | Amazon Linux 2023 minimal, Amazon Corretto 21 headless | none | none |
 
 Release images put the same suffixes after the version, as in `15.8.0-noble`. The slim variants start with the 15.9 line, so until 15.9.0 is released only the `snapshot-slim*` tags exist.
 
@@ -127,6 +127,8 @@ A slim image is the Fess distribution and nothing else, which leaves out:
 - **Thumbnails of images, PDF and Office documents.** `bin/generate-thumbnail` makes them with the tools above, so only HTML pages get thumbnails, and each failure is logged at WARN.
 
 Add a plugin back at startup with `FESS_PLUGINS` (for example `FESS_PLUGINS=fess-sso-saml:15.9.0`), or at build time in a derived image with `bin/fess-setup install plugin`.
+
+The slim Alpine and Noble images copy the Temurin runtime onto the bare distribution image, and leave out the class data sharing archive the JVM maps only for a heap above 32 GB; such a heap starts without class data sharing. The slim Amazon Linux 2023 image installs Corretto onto the minimal Amazon Linux image.
 
 ### Environment Variables
 
