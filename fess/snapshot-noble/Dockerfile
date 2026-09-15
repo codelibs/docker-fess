@@ -1,5 +1,13 @@
-# Base image with Java 21 JRE on Ubuntu Noble
-FROM eclipse-temurin:21-jre-noble
+# The Java runtime is the one from the official Temurin image, copied onto a bare Ubuntu Noble
+# instead of building on that image, which also installs gnupg, wget, p11-kit and the locales
+# package. classes_nocoops.jsa is left out: it is the class data sharing archive the JVM maps only
+# when the heap is above 32 GB and compressed oops are off, and such a heap starts without class
+# data sharing and without a warning. classes.jsa, which every smaller heap maps, stays.
+FROM eclipse-temurin:21-jre-noble AS jre
+RUN rm /opt/java/openjdk/lib/server/classes_nocoops.jsa
+
+# Base image: Ubuntu Noble
+FROM ubuntu:noble
 
 # Metadata labels for better container management
 LABEL maintainer="CodeLibs" \
@@ -9,6 +17,18 @@ LABEL maintainer="CodeLibs" \
       org.opencontainers.image.source="https://github.com/codelibs/docker-fess" \
       org.opencontainers.image.vendor="CodeLibs" \
       org.opencontainers.image.licenses="Apache-2.0"
+
+# The Java and locale environment the Temurin image sets. en_US.UTF-8 needs its compiled locale,
+# so the 3 MB locale archive the Temurin image generated is copied along with the runtime instead
+# of installing the locales package; without a UTF-8 locale Java falls back to ASCII for file names.
+ENV JAVA_HOME=/opt/java/openjdk \
+    PATH="/opt/java/openjdk/bin:${PATH}" \
+    LANG=en_US.UTF-8 \
+    LANGUAGE=en_US:en \
+    LC_ALL=en_US.UTF-8
+
+COPY --from=jre /opt/java/openjdk /opt/java/openjdk
+COPY --from=jre /usr/lib/locale/locale-archive /usr/lib/locale/locale-archive
 
 # Set environment variables for Fess application
 ENV FESS_APP_TYPE=docker
@@ -21,10 +41,17 @@ ARG CACHEBUST=1
 
 # Combine RUN instructions to reduce image layers and size
 RUN set -x && \
-    # 1. Update package list and install dependencies without recommended packages
+    # 1. Update package list and install dependencies without recommended packages. The deb
+    #    package depends on adduser, which the bare image does not have; ca-certificates is for
+    #    curl, and fontconfig and tzdata are what the Temurin image installs for Java's font
+    #    handling and zone data. The rest are the tools bin/generate-thumbnail calls.
     apt-get update && \
-    apt-get install -y --no-install-recommends \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        adduser \
+        ca-certificates \
         curl \
+        fontconfig \
+        tzdata \
         imagemagick \
         unoconv \
         python3-setuptools \
