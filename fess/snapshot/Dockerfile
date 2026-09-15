@@ -1,5 +1,13 @@
-# Base image with Java 21 JRE on Alpine
-FROM eclipse-temurin:21-jre-alpine
+# The Java runtime is the one from the official Temurin image, copied onto a bare Alpine instead of
+# building on that image, which also installs gnupg, openssl, p11-kit-trust and musl-locales.
+# classes_nocoops.jsa is left out: it is the class data sharing archive the JVM maps only when the
+# heap is above 32 GB and compressed oops are off, and such a heap starts without class data sharing
+# and without a warning. classes.jsa, which every smaller heap maps, stays.
+FROM eclipse-temurin:21-jre-alpine AS jre
+RUN rm /opt/java/openjdk/lib/server/classes_nocoops.jsa
+
+# Base image: the Alpine release the Temurin runtime above is built on. Move the two together.
+FROM alpine:3.24
 
 # Metadata labels for better container management
 LABEL maintainer="CodeLibs" \
@@ -9,6 +17,15 @@ LABEL maintainer="CodeLibs" \
       org.opencontainers.image.source="https://github.com/codelibs/docker-fess" \
       org.opencontainers.image.vendor="CodeLibs" \
       org.opencontainers.image.licenses="Apache-2.0"
+
+# The Java and locale environment the Temurin image sets
+ENV JAVA_HOME=/opt/java/openjdk \
+    PATH="/opt/java/openjdk/bin:${PATH}" \
+    LANG=en_US.UTF-8 \
+    LANGUAGE=en_US:en \
+    LC_ALL=en_US.UTF-8
+
+COPY --from=jre /opt/java/openjdk /opt/java/openjdk
 
 # Set environment variable for Fess application type
 ENV FESS_APP_TYPE=docker
@@ -21,11 +38,15 @@ ARG CACHEBUST=1
 
 # Combine RUN instructions to reduce image layers and size
 RUN set -x && \
-    # 1. Install minimal dependencies (including unzip for extraction)
+    # 1. Install minimal dependencies (including unzip for extraction). fontconfig, ttf-dejavu and
+    #    tzdata are what the Temurin image installs for Java's font handling and zone data.
     apk add --no-cache \
         bash \
         curl \
         coreutils \
+        fontconfig \
+        ttf-dejavu \
+        tzdata \
         unzip && \
     # 2. Create a dedicated user and group for Fess
     addgroup -g 1001 fess && \

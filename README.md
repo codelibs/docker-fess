@@ -111,9 +111,9 @@ Each Fess line is built on three bases, and from 15.9 each base also comes as a 
 
 | Snapshot tag | Base | Thumbnail tools | Plugins installed at build time |
 |--------------|------|-----------------|---------------------------------|
-| `snapshot` | Alpine, Eclipse Temurin 21 JRE | none | the seven listed under [Upgrading to 15.9](#upgrading-to-159) |
+| `snapshot` | Alpine 3.24, Eclipse Temurin 21 JRE | none | the seven listed under [Upgrading to 15.9](#upgrading-to-159) |
 | `snapshot-noble` | Ubuntu Noble, Eclipse Temurin 21 JRE | ImageMagick, poppler-utils, unoconv | the seven |
-| `snapshot-al2023` | Amazon Linux 2023, Amazon Corretto 21 | ImageMagick, poppler-utils | the seven |
+| `snapshot-al2023` | Amazon Linux 2023 minimal, Amazon Corretto 21 headless | ImageMagick, poppler-utils | the seven |
 | `snapshot-slim` | Alpine 3.24, Eclipse Temurin 21 JRE | none | none |
 | `snapshot-slim-noble` | Ubuntu Noble, Eclipse Temurin 21 JRE | none | none |
 | `snapshot-slim-al2023` | Amazon Linux 2023 minimal, Amazon Corretto 21 headless | none | none |
@@ -128,7 +128,7 @@ A slim image is the Fess distribution and nothing else, which leaves out:
 
 Add a plugin back at startup with `FESS_PLUGINS` (for example `FESS_PLUGINS=fess-sso-saml:15.9.0`), or at build time in a derived image with `bin/fess-setup install plugin`.
 
-The slim Alpine and Noble images copy the Temurin runtime onto the bare distribution image, and leave out the class data sharing archive the JVM maps only for a heap above 32 GB; such a heap starts without class data sharing. The slim Amazon Linux 2023 image installs Corretto onto the minimal Amazon Linux image.
+The Alpine and Noble images, slim or not, copy the Temurin runtime onto the bare distribution image, and leave out the class data sharing archive the JVM maps only for a heap above 32 GB; such a heap starts without class data sharing. The Amazon Linux 2023 images install the headless Corretto runtime onto the minimal Amazon Linux image, so neither variant carries JDK tools such as `jcmd` or `jstack`. Every image runs with the `en_US.UTF-8` locale.
 
 ### Environment Variables
 

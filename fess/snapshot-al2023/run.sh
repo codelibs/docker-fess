@@ -135,7 +135,7 @@ download_plugin() {
 start_fess() {
   . /etc/init.d/functions
   rm -f /usr/bin/java
-  ln -s /usr/lib/jvm/java/bin/java /usr/bin/java
+  ln -s "${JAVA_HOME}/bin/java" /usr/bin/java
   touch /var/log/fess/fess-crawler.log \
         /var/log/fess/fess-llm.log \
         /var/log/fess/fess-suggest.log \

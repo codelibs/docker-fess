@@ -1,5 +1,9 @@
-# Base image with Java 21 on Amazon Linux 2023
-FROM amazoncorretto:21-al2023
+# Base image: the minimal Amazon Linux 2023 image, which the headless Corretto 21 runtime is
+# installed onto below. The amazoncorretto images are built on the standard Amazon Linux image,
+# which adds dnf with its Python runtime. The headless runtime, like the Temurin JRE the other
+# variants use, has no JDK tools and no /usr/lib/jvm/java, which is why run.sh links java through
+# JAVA_HOME.
+FROM public.ecr.aws/amazonlinux/amazonlinux:2023-minimal
 
 # Metadata labels for better container management
 LABEL maintainer="CodeLibs" \
@@ -9,6 +13,9 @@ LABEL maintainer="CodeLibs" \
       org.opencontainers.image.source="https://github.com/codelibs/docker-fess" \
       org.opencontainers.image.vendor="CodeLibs" \
       org.opencontainers.image.licenses="Apache-2.0"
+
+# The minimal image does not set it; this is the value the amazoncorretto images use.
+ENV JAVA_HOME=/usr/lib/jvm/java-21-amazon-corretto
 
 # Set environment variables for Fess application
 ENV FESS_APP_TYPE=docker
@@ -21,12 +28,22 @@ ARG CACHEBUST=1
 
 # Combine RUN instructions to reduce image layers and size
 RUN set -x && \
-    # 1. Install dependencies without weak dependencies
-    dnf install -y --setopt=install_weak_deps=false \
+    # 1. Install Java and the dependencies without weak dependencies. dnf is microdnf in the
+    #    minimal image, which only takes 0 or 1 for install_weak_deps. The steps below call
+    #    groupadd, useradd and find, which the minimal image does not have, so shadow-utils and
+    #    findutils are named.
+    dnf install -y --setopt=install_weak_deps=0 \
+        java-21-amazon-corretto-headless \
         ImageMagick \
         poppler-utils \
         initscripts \
-        glibc-langpack-en && \
+        glibc-langpack-en \
+        shadow-utils \
+        findutils && \
+    #    The Java package also installs lib/src.zip, the 52 MB JDK source archive, which nothing
+    #    reads at runtime and which the amazoncorretto images delete as well. It is already
+    #    compressed, so leaving it in would cost as much in a pull as on disk.
+    rm -f /usr/lib/jvm/java-21-amazon-corretto/lib/src.zip && \
     # 2. Create a dedicated user and group for Fess
     groupadd -g 1001 fess && \
     useradd -u 1001 -g fess --system --no-create-home --home /var/lib/fess fess && \
@@ -72,6 +89,13 @@ RUN set -x && \
     chown -R fess:fess /usr/share/fess/app/WEB-INF/plugin && \
     # 10. Clean up dnf cache to reduce image size
     dnf clean all
+
+# The locale the other images use, which glibc-langpack-en above provides. It is set only after
+# that package is installed, so the build does not run under a locale that does not exist yet.
+# Without a UTF-8 locale Java falls back to ASCII for file names.
+ENV LANG=en_US.UTF-8 \
+    LANGUAGE=en_US:en \
+    LC_ALL=en_US.UTF-8
 
 # Set working directory
 WORKDIR /usr/share/fess
