@@ -31,7 +31,8 @@ RUN set -x && \
     # 1. Install Java and the dependencies without weak dependencies. dnf is microdnf in the
     #    minimal image, which only takes 0 or 1 for install_weak_deps. The steps below call
     #    groupadd, useradd and find, which the minimal image does not have, so shadow-utils and
-    #    findutils are named.
+    #    findutils are named. zip, which pulls in unzip, is for the zstd-jni step, which removes
+    #    both again.
     dnf install -y --setopt=install_weak_deps=0 \
         java-21-amazon-corretto-headless \
         ImageMagick \
@@ -39,7 +40,8 @@ RUN set -x && \
         initscripts \
         glibc-langpack-en \
         shadow-utils \
-        findutils && \
+        findutils \
+        zip && \
     #    The Java package also installs lib/src.zip, the 52 MB JDK source archive, which nothing
     #    reads at runtime and which the amazoncorretto images delete as well. It is already
     #    compressed, so leaving it in would cost as much in a pull as on disk.
@@ -55,6 +57,19 @@ RUN set -x && \
     # 4. Install Fess from the rpm package
     rpm -i --nodeps /tmp/fess-${FESS_VERSION}.rpm && \
     rm -f /tmp/fess-${FESS_VERSION}.rpm && \
+    #    zstd-jni, which extracts .zst and .tar.zst files, is the one jar in the distribution with
+    #    native code. It bundles its library for 17 OS and architecture combinations and loads
+    #    linux/<os.arch> on Linux, so only that one is kept, which cuts the jar from 6.5 MB to
+    #    about 0.4 MB. os.arch is read from the java this image runs, with perf data off so that it
+    #    leaves no /tmp/hsperfdata_root behind, and the build fails if the jar has no library for
+    #    it rather than leaving an image that cannot extract those files.
+    #    zip rewrites the jar as root, so it is given back to fess:fess, the owner the package sets.
+    arch=$("${JAVA_HOME}/bin/java" -XX:-UsePerfData -XshowSettings:properties -version 2>&1 | sed -n 's/^ *os\.arch = //p') && \
+    jar=$(ls /usr/share/fess/app/WEB-INF/lib/zstd-jni-*.jar) && \
+    zip -sf "${jar}" | grep -q "^ *linux/${arch}/libzstd-jni-.*\.so$" || (echo "zstd-jni has no native library for linux/${arch}" && exit 1) && \
+    zip -q -d "${jar}" '*.so' '*.dylib' '*.dll' -x "linux/${arch}/*" && \
+    chown fess:fess "${jar}" && \
+    dnf remove -y zip unzip && \
     # 5. Uncomment logging configurations in log4j2.xml files for console output
     for f in $(find /usr/share/fess/app/WEB-INF/ -type f | grep log4j2.xml) ; do \
       sed -i 's/[^\t]*<!-- //' $f; sed -i 's/\/> -->/\/>/' $f; done  && \

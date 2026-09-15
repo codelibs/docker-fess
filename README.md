@@ -130,6 +130,8 @@ Add a plugin back at startup with `FESS_PLUGINS` (for example `FESS_PLUGINS=fess
 
 The Alpine and Noble images, slim or not, copy the Temurin runtime onto the bare distribution image, and leave out the class data sharing archive the JVM maps only for a heap above 32 GB; such a heap starts without class data sharing. The Amazon Linux 2023 images install the headless Corretto runtime onto the minimal Amazon Linux image, so neither variant carries JDK tools such as `jcmd` or `jstack`. Every image runs with the `en_US.UTF-8` locale.
 
+Every image also keeps only its own architecture's native library in zstd-jni, the jar that extracts `.zst` and `.tar.zst` files. The distribution bundles one for each of 17 OS and architecture combinations, so the jar shrinks from 6.5 MB to about 0.4 MB.
+
 ### Environment Variables
 
 Configure Fess behavior through environment variables:

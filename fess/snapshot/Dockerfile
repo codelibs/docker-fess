@@ -38,8 +38,9 @@ ARG CACHEBUST=1
 
 # Combine RUN instructions to reduce image layers and size
 RUN set -x && \
-    # 1. Install minimal dependencies (including unzip for extraction). fontconfig, ttf-dejavu and
-    #    tzdata are what the Temurin image installs for Java's font handling and zone data.
+    # 1. Install minimal dependencies (including unzip for extraction and zip for the zstd-jni
+    #    step, both removed in step 5). fontconfig, ttf-dejavu and tzdata are what the Temurin
+    #    image installs for Java's font handling and zone data.
     apk add --no-cache \
         bash \
         curl \
@@ -47,7 +48,8 @@ RUN set -x && \
         fontconfig \
         ttf-dejavu \
         tzdata \
-        unzip && \
+        unzip \
+        zip && \
     # 2. Create a dedicated user and group for Fess
     addgroup -g 1001 fess && \
     adduser -u 1001 -G fess -S -h /var/lib/fess fess && \
@@ -61,8 +63,18 @@ RUN set -x && \
     unzip -q /tmp/fess-${FESS_VERSION}.zip -d /opt && \
     mv /opt/fess-${FESS_VERSION} /usr/share/fess && \
     rm -f /tmp/fess-${FESS_VERSION}.zip && \
-    # 5. Remove unzip after use to keep image minimal
-    apk del unzip && \
+    #    zstd-jni, which extracts .zst and .tar.zst files, is the one jar in the distribution with
+    #    native code. It bundles its library for 17 OS and architecture combinations and loads
+    #    linux/<os.arch> on Linux, musl included, so only that one is kept, which cuts the jar
+    #    from 6.5 MB to about 0.4 MB. os.arch is read from the java this image runs, with perf data
+    #    off so that it leaves no /tmp/hsperfdata_root behind, and the build fails if the jar has
+    #    no library for it rather than leaving an image that cannot extract those files.
+    arch=$("${JAVA_HOME}/bin/java" -XX:-UsePerfData -XshowSettings:properties -version 2>&1 | sed -n 's/^ *os\.arch = //p') && \
+    jar=$(ls /usr/share/fess/app/WEB-INF/lib/zstd-jni-*.jar) && \
+    zip -sf "${jar}" | grep -q "^ *linux/${arch}/libzstd-jni-.*\.so$" || (echo "zstd-jni has no native library for linux/${arch}" && exit 1) && \
+    zip -q -d "${jar}" '*.so' '*.dylib' '*.dll' -x "linux/${arch}/*" && \
+    # 5. Remove unzip and zip after use to keep image minimal
+    apk del unzip zip && \
     # 6. Create necessary directories
     mkdir -p /etc/default /etc/fess /opt/fess /var/tmp/fess /var/log/fess /var/lib/fess && \
     # 7. Uncomment logging configurations in log4j2.xml files for console output
