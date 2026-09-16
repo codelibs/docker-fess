@@ -112,7 +112,7 @@ Each Fess line is built on three bases, and from 15.9 each base also comes as a 
 | Snapshot tag | Base | Thumbnail tools | Plugins installed at build time |
 |--------------|------|-----------------|---------------------------------|
 | `snapshot` | Alpine 3.24, Eclipse Temurin 21 JRE | none | the seven listed under [Upgrading to 15.9](#upgrading-to-159) |
-| `snapshot-noble` | Ubuntu Noble, Eclipse Temurin 21 JRE | ImageMagick, poppler-utils, unoconv | the seven |
+| `snapshot-noble` | Ubuntu Noble, Eclipse Temurin 21 JRE | ImageMagick, poppler-utils, unoconv with the LibreOffice Writer, Calc and Impress filters | the seven |
 | `snapshot-al2023` | Amazon Linux 2023 minimal, Amazon Corretto 21 headless | ImageMagick, poppler-utils | the seven |
 | `snapshot-slim` | Alpine 3.24, Eclipse Temurin 21 JRE | none | none |
 | `snapshot-slim-noble` | Ubuntu Noble, Eclipse Temurin 21 JRE | none | none |
