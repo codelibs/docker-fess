@@ -45,6 +45,12 @@ RUN set -x && \
     #    package depends on adduser, which the bare image does not have; ca-certificates is for
     #    curl, and fontconfig and tzdata are what the Temurin image installs for Java's font
     #    handling and zone data. The rest are the tools bin/generate-thumbnail calls.
+    #    unoconv needs LibreOffice import filters for the formats it is asked to convert, and
+    #    --no-install-recommends leaves those out: unoconv alone pulls libreoffice-core and
+    #    libreoffice-common, which carry no document filter, so `unoconv -f pdf` on a .docx
+    #    exits 6 without writing a PDF and every Office thumbnail fails. The thumbnail
+    #    generator is registered for Word, Excel and PowerPoint documents (fess_thumbnail.xml),
+    #    so the three matching filter packages are named here. They cost about 127 MB.
     apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         adduser \
@@ -54,6 +60,9 @@ RUN set -x && \
         tzdata \
         imagemagick \
         unoconv \
+        libreoffice-writer \
+        libreoffice-calc \
+        libreoffice-impress \
         python3-setuptools \
         poppler-utils && \
     # 2. Create a dedicated user and group for Fess
