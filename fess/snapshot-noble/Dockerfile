@@ -43,8 +43,9 @@ ARG CACHEBUST=1
 RUN set -x && \
     # 1. Update package list and install dependencies without recommended packages. The deb
     #    package depends on adduser, which the bare image does not have; ca-certificates is for
-    #    curl, and fontconfig and tzdata are what the Temurin image installs for Java's font
-    #    handling and zone data. The rest are the tools bin/generate-thumbnail calls.
+    #    curl, zip is for the zstd-jni step, which removes it again, and fontconfig and tzdata are
+    #    what the Temurin image installs for Java's font handling and zone data. The rest are the
+    #    tools bin/generate-thumbnail calls.
     #    unoconv needs LibreOffice import filters for the formats it is asked to convert, and
     #    --no-install-recommends leaves those out: unoconv alone pulls libreoffice-core and
     #    libreoffice-common, which carry no document filter, so `unoconv -f pdf` on a .docx
@@ -56,6 +57,7 @@ RUN set -x && \
         adduser \
         ca-certificates \
         curl \
+        zip \
         fontconfig \
         tzdata \
         imagemagick \
@@ -77,6 +79,19 @@ RUN set -x && \
     # 4. Install Fess from the deb package
     dpkg -i /tmp/fess-${FESS_VERSION}.deb && \
     rm -f /tmp/fess-${FESS_VERSION}.deb && \
+    #    zstd-jni, which extracts .zst and .tar.zst files, is the one jar in the distribution with
+    #    native code. It bundles its library for 17 OS and architecture combinations and loads
+    #    linux/<os.arch> on Linux, so only that one is kept, which cuts the jar from 6.5 MB to
+    #    about 0.4 MB. os.arch is read from the java this image runs, with perf data off so that it
+    #    leaves no /tmp/hsperfdata_root behind, and the build fails if the jar has no library for
+    #    it rather than leaving an image that cannot extract those files.
+    #    zip rewrites the jar as root, so it is given back to fess:fess, the owner the package sets.
+    arch=$("${JAVA_HOME}/bin/java" -XX:-UsePerfData -XshowSettings:properties -version 2>&1 | sed -n 's/^ *os\.arch = //p') && \
+    jar=$(ls /usr/share/fess/app/WEB-INF/lib/zstd-jni-*.jar) && \
+    zip -sf "${jar}" | grep -q "^ *linux/${arch}/libzstd-jni-.*\.so$" || (echo "zstd-jni has no native library for linux/${arch}" && exit 1) && \
+    zip -q -d "${jar}" '*.so' '*.dylib' '*.dll' -x "linux/${arch}/*" && \
+    chown fess:fess "${jar}" && \
+    apt-get purge -y zip && \
     # 5. Uncomment logging configurations in log4j2.xml files for console output
     for f in $(find /usr/share/fess/app/WEB-INF/ -type f | grep log4j2.xml) ; do \
       sed -i 's/[^\t]*<!-- //' $f; sed -i 's/\/> -->/\/>/' $f; done  && \
