@@ -82,8 +82,9 @@ download_plugin() {
   plugin_version=$(echo ${plugin_id} | sed -e "s/.*://")
   # The prefixes Fess itself loads, which is PluginHelper.ArtifactType. fess-sso- and
   # fess-storage- arrived in 15.9, when the SSO authenticators and the S3 and GCS storage
-  # backends left the war; fess-thumbnail- was missing before that. Keep the message below
-  # in step with this list.
+  # backends left the war; fess-crawler- too, when the Playwright crawler became the
+  # fess-crawler-playwright plugin. fess-thumbnail- was missing before that. Keep the
+  # message below in step with this list.
   if [[ ${plugin_name} == fess-ds-* ]] \
     || [[ ${plugin_name} == fess-ingest-* ]] \
     || [[ ${plugin_name} == fess-script-* ]] \
@@ -93,6 +94,7 @@ download_plugin() {
     || [[ ${plugin_name} == fess-sso-* ]] \
     || [[ ${plugin_name} == fess-storage-* ]] \
     || [[ ${plugin_name} == fess-thumbnail-* ]] \
+    || [[ ${plugin_name} == fess-crawler-* ]] \
     ; then
     plugin_file="${plugin_name}-${plugin_version}.jar"
     if [[ ${plugin_version} == *-SNAPSHOT ]] ; then
@@ -128,7 +130,7 @@ download_plugin() {
     mv "${temp_dir}/${plugin_file}" "${plugin_dir}"
     chown fess:fess "${plugin_dir}/${plugin_file}"
   else
-    print_log ERROR "Unrecognized plugin ${plugin_id} in FESS_PLUGINS. Expected <name>:<version>, where <name> starts with fess-ds-, fess-ingest-, fess-llm-, fess-script-, fess-sso-, fess-storage-, fess-theme-, fess-thumbnail- or fess-webapp-. Skipping it."
+    print_log ERROR "Unrecognized plugin ${plugin_id} in FESS_PLUGINS. Expected <name>:<version>, where <name> starts with fess-crawler-, fess-ds-, fess-ingest-, fess-llm-, fess-script-, fess-sso-, fess-storage-, fess-theme-, fess-thumbnail- or fess-webapp-. Skipping it."
   fi
 }
 
