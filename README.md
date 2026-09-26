@@ -402,7 +402,7 @@ environment:
   - FESS_PLUGINS=fess-ds-wikipedia:15.8.0 fess-ds-git:15.8.0
 ```
 
-Entries are `plugin-name:version` pairs separated by spaces, and the name has to start with one of `fess-ds-`, `fess-ingest-`, `fess-llm-`, `fess-script-`, `fess-sso-`, `fess-storage-`, `fess-theme-`, `fess-thumbnail-` or `fess-webapp-`. A name that is not recognized, or a version that cannot be downloaded, is skipped and does not stop the container from starting, so check the boot log after adding a plugin.
+Entries are `plugin-name:version` pairs separated by spaces, and the name has to start with one of `fess-crawler-`, `fess-ds-`, `fess-ingest-`, `fess-llm-`, `fess-script-`, `fess-sso-`, `fess-storage-`, `fess-thumbnail-` or `fess-webapp-`. JSP theme plugins (`fess-theme-`) are not accepted since Fess 15.9, which serves the search UI from static themes. A name that is not recognized, or a version that cannot be downloaded, is skipped and does not stop the container from starting, so check the boot log after adding a plugin.
 
 Semantic search no longer needs a plugin. It became part of Fess in 15.8, and `fess-webapp-semantic-search` is not published for 15.8 or later.
 
