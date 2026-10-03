@@ -14,9 +14,11 @@ services:
       - "OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g"
       - "DISABLE_INSTALL_DEMO_CONFIG=true"
       - "DISABLE_SECURITY_PLUGIN=true"
-      # Work around the low-level cancellation slowdown in OpenSearch 3.7-3.9 (opensearch-project/OpenSearch#23107).
-      # Remove once the image ships an OpenSearch release that includes the fix.
-      - "search.low_level_cancellation=false"
+      # Optional: uncomment to work around the low-level cancellation slowdown in OpenSearch 3.7-3.9
+      # (opensearch-project/OpenSearch#23107). Cancelled or timed-out searches then stop at the next
+      # phase boundary instead of while scanning inside Lucene. Not needed once the image ships an
+      # OpenSearch release that includes the fix.
+      # - "search.low_level_cancellation=false"
     ulimits:
       memlock:
         soft: -1
