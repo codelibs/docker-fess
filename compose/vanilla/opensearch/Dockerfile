@@ -1,4 +1,4 @@
-FROM public.ecr.aws/opensearchproject/opensearch:3.8.0
+FROM public.ecr.aws/opensearchproject/opensearch:3.9.0
 
 # Install S3 repository plugin for snapshot support (not bundled by default)
 RUN bin/opensearch-plugin install --batch repository-s3

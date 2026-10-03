@@ -238,7 +238,7 @@ docker build --rm -t ghcr.io/codelibs/fess:snapshot-slim ./fess/snapshot-slim/
 **OpenSearch with Fess Plugins:**
 ```bash
 # Build OpenSearch image
-docker build --rm -t ghcr.io/codelibs/fess-opensearch:3.8.0 ./opensearch/3.8/
+docker build --rm -t ghcr.io/codelibs/fess-opensearch:3.9.0 ./opensearch/3.9/
 ```
 
 ### Project Structure
@@ -251,8 +251,8 @@ docker-fess/
 │   ├── snapshot/           # Development builds
 │   └── snapshot-slim/      # Development builds, slim variant
 ├── opensearch/             # OpenSearch images with Fess plugins
-│   ├── 3.8/               # Latest OpenSearch
-│   └── 3.7/               # Previous versions
+│   ├── 3.9/               # Latest OpenSearch
+│   └── 3.8/               # Previous versions
 ├── elasticsearch/          # Elasticsearch images (legacy)
 └── compose/                # Docker Compose configurations
     ├── compose.yaml        # Base Fess service
@@ -284,7 +284,7 @@ FESS_JAVA_OPTS="-Dfess.config.index.document.search.index=myapp.search \
 
 | Fess Version | OpenSearch | Elasticsearch | Java | Base Image |
 |--------------|------------|---------------|------|------------|
-| 15.9.0-SNAPSHOT (`snapshot` tag) | 3.8.0 | - | 21 | Alpine/Ubuntu Noble/Amazon Linux 2023, each also slim |
+| 15.9.0-SNAPSHOT (`snapshot` tag) | 3.9.0 | - | 21 | Alpine/Ubuntu Noble/Amazon Linux 2023, each also slim |
 | 15.8.0 | 3.8.0 | - | 21 | Alpine/Ubuntu Noble/Amazon Linux 2023 |
 | 15.7.0 | 3.7.0 | - | 21 | Alpine/Ubuntu Noble/Amazon Linux 2023 |
 | 15.6.0 | 3.6.0 | - | 21 | Alpine/Ubuntu Noble/Amazon Linux 2023 |
