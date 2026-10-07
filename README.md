@@ -159,7 +159,7 @@ The full set the images understand:
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `SEARCH_ENGINE_HTTP_URL` | `http://localhost:9200` | Backend search engine URL |
-| `SEARCH_ENGINE_TYPE` | (none) | Set to `cloud` for a plain OpenSearch without the Fess plugins. That mode loses the Japanese analyzers, minhash near-duplicate detection and the dictionary admin UI |
+| `SEARCH_ENGINE_TYPE` | (none) | Set to `vanilla` (Fess 15.9 or later; `cloud` on earlier releases) for a plain OpenSearch without the Fess plugins, such as Amazon OpenSearch Service (`aws` adds AWS-specific behavior on top of `vanilla`). That mode loses the Japanese analyzers, minhash near-duplicate detection, result collapsing and the dictionary admin UI |
 | `SEARCH_ENGINE_USERNAME` | (none) | Username, when the search engine requires authentication |
 | `SEARCH_ENGINE_PASSWORD` | (none) | Password, when the search engine requires authentication |
 | `FESS_DICTIONARY_PATH` | `/var/lib/opensearch/config/` | Dictionary directory shared with OpenSearch |
