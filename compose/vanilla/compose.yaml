@@ -6,6 +6,8 @@ services:
     container_name: fess01
     environment:
       - "SEARCH_ENGINE_HTTP_URL=http://search01:9200"
+      # `cloud` is the value understood by 15.8. Fess 15.9 and later use `vanilla`
+      # (`cloud` still works there but logs a deprecation warning).
       - "SEARCH_ENGINE_TYPE=cloud"
       - "FESS_DICTIONARY_PATH=${FESS_DICTIONARY_PATH:-/usr/share/opensearch/config/dictionary/}"
       # - "FESS_PLUGINS=fess-ds-wikipedia:15.8.0 fess-ds-git:15.8.0"
