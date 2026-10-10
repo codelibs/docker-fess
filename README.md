@@ -118,6 +118,8 @@ Each Fess line is built on three bases, and from 15.9 each base also comes as a 
 | `snapshot-slim-noble` | Ubuntu Noble, Eclipse Temurin 21 JRE | none | none |
 | `snapshot-slim-al2023` | Amazon Linux 2023 minimal, Amazon Corretto 21 headless | none | none |
 
+The Thumbnail tools column is what `bin/generate-thumbnail` uses for images, PDF and Office documents. Fess makes the thumbnail of an HTML page from an image in the page; a screenshot of the page comes from the `fess-thumbnail-playwright` plugin, which no image installs and which needs Node.js (see [Playwright](#playwright)).
+
 Release images put the same suffixes after the version, as in `15.8.0-noble`. The slim variants start with the 15.9 line, so until 15.9.0 is released only the `snapshot-slim*` tags exist.
 
 A slim image is the Fess distribution and nothing else, which leaves out:
@@ -326,11 +328,11 @@ behaviours differ:
 - **The legacy `elasticsearch.*` configuration keys are gone.** The `ES_*` environment variables
   these images accept are unaffected; the entrypoint translates them to `SEARCH_ENGINE_*`.
 
-15.9 also moved several features out of the war and into plugins. **The images install all seven
-at build time** with `bin/fess-setup install plugin`, so they behave as the 15.8 images did and
-none of these belongs in `FESS_PLUGINS`. The slim variants are the exception: they install none
-of them (see [Image Variants](#image-variants)), and on those this table is the list of what to
-add back:
+15.9 also moved several features out of the war and into plugins. **The images install the seven
+below at build time** with `bin/fess-setup install plugin`, so those features work as they did in
+the 15.8 images and none of these belongs in `FESS_PLUGINS`. The Playwright crawler is not one of
+the seven (see below). The slim variants are the exception: they install none of them (see
+[Image Variants](#image-variants)), and on those this table is the list of what to add back:
 
 | What stops working without it | Plugin |
 |-------------------------------|--------|
@@ -345,6 +347,14 @@ add back:
 To drop one from an image, run `bin/fess-setup remove plugin <name>` in a derived image. Keep a
 plugin on the same line as the Fess it runs in: a 15.9 SSO plugin in a 15.8 Fess registers a
 second copy of an authenticator that war already declares, and `/sso/` then fails.
+
+**No image installs the Playwright crawler.** In 15.8 it was part of the war, which is why
+`compose/playwright` only adds the system libraries Chromium needs. From 15.9 it is the
+`fess-crawler-playwright` plugin, and it runs on Node.js, which the distribution no longer carries.
+Until both are added (see [Playwright](#playwright)), a crawl configuration with
+`client.crawlerClients=playwright:...` is still crawled, but with the plain HTTP client, so text
+that only JavaScript produces is not indexed, and the crawl job still ends successfully. Each
+crawl logs one warning in `fess-crawler.log` for every such crawl configuration.
 
 ## Troubleshooting
 
@@ -421,6 +431,14 @@ environment:
 Entries are `plugin-name:version` pairs separated by spaces, and the name has to start with one of `fess-crawler-`, `fess-ds-`, `fess-ingest-`, `fess-llm-`, `fess-script-`, `fess-sso-`, `fess-storage-`, `fess-thumbnail-` or `fess-webapp-`. JSP theme plugins (`fess-theme-`) are not accepted since Fess 15.9, which serves the search UI from static themes. A name that is not recognized, or a version that cannot be downloaded, is skipped and does not stop the container from starting, so check the boot log after adding a plugin.
 
 Semantic search no longer needs a plugin. It became part of Fess in 15.8, and `fess-webapp-semantic-search` is not published for 15.8 or later.
+
+### Playwright
+
+From Fess 15.9 the Playwright crawler (`fess-crawler-playwright`) and the Playwright thumbnail generator (`fess-thumbnail-playwright`) are plugins, and both run Playwright's driver on Node.js, which the Fess distribution no longer carries. No image installs either plugin or Node.js. To use one of them, add:
+
+- the plugin, with `FESS_PLUGINS`, for example `FESS_PLUGINS=fess-crawler-playwright:15.9.0`;
+- Node.js, either with `bin/fess-setup install nodejs` in a derived image (`bin/fess.in.sh` finds what it installs under `/usr/share/fess/nodejs/`), or as any Node.js executable that `PLAYWRIGHT_NODEJS_PATH` points at;
+- the system libraries Chromium needs, which the `apt-get` line of `compose/playwright/Dockerfile` installs for the Noble image. That Dockerfile builds on the 15.8.0 image, where Playwright is still part of the war, so on 15.9 it needs the first two items added as well.
 
 ### Running Behind a Reverse Proxy
 
