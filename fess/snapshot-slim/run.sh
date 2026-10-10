@@ -156,7 +156,7 @@ wait_app() {
   error_count=0
   started=false
   while true ; do
-    status=$(curl -w '%{http_code}\n' -s -o /dev/null "${ping_url}")
+    status=$(curl -w '%{http_code}\n' -s --max-time 10 -o /dev/null "${ping_url}")
     if [[ x"${status}" = x200 ]] ; then
       started=true
       error_count=0
