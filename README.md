@@ -162,18 +162,34 @@ The full set the images understand:
 | `SEARCH_ENGINE_TYPE` | (none) | Set to `vanilla` (Fess 15.9 or later; `cloud` on earlier releases) for a plain OpenSearch without the Fess plugins, such as Amazon OpenSearch Service (`aws` adds AWS-specific behavior on top of `vanilla`). That mode loses the Japanese analyzers, minhash near-duplicate detection, result collapsing and the dictionary admin UI |
 | `SEARCH_ENGINE_USERNAME` | (none) | Username, when the search engine requires authentication |
 | `SEARCH_ENGINE_PASSWORD` | (none) | Password, when the search engine requires authentication |
-| `FESS_DICTIONARY_PATH` | `/var/lib/opensearch/config/` | Dictionary directory shared with OpenSearch |
+| `FESS_DICTIONARY_PATH` | `/var/lib/opensearch/config/` | Dictionary directory shared with OpenSearch: the `configsync.config_path` of that OpenSearch. Set it to `/usr/share/opensearch/config/dictionary/` for the `fess-opensearch` image; the default does not match it. See below |
 | `FESS_PORT` | `8080` | Port Fess listens on inside the container |
 | `FESS_CONTEXT_PATH` | `/` | Context path Fess is served under, e.g. `/fess` |
 | `FESS_HEAP_SIZE` | `512m` | Heap size; see Memory Settings below |
 | `FESS_MIN_MEM` / `FESS_MAX_MEM` | (none) | Asymmetric heap bounds; see Memory Settings below |
+| `FESS_HEAP_NEWSIZE` | (none) | Size of the young generation, passed to the JVM as `-Xmn`, e.g. `256m` |
 | `FESS_JAVA_OPTS` | (none) | Extra JVM options, mainly `-Dfess.config.*` and `-Dfess.system.*` |
+| `FESS_USE_IPV4` | (none) | Any non-empty value makes the JVM prefer the IPv4 stack (`-Djava.net.preferIPv4Stack=true`) |
+| `FESS_PROXY_HOST` / `FESS_PROXY_PORT` | (none) | Proxy for the Fess application's HTTP and HTTPS connections (`-Dhttp.proxyHost`, `-Dhttps.proxyHost` and the matching `proxyPort` options). It applies to the whole JVM, so Fess's own requests to the search engine use it too: add the search engine's host to `FESS_NON_PROXY_HOSTS` unless the proxy can reach it. The web crawl runs in a child JVM and does not use it |
+| `FESS_NON_PROXY_HOSTS` | (none) | Hosts that bypass the proxy for HTTP and HTTPS, separated by `\|` (`-Dhttp.nonProxyHosts`), e.g. `search01\|localhost` |
 | `FESS_PLUGINS` | (none) | Space-separated `plugin-name:version` list to install at startup |
-| `FESS_CONF_PATH` | `/etc/fess` | Configuration directory |
-| `FESS_OVERRIDE_CONF_PATH` | `/opt/fess` | Extra configuration directory placed ahead of `FESS_CONF_PATH` on the classpath, so a file mounted here replaces the packaged one |
+| `PLAYWRIGHT_NODEJS_PATH` | (none) | Node.js executable for the Playwright plugins (`fess-crawler-playwright` for crawling and `fess-thumbnail-playwright` for thumbnails, Fess 15.9 or later). When unset, Fess uses the one `bin/fess-setup install nodejs` installed under `/usr/share/fess/nodejs/`, if any. The images ship neither the plugin nor Node.js |
+| `FESS_CONF_PATH` | `/etc/fess` | Configuration directory; see below |
+| `FESS_OVERRIDE_CONF_PATH` | `/opt/fess` | Extra configuration directory placed ahead of `FESS_CONF_PATH` on the classpath, so a file mounted here replaces the packaged one; see below |
+| `FESS_LOG_PATH` | `/var/log/fess` | Directory for the application log and the GC log; see below |
+| `FESS_TEMP_PATH` | `/var/tmp/fess` | Temporary directory of the Fess JVM (`java.io.tmpdir`); see below |
+| `FESS_VAR_PATH` | `/var/lib/fess` | Directory for the files Fess writes at run time, such as thumbnails and the embedded Tomcat's base directory; see below |
+| `FESS_LOG_LEVEL` | `warn` | Log level of the Fess application, e.g. `info` or `debug` |
+| `APP_NAME` | `fess` | Base name of the application log (`<APP_NAME>.log`) and the GC log (`gc-<APP_NAME>.log`). The entrypoint only follows `fess.log`, so under another name `docker logs` no longer shows the application log |
+| `FESS_USE_GC_LOGGING` | (none) | Any non-empty value turns on JVM GC logging to `gc-<APP_NAME>.log` in `FESS_LOG_PATH` (up to 5 files of 64 MB) |
 | `PING_INTERVAL` | `60` | Seconds between the entrypoint's health probes |
 | `PING_RETRIES` | `5` | Consecutive failed probes, once Fess has answered at least once, before the entrypoint gives up and the container exits |
 | `PING_STARTUP_RETRIES` | `10` | Failed probes allowed before Fess has answered for the first time |
+| `RUN_SHELL` | (none) | Set to `true` to start Fess and then run `/bin/bash` instead of the health-probe loop, so the `PING_*` settings no longer apply. The container lives as long as that shell: start it with `-it`, because without a terminal the shell exits at once and the container with it |
+
+`FESS_DICTIONARY_PATH` has to be the same path as the `configsync.config_path` of the OpenSearch Fess talks to, because Fess puts it into the analyzer definitions of the indices it creates, and OpenSearch 3.8 and later only accept dictionary files inside their own config directory. The `fess-opensearch` image reads `configsync.config_path` from its own `FESS_DICTIONARY_PATH`, so give both containers `/usr/share/opensearch/config/dictionary/`, as the Compose files do. The default shown above is what the Fess image falls back to when the variable is unset. It is outside that config directory, so index creation fails with `Resource path must be inside config directory` and Fess does not start. A plain OpenSearch (`SEARCH_ENGINE_TYPE=vanilla`) has no dictionaries, and its index definitions do not use the path.
+
+`FESS_CONF_PATH`, `FESS_OVERRIDE_CONF_PATH`, `FESS_LOG_PATH`, `FESS_TEMP_PATH` and `FESS_VAR_PATH` can be changed on the Alpine images (`snapshot`, `snapshot-slim`) only. The Noble and AL2023 images, slim or not, assign them from `/etc/default/fess` (`/etc/sysconfig/fess` on AL2023) when Fess starts, so a value passed with `-e` is ignored there.
 
 The health check builds its URL from `FESS_PORT` and `FESS_CONTEXT_PATH`, so moving Fess to another port or context path does not make the container report unhealthy.
 
