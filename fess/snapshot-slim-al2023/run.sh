@@ -9,16 +9,22 @@ print_log() {
   echo '{"@timestamp":"'$(date -u "+%Y-%m-%dT%H:%M:%S.%3NZ")'","log.level": "'${log_level}'","message":"'"${message}"'", "ecs.version": "1.2.0","service.name":"fess","event.dataset":"app","process.thread.name":"bootstrap","log.logger":"run.sh"}'
 }
 
+# Escape \ & and | in a value, the characters that are special in the replacement text of
+# the s||| commands below, so that sed writes the value exactly as given.
+sed_escape() {
+  printf '%s' "$1" | sed -e 's/[\\&|]/\\&/g'
+}
+
 if [[ "x${FESS_DICTIONARY_PATH}" != "x" ]] ; then
-  sed -i -e "s|^FESS_DICTIONARY_PATH=.*|FESS_DICTIONARY_PATH=${FESS_DICTIONARY_PATH}|" /etc/sysconfig/fess
+  sed -i -e "s|^FESS_DICTIONARY_PATH=.*|FESS_DICTIONARY_PATH=$(sed_escape "${FESS_DICTIONARY_PATH}")|" /etc/sysconfig/fess
 fi
 
 if [[ "x${FESS_PORT}" != "x" ]] ; then
-  sed -i -e "s|^FESS_PORT=.*|FESS_PORT=${FESS_PORT}|" /etc/sysconfig/fess
+  sed -i -e "s|^FESS_PORT=.*|FESS_PORT=$(sed_escape "${FESS_PORT}")|" /etc/sysconfig/fess
 fi
 
 if [[ "x${FESS_HEAP_SIZE}" != "x" ]] ; then
-  sed -i -e "s|^FESS_HEAP_SIZE=.*|FESS_HEAP_SIZE=${FESS_HEAP_SIZE}|" /etc/sysconfig/fess
+  sed -i -e "s|^FESS_HEAP_SIZE=.*|FESS_HEAP_SIZE=$(sed_escape "${FESS_HEAP_SIZE}")|" /etc/sysconfig/fess
 elif [[ "x${FESS_MIN_MEM}${FESS_MAX_MEM}" != "x" ]] ; then
   # The packaged defaults file pins FESS_HEAP_SIZE and bin/fess.in.sh lets it
   # win over FESS_MIN_MEM/FESS_MAX_MEM. Clear it so the pair is honored; the
@@ -27,10 +33,10 @@ elif [[ "x${FESS_MIN_MEM}${FESS_MAX_MEM}" != "x" ]] ; then
 fi
 
 if [[ "x${SEARCH_ENGINE_HTTP_URL}" != "x" ]] ; then
-  sed -i -e "s|^SEARCH_ENGINE_HTTP_URL=.*|SEARCH_ENGINE_HTTP_URL=${SEARCH_ENGINE_HTTP_URL}|" /etc/sysconfig/fess
+  sed -i -e "s|^SEARCH_ENGINE_HTTP_URL=.*|SEARCH_ENGINE_HTTP_URL=$(sed_escape "${SEARCH_ENGINE_HTTP_URL}")|" /etc/sysconfig/fess
 elif [[ "x${ES_HTTP_URL}" != "x" ]] ; then
   print_log WARN "ES_HTTP_URL is deprecated."
-  sed -i -e "s|^SEARCH_ENGINE_HTTP_URL=.*|SEARCH_ENGINE_HTTP_URL=${ES_HTTP_URL}|" /etc/sysconfig/fess
+  sed -i -e "s|^SEARCH_ENGINE_HTTP_URL=.*|SEARCH_ENGINE_HTTP_URL=$(sed_escape "${ES_HTTP_URL}")|" /etc/sysconfig/fess
 else
   SEARCH_ENGINE_HTTP_URL=http://localhost:9200
 fi
