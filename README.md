@@ -120,7 +120,7 @@ Each Fess line is built on three bases, and from 15.9 each base also comes as a 
 
 The Thumbnail tools column is what `bin/generate-thumbnail` uses for images, PDF and Office documents. Fess makes the thumbnail of an HTML page from an image in the page; a screenshot of the page comes from the `fess-thumbnail-playwright` plugin, which no image installs and which needs Node.js (see [Playwright](#playwright)).
 
-Release images put the same suffixes after the version, as in `15.8.0-noble`. The slim variants start with the 15.9 line, so until 15.9.0 is released only the `snapshot-slim*` tags exist.
+Release images put the same suffixes after the version, as in `15.9.0-noble` or `15.9.0-slim-noble`. The slim variants start with the 15.9 line, so there is no slim image of 15.8.0 or earlier.
 
 A slim image is the Fess distribution and nothing else, which leaves out:
 
@@ -153,7 +153,7 @@ environment:
   - FESS_JAVA_OPTS=-Djavax.net.ssl.trustStore=/opt/fess/truststore.jks
 
   # Plugin installation
-  - FESS_PLUGINS=fess-ds-wikipedia:15.8.0 fess-ds-git:15.8.0
+  - FESS_PLUGINS=fess-ds-wikipedia:15.9.0 fess-ds-git:15.9.0
 ```
 
 The full set the images understand:
@@ -191,7 +191,7 @@ The full set the images understand:
 
 `FESS_DICTIONARY_PATH` has to be the same path as the `configsync.config_path` of the OpenSearch Fess talks to, because Fess puts it into the analyzer definitions of the indices it creates, and OpenSearch 3.8 and later only accept dictionary files inside their own config directory. The `fess-opensearch` image reads `configsync.config_path` from its own `FESS_DICTIONARY_PATH`, so give both containers `/usr/share/opensearch/config/dictionary/`, as the Compose files do. The default shown above is what the Fess image falls back to when the variable is unset. It is outside that config directory, so index creation fails with `Resource path must be inside config directory` and Fess does not start. A plain OpenSearch (`SEARCH_ENGINE_TYPE=vanilla`) has no dictionaries, and its index definitions do not use the path.
 
-`FESS_CONF_PATH`, `FESS_OVERRIDE_CONF_PATH`, `FESS_LOG_PATH`, `FESS_TEMP_PATH` and `FESS_VAR_PATH` can be changed on the Alpine images (`snapshot`, `snapshot-slim`) only. The Noble and AL2023 images, slim or not, assign them from `/etc/default/fess` (`/etc/sysconfig/fess` on AL2023) when Fess starts, so a value passed with `-e` is ignored there.
+`FESS_CONF_PATH`, `FESS_OVERRIDE_CONF_PATH`, `FESS_LOG_PATH`, `FESS_TEMP_PATH` and `FESS_VAR_PATH` can be changed on the Alpine images (`15.9.0`, `15.9.0-slim`, `snapshot`, `snapshot-slim`) only. The Noble and AL2023 images, slim or not, assign them from `/etc/default/fess` (`/etc/sysconfig/fess` on AL2023) when Fess starts, so a value passed with `-e` is ignored there.
 
 The health check builds its URL from `FESS_PORT` and `FESS_CONTEXT_PATH`, so moving Fess to another port or context path does not make the container report unhealthy.
 
@@ -244,10 +244,10 @@ Instance 1 is at http://localhost:8080 and instance 2 at http://localhost:8081. 
 **Fess Application:**
 ```bash
 # Build specific version
-docker build --rm -t ghcr.io/codelibs/fess:15.8.0 ./fess/15.8/
+docker build --rm -t ghcr.io/codelibs/fess:15.9.0 ./fess/15.9/
 
 # Build with custom args
-docker build --build-arg FESS_VERSION=15.8.0 -t my-fess ./fess/15.8/
+docker build --build-arg FESS_VERSION=15.9.0 -t my-fess ./fess/15.9/
 
 # Build the slim variant of the snapshot image
 docker build --rm -t ghcr.io/codelibs/fess:snapshot-slim ./fess/snapshot-slim/
@@ -264,8 +264,8 @@ docker build --rm -t ghcr.io/codelibs/fess-opensearch:3.9.0 ./opensearch/3.9/
 ```
 docker-fess/
 ├── fess/                    # Fess Docker images
-│   ├── 15.8/               # Latest stable version
-│   ├── 15.7/               # Previous versions
+│   ├── 15.9/               # Latest stable version
+│   ├── 15.8/               # Previous versions
 │   ├── snapshot/           # Development builds
 │   └── snapshot-slim/      # Development builds, slim variant
 ├── opensearch/             # OpenSearch images with Fess plugins
@@ -302,7 +302,7 @@ FESS_JAVA_OPTS="-Dfess.config.index.document.search.index=myapp.search \
 
 | Fess Version | OpenSearch | Elasticsearch | Java | Base Image |
 |--------------|------------|---------------|------|------------|
-| 15.9.0-SNAPSHOT (`snapshot` tag) | 3.9.0 | - | 21 | Alpine/Ubuntu Noble/Amazon Linux 2023, each also slim |
+| 15.9.0 | 3.9.0 | - | 21 | Alpine/Ubuntu Noble/Amazon Linux 2023, each also slim |
 | 15.8.0 | 3.8.0 | - | 21 | Alpine/Ubuntu Noble/Amazon Linux 2023 |
 | 15.7.0 | 3.7.0 | - | 21 | Alpine/Ubuntu Noble/Amazon Linux 2023 |
 | 15.6.0 | 3.6.0 | - | 21 | Alpine/Ubuntu Noble/Amazon Linux 2023 |
@@ -349,10 +349,10 @@ plugin on the same line as the Fess it runs in: a 15.9 SSO plugin in a 15.8 Fess
 second copy of an authenticator that war already declares, and `/sso/` then fails.
 
 **No image installs the Playwright crawler.** In 15.8 it was part of the war, which is why
-`compose/playwright` only adds the system libraries Chromium needs. From 15.9 it is the
+`compose/playwright` only added the system libraries Chromium needs. From 15.9 it is the
 `fess-crawler-playwright` plugin, and it runs on Node.js, which the distribution no longer carries.
-Until both are added (see [Playwright](#playwright)), a crawl configuration with
-`client.crawlerClients=playwright:...` is still crawled, but with the plain HTTP client, so text
+`compose/playwright` installs both. Until both are added (see [Playwright](#playwright)), a crawl
+configuration with `client.crawlerClients=playwright:...` is still crawled, but with the plain HTTP client, so text
 that only JavaScript produces is not indexed, and the crawl job still ends successfully. Each
 crawl logs one warning in `fess-crawler.log` for every such crawl configuration.
 
@@ -425,7 +425,7 @@ Install additional Fess plugins:
 
 ```yaml
 environment:
-  - FESS_PLUGINS=fess-ds-wikipedia:15.8.0 fess-ds-git:15.8.0
+  - FESS_PLUGINS=fess-ds-wikipedia:15.9.0 fess-ds-git:15.9.0
 ```
 
 Entries are `plugin-name:version` pairs separated by spaces, and the name has to start with one of `fess-crawler-`, `fess-ds-`, `fess-ingest-`, `fess-llm-`, `fess-script-`, `fess-sso-`, `fess-storage-`, `fess-thumbnail-` or `fess-webapp-`. JSP theme plugins (`fess-theme-`) are not accepted since Fess 15.9, which serves the search UI from static themes. A name that is not recognized, or a version that cannot be downloaded, is skipped and does not stop the container from starting, so check the boot log after adding a plugin.
@@ -438,7 +438,7 @@ From Fess 15.9 the Playwright crawler (`fess-crawler-playwright`) and the Playwr
 
 - the plugin, with `FESS_PLUGINS`, for example `FESS_PLUGINS=fess-crawler-playwright:15.9.0`;
 - Node.js, either with `bin/fess-setup install nodejs` in a derived image (`bin/fess.in.sh` finds what it installs under `/usr/share/fess/nodejs/`), or as any Node.js executable that `PLAYWRIGHT_NODEJS_PATH` points at;
-- the system libraries Chromium needs, which the `apt-get` line of `compose/playwright/Dockerfile` installs for the Noble image. That Dockerfile builds on the 15.8.0 image, where Playwright is still part of the war, so on 15.9 it needs the first two items added as well.
+- the system libraries Chromium needs, which `compose/playwright/Dockerfile` installs for the Noble image. That Dockerfile also installs the first two items, so building `compose/playwright` is enough.
 
 ### Running Behind a Reverse Proxy
 

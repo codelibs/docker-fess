@@ -1,16 +1,12 @@
 services:
   fess01:
-    # Noble is used because SEARCH_ENGINE_TYPE is only honored by the init.d
-    # based images. Switch back to the Alpine image once 15.9.0 is released.
-    image: ghcr.io/codelibs/fess:15.8.0-noble
+    image: ghcr.io/codelibs/fess:15.9.0
     container_name: fess01
     environment:
       - "SEARCH_ENGINE_HTTP_URL=http://search01:9200"
-      # `cloud` is the value understood by 15.8. Fess 15.9 and later use `vanilla`
-      # (`cloud` still works there but logs a deprecation warning).
-      - "SEARCH_ENGINE_TYPE=cloud"
+      - "SEARCH_ENGINE_TYPE=vanilla"
       - "FESS_DICTIONARY_PATH=${FESS_DICTIONARY_PATH:-/usr/share/opensearch/config/dictionary/}"
-      # - "FESS_PLUGINS=fess-ds-wikipedia:15.8.0 fess-ds-git:15.8.0"
+      # - "FESS_PLUGINS=fess-ds-wikipedia:15.9.0 fess-ds-git:15.9.0"
     ports:
       - "8080:8080"
     networks:
