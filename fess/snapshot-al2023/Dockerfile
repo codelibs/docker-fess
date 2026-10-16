@@ -21,7 +21,7 @@ ENV JAVA_HOME=/usr/lib/jvm/java-21-amazon-corretto
 ENV FESS_APP_TYPE=docker
 
 # Set Fess version as a build argument
-ARG FESS_VERSION=15.9.0-SNAPSHOT
+ARG FESS_VERSION=15.10.0-SNAPSHOT
 
 # This ARG is used to bust the cache when needed
 ARG CACHEBUST=1
@@ -94,13 +94,13 @@ RUN set -x && \
     #    resolved fails the build instead of leaving the image short.
     #    The package installs the tree as fess:fess, so the jars are chowned to match.
     /usr/share/fess/bin/fess-setup install plugin \
-      fess-script-groovy:15.9.0-SNAPSHOT \
-      fess-storage-gcs:15.9.0-SNAPSHOT \
-      fess-storage-s3:15.9.0-SNAPSHOT \
-      fess-sso-saml:15.9.0-SNAPSHOT \
-      fess-sso-spnego:15.9.0-SNAPSHOT \
-      fess-sso-entraid:15.9.0-SNAPSHOT \
-      fess-sso-oidc:15.9.0-SNAPSHOT && \
+      fess-script-groovy:15.10.0-SNAPSHOT \
+      fess-storage-gcs:15.10.0-SNAPSHOT \
+      fess-storage-s3:15.10.0-SNAPSHOT \
+      fess-sso-saml:15.10.0-SNAPSHOT \
+      fess-sso-spnego:15.10.0-SNAPSHOT \
+      fess-sso-entraid:15.10.0-SNAPSHOT \
+      fess-sso-oidc:15.10.0-SNAPSHOT && \
     chown -R fess:fess /usr/share/fess/app/WEB-INF/plugin && \
     # 10. Clean up dnf cache to reduce image size
     dnf clean all
