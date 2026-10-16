@@ -31,7 +31,7 @@ COPY --from=jre /opt/java/openjdk /opt/java/openjdk
 ENV FESS_APP_TYPE=docker
 
 # Set Fess version as a build argument
-ARG FESS_VERSION=15.9.0-SNAPSHOT
+ARG FESS_VERSION=15.10.0-SNAPSHOT
 
 # This ARG is used to bust the cache when needed
 ARG CACHEBUST=1
@@ -116,13 +116,13 @@ RUN set -x && \
     #     is checked against the SHA-1 the repository publishes, and a version that cannot be
     #     resolved fails the build instead of leaving the image short.
     /usr/share/fess/bin/fess-setup install plugin \
-      fess-script-groovy:15.9.0-SNAPSHOT \
-      fess-storage-gcs:15.9.0-SNAPSHOT \
-      fess-storage-s3:15.9.0-SNAPSHOT \
-      fess-sso-saml:15.9.0-SNAPSHOT \
-      fess-sso-spnego:15.9.0-SNAPSHOT \
-      fess-sso-entraid:15.9.0-SNAPSHOT \
-      fess-sso-oidc:15.9.0-SNAPSHOT && \
+      fess-script-groovy:15.10.0-SNAPSHOT \
+      fess-storage-gcs:15.10.0-SNAPSHOT \
+      fess-storage-s3:15.10.0-SNAPSHOT \
+      fess-sso-saml:15.10.0-SNAPSHOT \
+      fess-sso-spnego:15.10.0-SNAPSHOT \
+      fess-sso-entraid:15.10.0-SNAPSHOT \
+      fess-sso-oidc:15.10.0-SNAPSHOT && \
     # 12. Set proper ownership for all Fess-related directories and files
     chown -R fess:fess /usr/share/fess /etc/default/fess /etc/fess /opt/fess /var/tmp/fess /var/log/fess /var/lib/fess
 

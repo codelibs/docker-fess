@@ -43,7 +43,7 @@ COPY --from=jre /usr/lib/locale/locale-archive /usr/lib/locale/locale-archive
 ENV FESS_APP_TYPE=docker
 
 # Set Fess version as a build argument
-ARG FESS_VERSION=15.9.0-SNAPSHOT
+ARG FESS_VERSION=15.10.0-SNAPSHOT
 
 # This ARG is used to bust the cache when needed
 ARG CACHEBUST=1
