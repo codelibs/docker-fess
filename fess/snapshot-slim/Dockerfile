@@ -110,7 +110,6 @@ RUN set -x && \
        /usr/share/fess/lib/classes/logging.properties \
        /usr/share/fess/app/WEB-INF/classes/fess_config.properties \
        /usr/share/fess/app/WEB-INF/classes/fess_env_*.properties \
-       /usr/share/fess/app/WEB-INF/classes/tika.xml \
        /etc/fess && \
     # 11. Set proper ownership for all Fess-related directories and files
     chown -R fess:fess /usr/share/fess /etc/default/fess /etc/fess /opt/fess /var/tmp/fess /var/log/fess /var/lib/fess

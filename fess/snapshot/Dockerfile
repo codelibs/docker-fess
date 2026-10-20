@@ -102,7 +102,6 @@ RUN set -x && \
        /usr/share/fess/lib/classes/logging.properties \
        /usr/share/fess/app/WEB-INF/classes/fess_config.properties \
        /usr/share/fess/app/WEB-INF/classes/fess_env_*.properties \
-       /usr/share/fess/app/WEB-INF/classes/tika.xml \
        /etc/fess && \
     # 11. Install the plugins that carry what the distribution used to bundle. 15.9 moved the
     #     Groovy script engine, the S3 and GCS storage backends and the four SSO authenticators
