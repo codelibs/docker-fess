@@ -2,6 +2,8 @@
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/codelibs/docker-fess/blob/main/LICENSE)
 
+> **Upgrading from an earlier version?** See [UPGRADING.md](UPGRADING.md).
+
 Official Docker images and Docker Compose configurations for [Fess](https://fess.codelibs.org/), an open-source enterprise search server built on OpenSearch.
 
 ## About
@@ -111,7 +113,7 @@ Each Fess line is built on three bases, and from 15.9 each base also comes as a 
 
 | Snapshot tag | Base | Thumbnail tools | Plugins installed at build time |
 |--------------|------|-----------------|---------------------------------|
-| `snapshot` | Alpine 3.24, Eclipse Temurin 21 JRE | none | the seven listed under [Upgrading to 15.9](#upgrading-to-159) |
+| `snapshot` | Alpine 3.24, Eclipse Temurin 21 JRE | none | the seven listed under [Bundled Plugins](#bundled-plugins) |
 | `snapshot-noble` | Ubuntu Noble, Eclipse Temurin 21 JRE | ImageMagick, poppler-utils, unoconv with the LibreOffice Writer, Calc and Impress filters | the seven |
 | `snapshot-al2023` | Amazon Linux 2023 minimal, Amazon Corretto 21 headless | ImageMagick, poppler-utils | the seven |
 | `snapshot-slim` | Alpine 3.24, Eclipse Temurin 21 JRE | none | none |
@@ -133,6 +135,28 @@ Add a plugin back at startup with `FESS_PLUGINS` (for example `FESS_PLUGINS=fess
 The Alpine and Noble images, slim or not, copy the Temurin runtime onto the bare distribution image, and leave out the class data sharing archive the JVM maps only for a heap above 32 GB; such a heap starts without class data sharing. The Amazon Linux 2023 images install the headless Corretto runtime onto the minimal Amazon Linux image, so neither variant carries JDK tools such as `jcmd` or `jstack`. Every image runs with the `en_US.UTF-8` locale.
 
 Every image also keeps only its own architecture's native library in zstd-jni, the jar that extracts `.zst` and `.tar.zst` files. The distribution bundles one for each of 17 OS and architecture combinations, so the jar shrinks from 6.5 MB to about 0.4 MB.
+
+#### Bundled Plugins
+
+15.9 also moved several features out of the war and into plugins. **The images install the seven
+below at build time** with `bin/fess-setup install plugin`, so those features work as they did in
+the 15.8 images and none of these belongs in `FESS_PLUGINS`. The Playwright crawler is not one of
+the seven (see [Playwright](#playwright)). The slim variants are the exception: they install none of them (see
+[Image Variants](#image-variants)), and on those this table is the list of what to add back:
+
+| What stops working without it | Plugin |
+|-------------------------------|--------|
+| `script_type=groovy` -- and any data store, job or crawler script that leaves `script_type` unset, which still resolves to groovy | `fess-script-groovy` |
+| `s3:` crawling and the S3 storage backend | `fess-storage-s3` |
+| `gcs:` crawling and the GCS storage backend | `fess-storage-gcs` |
+| `sso.type=saml` | `fess-sso-saml` |
+| `sso.type=spnego` | `fess-sso-spnego` |
+| `sso.type=entraid`, and the legacy `aad` | `fess-sso-entraid` |
+| `sso.type=oic` -- the one name that differs from its plugin's | `fess-sso-oidc` |
+
+To drop one from an image, run `bin/fess-setup remove plugin <name>` in a derived image. Keep a
+plugin on the same line as the Fess it runs in: a 15.9 SSO plugin in a 15.8 Fess registers a
+second copy of an authenticator that war already declares, and `/sso/` then fails.
 
 ### Environment Variables
 
@@ -314,48 +338,6 @@ FESS_JAVA_OPTS="-Dfess.config.index.document.search.index=myapp.search \
 | 15.0.0 | 2.15 | 8.10+ | 17 | Alpine |
 | 14.x | 2.x | 7.17/8.x | 11 | Alpine |
 
-### Upgrading to 15.9
-
-Fess 15.9 removed the embedded search engine, so a Fess container always needs an OpenSearch to
-talk to. The compose files here already start one, so nothing changes for them, but three
-behaviours differ:
-
-- **A search engine older than OpenSearch 3 now stops startup** instead of logging an error and
-  continuing. Earlier engines do not implement the `_shard_doc` sort that document export, purge,
-  backup and suggest dictionary builds rely on, and over HTTP those requests hang rather than
-  fail, so the mismatch is refused up front.
-- **`SEARCH_ENGINE_HOME` no longer does anything.** It pointed at the bundled engine's directory.
-- **The legacy `elasticsearch.*` configuration keys are gone.** The `ES_*` environment variables
-  these images accept are unaffected; the entrypoint translates them to `SEARCH_ENGINE_*`.
-
-15.9 also moved several features out of the war and into plugins. **The images install the seven
-below at build time** with `bin/fess-setup install plugin`, so those features work as they did in
-the 15.8 images and none of these belongs in `FESS_PLUGINS`. The Playwright crawler is not one of
-the seven (see below). The slim variants are the exception: they install none of them (see
-[Image Variants](#image-variants)), and on those this table is the list of what to add back:
-
-| What stops working without it | Plugin |
-|-------------------------------|--------|
-| `script_type=groovy` -- and any data store, job or crawler script that leaves `script_type` unset, which still resolves to groovy | `fess-script-groovy` |
-| `s3:` crawling and the S3 storage backend | `fess-storage-s3` |
-| `gcs:` crawling and the GCS storage backend | `fess-storage-gcs` |
-| `sso.type=saml` | `fess-sso-saml` |
-| `sso.type=spnego` | `fess-sso-spnego` |
-| `sso.type=entraid`, and the legacy `aad` | `fess-sso-entraid` |
-| `sso.type=oic` -- the one name that differs from its plugin's | `fess-sso-oidc` |
-
-To drop one from an image, run `bin/fess-setup remove plugin <name>` in a derived image. Keep a
-plugin on the same line as the Fess it runs in: a 15.9 SSO plugin in a 15.8 Fess registers a
-second copy of an authenticator that war already declares, and `/sso/` then fails.
-
-**No image installs the Playwright crawler.** In 15.8 it was part of the war, which is why
-`compose/playwright` only added the system libraries Chromium needs. From 15.9 it is the
-`fess-crawler-playwright` plugin, and it runs on Node.js, which the distribution no longer carries.
-`compose/playwright` installs both. Until both are added (see [Playwright](#playwright)), a crawl
-configuration with `client.crawlerClients=playwright:...` is still crawled, but with the plain HTTP client, so text
-that only JavaScript produces is not indexed, and the crawl job still ends successfully. Each
-crawl logs one warning in `fess-crawler.log` for every such crawl configuration.
-
 ## Troubleshooting
 
 ### Common Issues
@@ -439,6 +421,10 @@ From Fess 15.9 the Playwright crawler (`fess-crawler-playwright`) and the Playwr
 - the plugin, with `FESS_PLUGINS`, for example `FESS_PLUGINS=fess-crawler-playwright:15.9.0`;
 - Node.js, either with `bin/fess-setup install nodejs` in a derived image (`bin/fess.in.sh` finds what it installs under `/usr/share/fess/nodejs/`), or as any Node.js executable that `PLAYWRIGHT_NODEJS_PATH` points at;
 - the system libraries Chromium needs, which `compose/playwright/Dockerfile` installs for the Noble image. That Dockerfile also installs the first two items, so building `compose/playwright` is enough.
+
+Until the plugin and Node.js are both added, a crawl configuration with `client.crawlerClients=playwright:...` is still crawled, but with the plain HTTP client, so text
+that only JavaScript produces is not indexed, and the crawl job still ends successfully. Each
+crawl logs one warning in `fess-crawler.log` for every such crawl configuration.
 
 ### Running Behind a Reverse Proxy
 
