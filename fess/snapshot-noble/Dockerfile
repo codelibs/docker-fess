@@ -29,14 +29,12 @@ RUN set -eux; \
     file="OpenJDK${major}U-jre_${arch}_linux_hotspot_$(echo "${TEMURIN_VERSION}" | tr + _).tar.gz"; \
     url="https://github.com/adoptium/temurin${major}-binaries/releases/download/jdk-$(echo "${TEMURIN_VERSION}" | sed 's/+/%2B/')/${file}"; \
     cd /tmp; \
-    curl -fsSLO "${url}"; \
+    curl -fsSL --retry 3 -O "${url}"; \
     # The checksum is the one published beside the archive, in `sha256sum` format.
-    curl -fsSL "${url}.sha256.txt" | sha256sum -c -; \
+    curl -fsSL --retry 3 "${url}.sha256.txt" | sha256sum -c -; \
     mkdir -p /opt/java/openjdk; \
     tar -xzf "${file}" -C /opt/java/openjdk --strip-components=1 --no-same-owner; \
     rm -f "${file}" /opt/java/openjdk/lib/server/classes_nocoops.jsa; \
-    # Regenerate the default class data sharing archive for this runtime, as the Temurin image does.
-    /opt/java/openjdk/bin/java -Xshare:dump; \
     /opt/java/openjdk/bin/java --version
 
 FROM ubuntu:${UBUNTU_RELEASE}
