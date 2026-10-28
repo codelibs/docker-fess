@@ -10,7 +10,7 @@ FROM alpine:${ALPINE_VERSION} AS jre
 
 # Temurin release as <version>+<build>, from https://github.com/adoptium/temurin21-binaries/releases
 # (the repository name carries the feature release, which is read from this value).
-ARG TEMURIN_VERSION=21.0.12.1+1
+ARG TEMURIN_VERSION=21.0.13+9
 
 RUN set -eux; \
     apk add --no-cache curl; \

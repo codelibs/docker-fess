@@ -11,7 +11,7 @@ FROM ubuntu:${UBUNTU_RELEASE} AS jre
 
 # Temurin release as <version>+<build>, from https://github.com/adoptium/temurin21-binaries/releases
 # (the repository name carries the feature release, which is read from this value).
-ARG TEMURIN_VERSION=21.0.12.1+1
+ARG TEMURIN_VERSION=21.0.13+9
 
 # locales builds the compiled en_US.UTF-8 locale, whose archive is copied to the final image;
 # without a UTF-8 locale Java falls back to ASCII for file names.
