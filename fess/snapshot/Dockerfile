@@ -1,13 +1,37 @@
-# The Java runtime is the one from the official Temurin image, copied onto a bare Alpine instead of
-# building on that image, which also installs gnupg, openssl, p11-kit-trust and musl-locales.
+# The Java runtime is the Temurin JRE from the Adoptium release, downloaded and verified in the
+# "jre" stage and copied onto a bare Alpine, so curl stays out of the final image. To move to a
+# newer runtime, change TEMURIN_VERSION below; the Alpine release is ALPINE_VERSION.
 # classes_nocoops.jsa is left out: it is the class data sharing archive the JVM maps only when the
 # heap is above 32 GB and compressed oops are off, and such a heap starts without class data sharing
 # and without a warning. classes.jsa, which every smaller heap maps, stays.
-FROM eclipse-temurin:21-jre-alpine AS jre
-RUN rm /opt/java/openjdk/lib/server/classes_nocoops.jsa
+ARG ALPINE_VERSION=3.24
 
-# Base image: the Alpine release the Temurin runtime above is built on. Move the two together.
-FROM alpine:3.24
+FROM alpine:${ALPINE_VERSION} AS jre
+
+# Temurin release as <version>+<build>, from https://github.com/adoptium/temurin21-binaries/releases
+# (the repository name carries the feature release, which is read from this value).
+ARG TEMURIN_VERSION=21.0.13+9
+
+RUN set -eux; \
+    apk add --no-cache curl; \
+    case "$(uname -m)" in \
+      x86_64) arch=x64 ;; \
+      aarch64) arch=aarch64 ;; \
+      *) echo "Unsupported architecture: $(uname -m)"; exit 1 ;; \
+    esac; \
+    major="${TEMURIN_VERSION%%.*}"; \
+    file="OpenJDK${major}U-jre_${arch}_alpine-linux_hotspot_$(echo "${TEMURIN_VERSION}" | tr + _).tar.gz"; \
+    url="https://github.com/adoptium/temurin${major}-binaries/releases/download/jdk-$(echo "${TEMURIN_VERSION}" | sed 's/+/%2B/')/${file}"; \
+    cd /tmp; \
+    curl -fsSL --retry 3 -O "${url}"; \
+    # The checksum is the one published beside the archive, in `sha256sum` format.
+    curl -fsSL --retry 3 "${url}.sha256.txt" | sha256sum -c -; \
+    mkdir -p /opt/java/openjdk; \
+    tar -xzf "${file}" -C /opt/java/openjdk --strip-components=1 --no-same-owner; \
+    rm -f "${file}" /opt/java/openjdk/lib/server/classes_nocoops.jsa; \
+    /opt/java/openjdk/bin/java --version
+
+FROM alpine:${ALPINE_VERSION}
 
 # Metadata labels for better container management
 LABEL maintainer="CodeLibs" \
@@ -18,7 +42,7 @@ LABEL maintainer="CodeLibs" \
       org.opencontainers.image.vendor="CodeLibs" \
       org.opencontainers.image.licenses="Apache-2.0"
 
-# The Java and locale environment the Temurin image sets
+# The Java and locale environment
 ENV JAVA_HOME=/opt/java/openjdk \
     PATH="/opt/java/openjdk/bin:${PATH}" \
     LANG=en_US.UTF-8 \
@@ -39,8 +63,8 @@ ARG CACHEBUST=1
 # Combine RUN instructions to reduce image layers and size
 RUN set -x && \
     # 1. Install minimal dependencies (including unzip for extraction and zip for the zstd-jni
-    #    step, both removed in step 5). fontconfig, ttf-dejavu and tzdata are what the Temurin
-    #    image installs for Java's font handling and zone data.
+    #    step, both removed in step 5). fontconfig, ttf-dejavu and tzdata are what Java needs
+    #    for font handling and zone data.
     apk add --no-cache \
         bash \
         curl \

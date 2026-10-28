@@ -1,13 +1,43 @@
-# The Java runtime is the one from the official Temurin image, copied onto a bare Ubuntu Noble
-# instead of building on that image, which also installs gnupg, wget, p11-kit and the locales
-# package. classes_nocoops.jsa is left out: it is the class data sharing archive the JVM maps only
-# when the heap is above 32 GB and compressed oops are off, and such a heap starts without class
-# data sharing and without a warning. classes.jsa, which every smaller heap maps, stays.
-FROM eclipse-temurin:21-jre-noble AS jre
-RUN rm /opt/java/openjdk/lib/server/classes_nocoops.jsa
+# The Java runtime is the Temurin JRE from the Adoptium release, downloaded and verified in the
+# "jre" stage and copied onto a bare Ubuntu, so curl and the locales package stay out of the final
+# image. To move to a newer runtime, change TEMURIN_VERSION below; the Ubuntu release is
+# UBUNTU_RELEASE. classes_nocoops.jsa is left out: it is the class data sharing archive the JVM
+# maps only when the heap is above 32 GB and compressed oops are off, and such a heap starts
+# without class data sharing and without a warning. classes.jsa, which every smaller heap maps,
+# stays.
+ARG UBUNTU_RELEASE=noble
 
-# Base image: Ubuntu Noble
-FROM ubuntu:noble
+FROM ubuntu:${UBUNTU_RELEASE} AS jre
+
+# Temurin release as <version>+<build>, from https://github.com/adoptium/temurin21-binaries/releases
+# (the repository name carries the feature release, which is read from this value).
+ARG TEMURIN_VERSION=21.0.13+9
+
+# locales builds the compiled en_US.UTF-8 locale, whose archive is copied to the final image;
+# without a UTF-8 locale Java falls back to ASCII for file names.
+RUN set -eux; \
+    apt-get update; \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ca-certificates curl locales; \
+    echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen; \
+    locale-gen en_US.UTF-8; \
+    case "$(dpkg --print-architecture)" in \
+      amd64) arch=x64 ;; \
+      arm64) arch=aarch64 ;; \
+      *) echo "Unsupported architecture: $(dpkg --print-architecture)"; exit 1 ;; \
+    esac; \
+    major="${TEMURIN_VERSION%%.*}"; \
+    file="OpenJDK${major}U-jre_${arch}_linux_hotspot_$(echo "${TEMURIN_VERSION}" | tr + _).tar.gz"; \
+    url="https://github.com/adoptium/temurin${major}-binaries/releases/download/jdk-$(echo "${TEMURIN_VERSION}" | sed 's/+/%2B/')/${file}"; \
+    cd /tmp; \
+    curl -fsSL --retry 3 -O "${url}"; \
+    # The checksum is the one published beside the archive, in `sha256sum` format.
+    curl -fsSL --retry 3 "${url}.sha256.txt" | sha256sum -c -; \
+    mkdir -p /opt/java/openjdk; \
+    tar -xzf "${file}" -C /opt/java/openjdk --strip-components=1 --no-same-owner; \
+    rm -f "${file}" /opt/java/openjdk/lib/server/classes_nocoops.jsa; \
+    /opt/java/openjdk/bin/java --version
+
+FROM ubuntu:${UBUNTU_RELEASE}
 
 # Metadata labels for better container management
 LABEL maintainer="CodeLibs" \
@@ -18,9 +48,9 @@ LABEL maintainer="CodeLibs" \
       org.opencontainers.image.vendor="CodeLibs" \
       org.opencontainers.image.licenses="Apache-2.0"
 
-# The Java and locale environment the Temurin image sets. en_US.UTF-8 needs its compiled locale,
-# so the 3 MB locale archive the Temurin image generated is copied along with the runtime instead
-# of installing the locales package; without a UTF-8 locale Java falls back to ASCII for file names.
+# The Java and locale environment. en_US.UTF-8 needs its compiled locale, so the 3 MB locale
+# archive generated in the jre stage is copied along with the runtime instead of installing the
+# locales package.
 ENV JAVA_HOME=/opt/java/openjdk \
     PATH="/opt/java/openjdk/bin:${PATH}" \
     LANG=en_US.UTF-8 \
@@ -44,7 +74,7 @@ RUN set -x && \
     # 1. Update package list and install dependencies without recommended packages. The deb
     #    package depends on adduser, which the bare image does not have; ca-certificates is for
     #    curl, zip is for the zstd-jni step, which removes it again, and fontconfig and tzdata are
-    #    what the Temurin image installs for Java's font handling and zone data. The rest are the
+    #    what Java needs for font handling and zone data. The rest are the
     #    tools bin/generate-thumbnail calls.
     #    unoconv needs LibreOffice import filters for the formats it is asked to convert, and
     #    --no-install-recommends leaves those out: unoconv alone pulls libreoffice-core and
