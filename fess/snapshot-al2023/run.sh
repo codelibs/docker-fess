@@ -163,6 +163,26 @@ start_fess() {
   /etc/init.d/fess start > /dev/null 2>&1
 }
 
+# True while the Fess JVM is alive. /etc/init.d/fess starts it as a daemon, so it is not
+# a child of this script and is looked up by its main class instead.
+fess_running() {
+  pgrep -u fess -f org.codelibs.fess.FessBoot > /dev/null
+}
+
+# Sleep for PING_INTERVAL seconds, one second at a time, and leave as soon as the Fess
+# process is gone. Fess stops itself when the web application cannot start or the port
+# cannot be opened, and waiting for the health probes to run out would keep a dead
+# container up for minutes.
+wait_interval() {
+  for ((i = 0; i < PING_INTERVAL; i++)) ; do
+    sleep 1
+    if ! fess_running ; then
+      print_log ERROR "The Fess process has exited."
+      exit 1
+    fi
+  done
+}
+
 wait_app() {
   # Same variables Fess itself uses to bind the connector, so the supervisor
   # follows a relocated port or context path. A bare "/" context path is the
@@ -191,7 +211,7 @@ wait_app() {
         exit 1
       fi
     fi
-    sleep ${PING_INTERVAL}
+    wait_interval
   done
 }
 
