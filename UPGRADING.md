@@ -2,6 +2,24 @@
 
 Notes for moving an existing docker-fess deployment to a newer Fess image line.
 
+## Upgrading to 15.10
+
+Two things differ for a deployment that carries files or settings over from a 15.9 image:
+
+- **`tika.xml` is no longer read.** Fess 15.10 uses Apache Tika 4, which has no XML configuration
+  file, so Fess builds the Tika parser in code. The 15.9 images move `tika.xml` into `/etc/fess`;
+  the 15.10 images do not contain it. If you copied or mounted a `tika.xml` of your own into
+  `/opt/fess` (the directory the images read overrides from) or `/etc/fess`, Fess ignores it and
+  writes a warning to `fess.log` at startup, and the parsers it excluded run again. Delete the
+  file. The location of `tesseract` can no longer be set either, so `tesseractPath` and
+  `tessdataPath` in a Tesseract properties file have no effect; `tesseract` has to be on the `PATH`
+  of the crawler process, which is where the `apk add` in `compose/tesseract` puts it.
+- **A `FESS_PLUGINS` entry that names version 15.9.0 installs a 15.9 plugin into a 15.10 Fess.**
+  Plugins built for 15.9.0 were started and used for crawling on 15.10 without being rebuilt, but
+  `bin/fess-setup check` (run it with `docker exec`) reports them as FAIL ("built for another
+  release"). Change the version of every entry to the 15.10 one. The seven plugins the images
+  install themselves already match the image.
+
 ## Upgrading to 15.9
 
 Fess 15.9 removed the embedded search engine, so a Fess container always needs an OpenSearch to
