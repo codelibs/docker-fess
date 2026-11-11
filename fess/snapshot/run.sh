@@ -146,6 +146,26 @@ start_fess() {
   print_log INFO "Starting Fess service."
   # Start Fess directly since Alpine doesn't have init.d
   su -s /bin/bash -c "source /etc/default/fess && cd /usr/share/fess && ./bin/fess" fess &
+  fess_pid=$!
+}
+
+# True while the process started by start_fess is alive.
+fess_running() {
+  kill -0 "${fess_pid}" 2> /dev/null
+}
+
+# Sleep for PING_INTERVAL seconds, one second at a time, and leave as soon as the Fess
+# process is gone. Fess stops itself when the web application cannot start or the port
+# cannot be opened, and waiting for the health probes to run out would keep a dead
+# container up for minutes.
+wait_interval() {
+  for ((i = 0; i < PING_INTERVAL; i++)) ; do
+    sleep 1
+    if ! fess_running ; then
+      print_log ERROR "The Fess process has exited."
+      exit 1
+    fi
+  done
 }
 
 wait_app() {
@@ -176,7 +196,7 @@ wait_app() {
         exit 1
       fi
     fi
-    sleep ${PING_INTERVAL}
+    wait_interval
   done
 }
 
