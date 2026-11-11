@@ -169,13 +169,26 @@ fess_running() {
   pgrep -u fess -f org.codelibs.fess.FessBoot > /dev/null
 }
 
+# Stop Fess and exit when the container is asked to stop. This script is PID 1, which has no
+# default action for SIGTERM, so without a handler `docker stop` waits out its timeout and
+# kills the JVM with SIGKILL. A shell runs a trap only between commands, which is why
+# wait_interval sleeps in the background and waits for it. /etc/init.d/fess stop sends SIGTERM
+# to the daemon and returns once it has exited; 143 is the status of a process ended by it.
+stop_fess() {
+  trap '' TERM INT
+  print_log INFO "Stopping Fess service."
+  /etc/init.d/fess stop > /dev/null 2>&1
+  exit 143
+}
+
 # Sleep for PING_INTERVAL seconds, one second at a time, and leave as soon as the Fess
 # process is gone. Fess stops itself when the web application cannot start or the port
 # cannot be opened, and waiting for the health probes to run out would keep a dead
 # container up for minutes.
 wait_interval() {
   for ((i = 0; i < PING_INTERVAL; i++)) ; do
-    sleep 1
+    sleep 1 &
+    wait $!
     if ! fess_running ; then
       print_log ERROR "The Fess process has exited."
       exit 1
@@ -220,6 +233,7 @@ for plugin_id in $FESS_PLUGINS ; do
 done
 
 start_fess
+trap stop_fess TERM INT
 
 if [[ "x${RUN_SHELL}" = "xtrue" ]] ; then
   /bin/bash
