@@ -1,5 +1,38 @@
-# Base image with Java 21 JRE on Alpine
-FROM eclipse-temurin:21-jre-alpine
+# The Java runtime is the Temurin JRE from the Adoptium release, downloaded and verified in the
+# "jre" stage and copied onto a bare Alpine, so the runtime moves to a new Temurin release by
+# changing TEMURIN_VERSION, without waiting for the eclipse-temurin image to be rebuilt. The
+# packages the eclipse-temurin image used to install are installed explicitly below, so the image
+# keeps the tools and the Java environment of the earlier releases of this line.
+ARG ALPINE_VERSION=3.24
+
+# Temurin release as <version>+<build>, from https://github.com/adoptium/temurin21-binaries/releases
+# (the repository name carries the feature release, which is read from this value).
+ARG TEMURIN_VERSION=21.0.13+9
+
+FROM alpine:${ALPINE_VERSION} AS jre
+ARG TEMURIN_VERSION
+
+RUN set -eux; \
+    apk add --no-cache curl; \
+    case "$(uname -m)" in \
+      x86_64) arch=x64 ;; \
+      aarch64) arch=aarch64 ;; \
+      *) echo "Unsupported architecture: $(uname -m)"; exit 1 ;; \
+    esac; \
+    major="${TEMURIN_VERSION%%.*}"; \
+    file="OpenJDK${major}U-jre_${arch}_alpine-linux_hotspot_$(echo "${TEMURIN_VERSION}" | tr + _).tar.gz"; \
+    url="https://github.com/adoptium/temurin${major}-binaries/releases/download/jdk-$(echo "${TEMURIN_VERSION}" | sed 's/+/%2B/')/${file}"; \
+    cd /tmp; \
+    curl -fsSL --retry 3 -O "${url}"; \
+    # The checksum is the one published beside the archive, in `sha256sum` format.
+    curl -fsSL --retry 3 "${url}.sha256.txt" | sha256sum -c -; \
+    mkdir -p /opt/java/openjdk; \
+    tar -xzf "${file}" -C /opt/java/openjdk --strip-components=1 --no-same-owner; \
+    rm -f "${file}"; \
+    /opt/java/openjdk/bin/java --version
+
+FROM alpine:${ALPINE_VERSION}
+ARG TEMURIN_VERSION
 
 # Metadata labels for better container management
 LABEL maintainer="CodeLibs" \
@@ -9,6 +42,16 @@ LABEL maintainer="CodeLibs" \
       org.opencontainers.image.source="https://github.com/codelibs/docker-fess" \
       org.opencontainers.image.vendor="CodeLibs" \
       org.opencontainers.image.licenses="Apache-2.0"
+
+# The Java and locale environment the Temurin image sets
+ENV JAVA_HOME=/opt/java/openjdk \
+    JAVA_VERSION=jdk-${TEMURIN_VERSION} \
+    PATH="/opt/java/openjdk/bin:${PATH}" \
+    LANG=en_US.UTF-8 \
+    LANGUAGE=en_US:en \
+    LC_ALL=en_US.UTF-8
+
+COPY --from=jre /opt/java/openjdk /opt/java/openjdk
 
 # Set environment variable for Fess application type
 ENV FESS_APP_TYPE=docker
@@ -25,7 +68,16 @@ RUN set -x && \
     apk add --no-cache \
         bash \
         curl \
+        ca-certificates \
         coreutils \
+        fontconfig \
+        gnupg \
+        musl-locales \
+        musl-locales-lang \
+        openssl \
+        p11-kit-trust \
+        ttf-dejavu \
+        tzdata \
         unzip && \
     # 2. Create a dedicated user and group for Fess
     addgroup -g 1001 fess && \
