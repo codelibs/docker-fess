@@ -1,5 +1,38 @@
+# The Java runtime is the Temurin JRE from the Adoptium release, downloaded and verified in the
+# "jre" stage and copied over the one the base image carries, so the runtime can move to a new
+# Temurin release without waiting for the eclipse-temurin image to be rebuilt. To move to a newer
+# runtime, change TEMURIN_VERSION below.
+FROM alpine:3.24 AS jre
+
+# Temurin release as <version>+<build>, from https://github.com/adoptium/temurin21-binaries/releases
+# (the repository name carries the feature release, which is read from this value).
+ARG TEMURIN_VERSION=21.0.13+9
+
+RUN set -eux; \
+    apk add --no-cache curl; \
+    case "$(uname -m)" in \
+      x86_64) arch=x64 ;; \
+      aarch64) arch=aarch64 ;; \
+      *) echo "Unsupported architecture: $(uname -m)"; exit 1 ;; \
+    esac; \
+    major="${TEMURIN_VERSION%%.*}"; \
+    file="OpenJDK${major}U-jre_${arch}_alpine-linux_hotspot_$(echo "${TEMURIN_VERSION}" | tr + _).tar.gz"; \
+    url="https://github.com/adoptium/temurin${major}-binaries/releases/download/jdk-$(echo "${TEMURIN_VERSION}" | sed 's/+/%2B/')/${file}"; \
+    cd /tmp; \
+    curl -fsSL --retry 3 -O "${url}"; \
+    # The checksum is the one published beside the archive, in `sha256sum` format.
+    curl -fsSL --retry 3 "${url}.sha256.txt" | sha256sum -c -; \
+    mkdir -p /opt/java/openjdk; \
+    tar -xzf "${file}" -C /opt/java/openjdk --strip-components=1 --no-same-owner; \
+    rm -f "${file}"; \
+    /opt/java/openjdk/bin/java --version
+
 # Base image with Java 21 JRE on Alpine
 FROM eclipse-temurin:21-jre-alpine
+
+# Replace the Java runtime of the base image with the one from the jre stage.
+RUN rm -rf /opt/java/openjdk
+COPY --from=jre /opt/java/openjdk /opt/java/openjdk
 
 # Metadata labels for better container management
 LABEL maintainer="CodeLibs" \
