@@ -58,6 +58,13 @@ ENV JAVA_HOME=/opt/java/openjdk \
     LC_ALL=en_US.UTF-8
 
 COPY --from=jre /opt/java/openjdk /opt/java/openjdk
+
+# A heap overflow was reported in the AVX-512 implementation of the JDK's Base64 decoder, which
+# the JVM uses on x86-64 CPUs with AVX-512 VBMI. This turns that intrinsic off in every JVM the
+# image starts, Fess's own and the crawler, suggest and thumbnail processes it launches. A
+# JAVA_TOOL_OPTIONS set with -e replaces it. Remove it once TEMURIN_VERSION is a release that
+# carries the fix.
+ENV JAVA_TOOL_OPTIONS="-XX:-UseBASE64Intrinsics"
 COPY --from=jre /usr/lib/locale/locale-archive /usr/lib/locale/locale-archive
 
 # Set environment variables for Fess application
