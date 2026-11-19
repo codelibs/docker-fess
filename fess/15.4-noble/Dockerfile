@@ -7,7 +7,7 @@ ARG UBUNTU_RELEASE=noble
 
 # Temurin release as <version>+<build>, from https://github.com/adoptium/temurin21-binaries/releases
 # (the repository name carries the feature release, which is read from this value).
-ARG TEMURIN_VERSION=21.0.13+9
+ARG TEMURIN_VERSION=21.0.13.1+2
 
 FROM ubuntu:${UBUNTU_RELEASE} AS jre
 ARG TEMURIN_VERSION
