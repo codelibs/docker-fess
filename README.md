@@ -280,7 +280,7 @@ docker build --rm -t ghcr.io/codelibs/fess:snapshot-slim ./fess/snapshot-slim/
 **OpenSearch with Fess Plugins:**
 ```bash
 # Build OpenSearch image
-docker build --rm -t ghcr.io/codelibs/fess-opensearch:3.9.0 ./opensearch/3.9/
+docker build --rm -t ghcr.io/codelibs/fess-opensearch:3.10.0 ./opensearch/3.10/
 ```
 
 ### Project Structure
@@ -293,8 +293,9 @@ docker-fess/
 │   ├── snapshot/           # Development builds
 │   └── snapshot-slim/      # Development builds, slim variant
 ├── opensearch/             # OpenSearch images with Fess plugins
-│   ├── 3.9/               # Latest OpenSearch
-│   └── 3.8/               # Previous versions
+│   ├── 3.10/              # Latest OpenSearch
+│   ├── 3.9/               # Previous versions
+│   └── 3.8/
 ├── elasticsearch/          # Elasticsearch images (legacy)
 └── compose/                # Docker Compose configurations
     ├── compose.yaml        # Base Fess service

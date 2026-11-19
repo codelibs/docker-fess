@@ -1,6 +1,6 @@
 services:
   search01:
-    image: ghcr.io/codelibs/fess-opensearch:3.9.0
+    image: ghcr.io/codelibs/fess-opensearch:3.10.0
     container_name: search01
     environment:
       - node.name=search01
@@ -12,11 +12,6 @@ services:
       - "OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g"
       - "DISABLE_INSTALL_DEMO_CONFIG=true"
       - "DISABLE_SECURITY_PLUGIN=true"
-      # Optional: uncomment to work around the low-level cancellation slowdown in OpenSearch 3.7-3.9
-      # (opensearch-project/OpenSearch#23107). Cancelled or timed-out searches then stop at the next
-      # phase boundary instead of while scanning inside Lucene. Not needed once the image ships an
-      # OpenSearch release that includes the fix.
-      # - "search.low_level_cancellation=false"
       - "FESS_DICTIONARY_PATH=/usr/share/opensearch/config/dictionary"
     ulimits:
       memlock:
@@ -40,7 +35,7 @@ services:
     restart: unless-stopped
 
   search02:
-    image: ghcr.io/codelibs/fess-opensearch:3.9.0
+    image: ghcr.io/codelibs/fess-opensearch:3.10.0
     container_name: search02
     environment:
       - node.name=search02
@@ -78,7 +73,7 @@ services:
       - search01
 
   search03:
-    image: ghcr.io/codelibs/fess-opensearch:3.9.0
+    image: ghcr.io/codelibs/fess-opensearch:3.10.0
     container_name: search03
     environment:
       - node.name=search03
@@ -117,7 +112,7 @@ services:
       - search02
 
   search04:
-    image: ghcr.io/codelibs/fess-opensearch:3.9.0
+    image: ghcr.io/codelibs/fess-opensearch:3.10.0
     container_name: search04
     environment:
       - node.name=search04
@@ -157,7 +152,7 @@ services:
       - search03
 
   search05:
-    image: ghcr.io/codelibs/fess-opensearch:3.9.0
+    image: ghcr.io/codelibs/fess-opensearch:3.10.0
     container_name: search05
     environment:
       - node.name=search05
