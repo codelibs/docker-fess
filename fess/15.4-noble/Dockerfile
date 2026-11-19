@@ -76,6 +76,7 @@ RUN set -x && \
         wget \
         curl \
         imagemagick \
+        libheif-plugin-libde265 \
         unoconv \
         python3-setuptools \
         poppler-utils && \
