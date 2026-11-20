@@ -1,0 +1,27 @@
+name: GHCR cleanup
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: 'Dry run (no deletion)'
+        type: boolean
+        default: true
+  schedule:
+    - cron: '0 3 * * 0'
+
+permissions:
+  packages: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: dataaxiom/ghcr-cleanup-action@d52806a0dc70b430571a37da1fde39733ffd640f # v1.2.2
+        with:
+          package: fess
+          delete-untagged: true
+          delete-ghost-images: true
+          delete-partial-images: true
+          validate: true
+          dry-run: ${{ github.event_name == 'workflow_dispatch' && inputs.dry-run || false }}
