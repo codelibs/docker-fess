@@ -7,6 +7,9 @@ on:
         description: 'Dry run (no deletion)'
         type: boolean
         default: true
+  pull_request:
+    paths:
+      - '.github/workflows/ghcr-cleanup.yml'
   schedule:
     - cron: '0 3 * * 0'
 
@@ -24,4 +27,6 @@ jobs:
           delete-ghost-images: true
           delete-partial-images: true
           validate: true
-          dry-run: ${{ github.event_name == 'workflow_dispatch' && inputs.dry-run || false }}
+          # Delete only on schedule, or on a manual run with dry-run turned off.
+          # Pull requests always run as a dry run.
+          dry-run: ${{ github.event_name == 'schedule' && 'false' || (github.event_name == 'workflow_dispatch' && inputs.dry-run == false && 'false') || 'true' }}
