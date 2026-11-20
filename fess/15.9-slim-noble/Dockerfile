@@ -1,16 +1,59 @@
-# The Java runtime is the one from the official Temurin image, copied onto a bare Ubuntu Noble
-# instead of building on that image, which also installs gnupg, wget, p11-kit and the locales
-# package. classes_nocoops.jsa is
-# left out: it is the class data sharing archive the JVM maps only when the heap is above 32 GB
-# and compressed oops are off, and such a heap starts without class data sharing and without a
-# warning. classes.jsa, which every smaller heap maps, stays.
-FROM eclipse-temurin:21-jre-noble AS jre
-RUN rm /opt/java/openjdk/lib/server/classes_nocoops.jsa
+# The Java runtime is the Azul Zulu JRE, downloaded and verified in the
+# "jre" stage and copied onto a bare Ubuntu, so curl and the locales package stay out of the final
+# image. To move to a newer runtime, change JRE_VERSION and ZULU_VERSION below; the Ubuntu release is
+# UBUNTU_RELEASE. classes_nocoops.jsa is left out: it is the class data sharing archive the JVM
+# maps only when the heap is above 32 GB and compressed oops are off, and such a heap starts
+# without class data sharing and without a warning. classes.jsa, which every smaller heap maps,
+# stays.
+ARG UBUNTU_RELEASE=noble
 
-# Base image: Ubuntu Noble
-FROM ubuntu:noble
+FROM ubuntu:${UBUNTU_RELEASE} AS jre
 
-# The slim variant of fess/15.9-noble. It leaves out the plugins that 15.9 moved out of the
+# Azul Zulu JRE: JRE_VERSION is the OpenJDK version and build, ZULU_VERSION the Zulu release, which
+# together name the archive zulu<ZULU_VERSION>-ca-jre<version>-linux_<arch>.tar.gz of
+# https://cdn.azul.com/zulu/bin/. Zulu is used because it publishes the glibc aarch64 builds.
+ARG JRE_VERSION=21.0.13.1+2
+ARG ZULU_VERSION=21.54.201
+
+# locales builds the compiled en_US.UTF-8 locale, whose archive is copied to the final image;
+# without a UTF-8 locale Java falls back to ASCII for file names.
+RUN set -eux; \
+    apt-get update; \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ca-certificates curl locales; \
+    echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen; \
+    locale-gen en_US.UTF-8; \
+    case "$(dpkg --print-architecture)" in \
+      amd64) arch=x64 ;; \
+      arm64) arch=aarch64 ;; \
+      *) echo "Unsupported architecture: $(dpkg --print-architecture)"; exit 1 ;; \
+    esac; \
+    jdk="${JRE_VERSION%%+*}"; \
+    file="zulu${ZULU_VERSION}-ca-jre${jdk}-linux_${arch}.tar.gz"; \
+    # The checksum is the one Azul publishes for the archive in its metadata API.
+    sha256="$(curl -fsSL --retry 3 "https://api.azul.com/metadata/v1/zulu/packages/?java_version=${jdk}&os=linux&arch=${arch}&java_package_type=jre&archive_type=tar.gz&release_status=ga&availability_types=CA&page_size=100&include_fields=sha256_hash" | tr '{' '\n' | sed -n "s/.*\"name\":\"${file}\".*\"sha256_hash\":\"\([0-9a-f]\{64\}\)\".*/\1/p")"; \
+    [ -n "${sha256}" ]; \
+    cd /tmp; \
+    curl -fsSL --retry 3 -O "https://cdn.azul.com/zulu/bin/${file}"; \
+    echo "${sha256}  ${file}" | sha256sum -c -; \
+    mkdir -p /opt/java/openjdk; \
+    tar -xzf "${file}" -C /opt/java/openjdk --strip-components=1 --no-same-owner; \
+    rm -f "${file}" /opt/java/openjdk/lib/server/classes_nocoops.jsa; \
+    # The JDK trust store is rebuilt from the Ubuntu CA bundle: the Zulu one lacks about 50 roots that the
+    # Temurin images of these lines trust (for example D-TRUST, Telekom Security, HARICA and Certum).
+    # The certificates are stored unencrypted, as in the JDK's own cacerts, because the JVM opens the
+    # trust store without a password and would otherwise see no certificate at all.
+    rm -f /opt/java/openjdk/lib/security/cacerts; \
+    for pem in /etc/ssl/certs/*.pem; do \
+      /opt/java/openjdk/bin/keytool -J-Dkeystore.pkcs12.certProtectionAlgorithm=NONE \
+        -importcert -noprompt -storetype PKCS12 \
+        -keystore /opt/java/openjdk/lib/security/cacerts -storepass changeit \
+        -alias "$(basename "${pem}" .pem | tr -c 'A-Za-z0-9._\n-' _)" < "${pem}" > /dev/null; \
+    done; \
+    /opt/java/openjdk/bin/java --version
+
+FROM ubuntu:${UBUNTU_RELEASE}
+
+# The slim variant of fess/snapshot-noble. It leaves out the plugins that 15.9 moved out of the
 # war (fess-script-groovy, fess-storage-s3, fess-storage-gcs and the four fess-sso-* authenticators),
 # so script_type=groovy and every data store, job or crawler script that leaves script_type unset,
 # s3: and gcs: and every sso.type do not work until one is added back, at startup with
@@ -27,9 +70,9 @@ LABEL maintainer="CodeLibs" \
       org.opencontainers.image.vendor="CodeLibs" \
       org.opencontainers.image.licenses="Apache-2.0"
 
-# The Java and locale environment the Temurin image sets. en_US.UTF-8 needs its compiled locale,
-# so the 3 MB locale archive the Temurin image generated is copied along with the runtime instead
-# of installing the locales package; without a UTF-8 locale Java falls back to ASCII for file names.
+# The Java and locale environment. en_US.UTF-8 needs its compiled locale, so the 3 MB locale
+# archive generated in the jre stage is copied along with the runtime instead of installing the
+# locales package.
 ENV JAVA_HOME=/opt/java/openjdk \
     PATH="/opt/java/openjdk/bin:${PATH}" \
     LANG=en_US.UTF-8 \
