@@ -16,6 +16,10 @@ on:
 permissions:
   packages: write
 
+concurrency:
+  group: ghcr-cleanup
+  cancel-in-progress: false
+
 jobs:
   cleanup:
     runs-on: ubuntu-latest
@@ -27,6 +31,9 @@ jobs:
           delete-ghost-images: true
           delete-partial-images: true
           validate: true
+          # Leave images pushed within the last day alone, so a build that is
+          # still pushing its platform images is never cleaned up.
+          older-than: 1 day
           # Delete only on schedule, or on a manual run with dry-run turned off.
           # Pull requests always run as a dry run.
           dry-run: ${{ github.event_name == 'schedule' && 'false' || (github.event_name == 'workflow_dispatch' && inputs.dry-run == false && 'false') || 'true' }}
