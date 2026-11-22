@@ -187,7 +187,7 @@ The full set the images understand:
 | `SEARCH_ENGINE_HTTP_URL` | `http://localhost:9200` | Backend search engine URL |
 | `SEARCH_ENGINE_TYPE` | (none) | Set to `vanilla` (Fess 15.9 or later; `cloud` on earlier releases) for a plain OpenSearch without the Fess plugins, such as Amazon OpenSearch Service (`aws` adds AWS-specific behavior on top of `vanilla`). That mode loses the Japanese analyzers, minhash near-duplicate detection, result collapsing and the dictionary admin UI |
 | `SEARCH_ENGINE_USERNAME` | (none) | Username, when the search engine requires authentication |
-| `SEARCH_ENGINE_PASSWORD` | (none) | Password, when the search engine requires authentication |
+| `SEARCH_ENGINE_PASSWORD` | (none) | Password, when the search engine requires authentication. The entrypoint writes it into the `search_engine.password` line of `fess_config.properties` instead of passing it as a JVM option, so it does not appear in `ps` or `docker top`. The file is the one in `FESS_OVERRIDE_CONF_PATH` if you mounted a `fess_config.properties` there (it must be writable), otherwise the packaged one in `/etc/fess`. Spaces at either end of the password are dropped, because Fess trims every value it reads from that file |
 | `FESS_DICTIONARY_PATH` | `/var/lib/opensearch/config/` | Dictionary directory shared with OpenSearch: the `configsync.config_path` of that OpenSearch. Set it to `/usr/share/opensearch/config/dictionary/` for the `fess-opensearch` image; the default does not match it. See below |
 | `FESS_PORT` | `8080` | Port Fess listens on inside the container |
 | `FESS_CONTEXT_PATH` | `/` | Context path Fess is served under, e.g. `/fess` |

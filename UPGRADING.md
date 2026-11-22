@@ -4,7 +4,7 @@ Notes for moving an existing docker-fess deployment to a newer Fess image line.
 
 ## Upgrading to 15.10
 
-Two things differ for a deployment that carries files or settings over from a 15.9 image:
+Three things differ for a deployment that carries files or settings over from a 15.9 image:
 
 - **`tika.xml` is no longer read.** Fess 15.10 uses Apache Tika 4, which has no XML configuration
   file, so Fess builds the Tika parser in code. The 15.9 images move `tika.xml` into `/etc/fess`;
@@ -19,6 +19,13 @@ Two things differ for a deployment that carries files or settings over from a 15
   `bin/fess-setup check` (run it with `docker exec`) reports them as FAIL ("built for another
   release"). Change the version of every entry to the 15.10 one. The seven plugins the images
   install themselves already match the image.
+- **`SEARCH_ENGINE_PASSWORD` (and `ES_PASSWORD`) is written to `fess_config.properties`, no longer
+  passed as `-Dfess.config.search_engine.password`.** The JVM option showed the password in `ps` and
+  `docker top`, and in the command line of every crawler, suggest and thumbnail process. If you mount
+  your own `fess_config.properties` into `/opt/fess`, the entrypoint now rewrites its
+  `search_engine.password` line (or appends one), so the mounted file has to be writable, and the
+  container stops with an error when it is not. Remove `SEARCH_ENGINE_PASSWORD` and keep the password
+  in that file if you would rather not have it changed.
 
 ## Upgrading to 15.9
 

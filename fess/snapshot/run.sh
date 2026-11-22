@@ -43,8 +43,43 @@ if [[ "x${SEARCH_ENGINE_USERNAME}" != "x" ]] ; then
   FESS_JAVA_OPTS="${FESS_JAVA_OPTS} -Dfess.config.search_engine.username=${SEARCH_ENGINE_USERNAME}"
 fi
 
+# The search engine password goes into fess_config.properties rather than into
+# -Dfess.config.search_engine.password: a JVM option is part of the command line that
+# `ps` and `docker top` print, and Fess repeats every -Dfess.config.* option on the command
+# line of the crawler, suggest, thumbnail and chunk processes it starts. The file is the copy
+# in the override directory if one was mounted there, otherwise the packaged one. The value
+# reaches awk through its environment, so it is not on any command line.
+set_search_engine_password() {
+  local conf="${FESS_OVERRIDE_CONF_PATH:-/opt/fess}/fess_config.properties"
+  local packaged=false
+  if [[ ! -f "${conf}" ]] ; then
+    conf="${FESS_CONF_PATH:-/etc/fess}/fess_config.properties"
+    packaged=true
+  fi
+  # Escape for a properties file: a backslash is doubled and a line break would end the value.
+  local value="${1//\\/\\\\}"
+  value="${value//$'\n'/\\n}"
+  value="${value//$'\r'/\\r}"
+  local tmp
+  if ! tmp=$(mktemp "${temp_dir}/fess_config.XXXXXX") \
+    || ! SEARCH_ENGINE_PASSWORD_LINE="${value}" awk '
+         /^search_engine\.password[ \t]*[=:]/ { print "search_engine.password=" ENVIRON["SEARCH_ENGINE_PASSWORD_LINE"]; found = 1; next }
+         { print }
+         END { if (!found) print "search_engine.password=" ENVIRON["SEARCH_ENGINE_PASSWORD_LINE"] }
+       ' "${conf}" > "${tmp}" \
+    || ! cat "${tmp}" > "${conf}" ; then
+    rm -f "${tmp}"
+    print_log ERROR "Failed to write the search engine password to ${conf}."
+    exit 1
+  fi
+  rm -f "${tmp}"
+  if [[ "${packaged}" = "true" ]] ; then
+    chmod 600 "${conf}"
+  fi
+}
+
 if [[ "x${SEARCH_ENGINE_PASSWORD}" != "x" ]] ; then
-  FESS_JAVA_OPTS="${FESS_JAVA_OPTS} -Dfess.config.search_engine.password=${SEARCH_ENGINE_PASSWORD}"
+  set_search_engine_password "${SEARCH_ENGINE_PASSWORD}"
 fi
 
 # bin/fess runs as a child process, so this has to be exported rather than
