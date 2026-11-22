@@ -124,6 +124,8 @@ The Thumbnail tools column is what `bin/generate-thumbnail` uses for images, PDF
 
 Release images put the same suffixes after the version, as in `15.9.0-noble` or `15.9.0-slim-noble`. The slim variants start with the 15.9 line, so there is no slim image of 15.8.0 or earlier.
 
+**Pin the version tag.** Name the full tag in every `image:` line and `docker pull`, as the Compose files here do (`ghcr.io/codelibs/fess:15.9.0`). `latest` is not maintained: `ghcr.io/codelibs/fess:latest`, which is what a pull without a tag fetches, is a single-architecture Fess 13.12.0 image from 2021, and there is no floating `15` or `15.9` tag either. Move to a newer release by changing the tag.
+
 A slim image is the Fess distribution and nothing else, which leaves out:
 
 - **Groovy.** A data store, job or crawler script with `script_type=groovy`, or with no `script_type` at all, which still resolves to groovy, fails with `groovy is not found`. Set `script_type=javascript` on it, or add `fess-script-groovy`.
@@ -352,6 +354,17 @@ cat /proc/sys/vm/max_map_count  # Should be >= 262144
 docker compose logs fess01
 docker compose logs search01
 ```
+
+**`docker logs` does not show every log file:**
+
+The entrypoint follows six files in `/var/log/fess`: `fess.log`, `fess-crawler.log`, `fess-suggest.log`, `fess-thumbnail.log`, `fess-llm.log` and `audit.log`. `fess-urls.log` and `searchlog.log` are written to the same directory but are not followed, so they never reach `docker logs`. Read them from inside the container:
+
+```bash
+docker exec fess01 tail -f /var/log/fess/fess-urls.log
+docker exec fess01 tail -f /var/log/fess/searchlog.log
+```
+
+`fess01` is the container name used by `compose/compose.yaml`; use your own container name otherwise. The directory is the `FESS_LOG_PATH` value (default `/var/log/fess`).
 
 **Out of memory errors:**
 
