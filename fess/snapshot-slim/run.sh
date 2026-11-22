@@ -149,9 +149,11 @@ start_fess() {
   fess_pid=$!
 }
 
-# True while the process started by start_fess is alive.
+# True while the process started by start_fess is alive. BusyBox su runs the command in its own
+# process, which belongs to the fess user, so kill -0 would fail with EPERM and report a live
+# Fess as dead in a container that does not hold CAP_KILL. /proc does not depend on it.
 fess_running() {
-  kill -0 "${fess_pid}" 2> /dev/null
+  [[ -d "/proc/${fess_pid}" ]]
 }
 
 # Pass a stop request on to Fess and exit with its status. This script is PID 1, which has no
