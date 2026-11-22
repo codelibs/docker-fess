@@ -23,7 +23,7 @@ Fess is an enterprise search server with a web-based administration UI, indexing
 
 - **Search Engine**: OpenSearch 3.x
 - **Application Server**: Apache Tomcat (embedded)
-- **Runtime**: Java 21 (Eclipse Temurin; Amazon Corretto on Amazon Linux 2023)
+- **Runtime**: Java 21 (Eclipse Temurin on Alpine; Azul Zulu on Ubuntu; Amazon Corretto on Amazon Linux 2023)
 - **Base Images**: Alpine Linux (production), Amazon Linux 2023, Ubuntu Noble, each also as a slim variant (see [Image Variants](#image-variants))
 - **Containerization**: Docker & Docker Compose
 - **Optional Services**: OpenSearch Dashboards, MinIO object storage
@@ -114,10 +114,10 @@ Each Fess line is built on three bases, and from 15.9 each base also comes as a 
 | Snapshot tag | Base | Thumbnail tools | Plugins installed at build time |
 |--------------|------|-----------------|---------------------------------|
 | `snapshot` | Alpine 3.24, Eclipse Temurin 21 JRE | none | the seven listed under [Bundled Plugins](#bundled-plugins) |
-| `snapshot-noble` | Ubuntu Noble, Eclipse Temurin 21 JRE | ImageMagick, poppler-utils, unoconv with the LibreOffice Writer, Calc and Impress filters | the seven |
+| `snapshot-noble` | Ubuntu Noble, Azul Zulu 21 JRE | ImageMagick, poppler-utils, unoconv with the LibreOffice Writer, Calc and Impress filters | the seven |
 | `snapshot-al2023` | Amazon Linux 2023 minimal, Amazon Corretto 21 headless | ImageMagick, poppler-utils | the seven |
 | `snapshot-slim` | Alpine 3.24, Eclipse Temurin 21 JRE | none | none |
-| `snapshot-slim-noble` | Ubuntu Noble, Eclipse Temurin 21 JRE | none | none |
+| `snapshot-slim-noble` | Ubuntu Noble, Azul Zulu 21 JRE | none | none |
 | `snapshot-slim-al2023` | Amazon Linux 2023 minimal, Amazon Corretto 21 headless | none | none |
 
 The Thumbnail tools column is what `bin/generate-thumbnail` uses for images, PDF and Office documents. Fess makes the thumbnail of an HTML page from an image in the page; a screenshot of the page comes from the `fess-thumbnail-playwright` plugin, which no image installs and which needs Node.js (see [Playwright](#playwright)).
@@ -132,7 +132,7 @@ A slim image is the Fess distribution and nothing else, which leaves out:
 
 Add a plugin back at startup with `FESS_PLUGINS` (for example `FESS_PLUGINS=fess-sso-saml:15.9.0`), or at build time in a derived image with `bin/fess-setup install plugin`.
 
-The Alpine and Noble images, slim or not, put the Temurin runtime on the bare distribution image (the snapshot images download it from the Adoptium release named by `TEMURIN_VERSION` in their Dockerfile instead of copying it from the `eclipse-temurin` image), and leave out the class data sharing archive the JVM maps only for a heap above 32 GB; such a heap starts without class data sharing. The Amazon Linux 2023 images install the headless Corretto runtime onto the minimal Amazon Linux image, so neither variant carries JDK tools such as `jcmd` or `jstack`. Every image runs with the `en_US.UTF-8` locale.
+The Alpine and Noble images, slim or not, put the Java runtime on the bare distribution image instead of copying it from a Java base image: the Alpine images download the Eclipse Temurin JRE from the Adoptium release named by `TEMURIN_VERSION` in their Dockerfile, and the Noble images download the Azul Zulu JRE named by `ZULU_VERSION` and `JRE_VERSION` from `cdn.azul.com`, checking it against the checksum Azul publishes (Zulu is used because it has glibc aarch64 builds). Both leave out the class data sharing archive the JVM maps only for a heap above 32 GB; such a heap starts without class data sharing. The Amazon Linux 2023 images install the headless Corretto runtime onto the minimal Amazon Linux image, so neither variant carries JDK tools such as `jcmd` or `jstack`. Every image runs with the `en_US.UTF-8` locale.
 
 Every image also keeps only its own architecture's native library in zstd-jni, the jar that extracts `.zst` and `.tar.zst` files. The distribution bundles one for each of 17 OS and architecture combinations, so the jar shrinks from 6.5 MB to about 0.4 MB.
 
