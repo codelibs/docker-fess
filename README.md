@@ -285,6 +285,8 @@ docker build --rm -t ghcr.io/codelibs/fess:snapshot-slim ./fess/snapshot-slim/
 docker build --rm -t ghcr.io/codelibs/fess-opensearch:3.10.0 ./opensearch/3.10/
 ```
 
+Besides the Fess plugins (`analysis-fess`, `analysis-extension`, `minhash`, `configsync`), the image installs `analysis-nori` and `analysis-smartcn`. `analysis-fess` builds its Korean and Chinese tokenizers on them and returns no tokens for those languages without them. Only `opensearch/snapshot` installs them; the released `opensearch/3.10` and the older directories are unchanged, so the first release image to carry them is the next one built from `opensearch/snapshot`.
+
 ### Project Structure
 
 ```
