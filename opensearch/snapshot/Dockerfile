@@ -11,12 +11,17 @@ ARG ANALYSIS_FESS_PLUGIN=${PLUGIN_REPO}/opensearch-analysis-fess/${PLUGIN_VERSIO
 ARG MINHASH_PLUGIN=${PLUGIN_REPO}/opensearch-minhash/${PLUGIN_VERSION}/opensearch-minhash-${PLUGIN_VERSION}.zip
 ARG CONFIGSYNC_PLUGIN=${PLUGIN_REPO}/opensearch-configsync/${PLUGIN_VERSION}/opensearch-configsync-${PLUGIN_VERSION}.zip
 
+# analysis-nori and analysis-smartcn are the Korean and Chinese tokenizers that
+# opensearch-analysis-fess needs for those languages; without them its Korean and Chinese
+# analyzers produce no tokens.
 RUN /usr/share/opensearch/bin/opensearch-plugin remove opensearch-security-analytics && \
     /usr/share/opensearch/bin/opensearch-plugin remove opensearch-performance-analyzer && \
     /usr/share/opensearch/bin/opensearch-plugin install $ANALYSIS_FESS_PLUGIN -b  && \
     /usr/share/opensearch/bin/opensearch-plugin install $ANALYSIS_EXTENSION_PLUGIN -b && \
     /usr/share/opensearch/bin/opensearch-plugin install $MINHASH_PLUGIN -b && \
     /usr/share/opensearch/bin/opensearch-plugin install $CONFIGSYNC_PLUGIN -b && \
+    /usr/share/opensearch/bin/opensearch-plugin install analysis-nori -b && \
+    /usr/share/opensearch/bin/opensearch-plugin install analysis-smartcn -b && \
     echo 'configsync.config_path: ${FESS_DICTIONARY_PATH}' >> /usr/share/opensearch/config/opensearch.yml && \
     mkdir /usr/share/opensearch/config/dictionary && \
     chown opensearch /usr/share/opensearch/config/dictionary
