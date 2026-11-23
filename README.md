@@ -26,7 +26,7 @@ Fess is an enterprise search server with a web-based administration UI, indexing
 - **Runtime**: Java 21 (Eclipse Temurin on Alpine; Azul Zulu on Ubuntu; Amazon Corretto on Amazon Linux 2023)
 - **Base Images**: Alpine Linux (production), Amazon Linux 2023, Ubuntu Noble, each also as a slim variant (see [Image Variants](#image-variants))
 - **Containerization**: Docker & Docker Compose
-- **Optional Services**: OpenSearch Dashboards, MinIO object storage
+- **Optional Services**: OpenSearch Dashboards
 
 ## Quick Start
 
@@ -68,14 +68,6 @@ docker compose -f compose.yaml -f compose-opensearch3.yaml -f compose-dashboards
 ```
 
 Fess is at http://localhost:8080 and OpenSearch Dashboards at http://localhost:5601.
-
-### With Object Storage (MinIO)
-
-```bash
-docker compose -f compose.yaml -f compose-opensearch3.yaml -f compose-minio.yaml up -d
-```
-
-Fess is at http://localhost:8080 and the MinIO console at http://localhost:9001.
 
 ### Development Snapshots
 
@@ -261,7 +253,6 @@ Instance 1 is at http://localhost:8080 and instance 2 at http://localhost:8081. 
 | Fess Admin | http://localhost:8080/admin | Administration panel |
 | OpenSearch API | http://localhost:9200 | Direct search engine access |
 | OpenSearch Dashboards | http://localhost:5601 | Data visualization |
-| MinIO Console | http://localhost:9001 | Object storage management |
 
 ## Development
 
@@ -305,7 +296,6 @@ docker-fess/
     ├── compose.yaml        # Base Fess service
     ├── compose-opensearch3.yaml  # OpenSearch 3.x
     ├── compose-dashboards3.yaml  # OpenSearch Dashboards
-    ├── compose-minio.yaml  # MinIO object storage
     ├── multi-instance/     # Multi-instance setup
     ├── snapshot/           # Development snapshot builds
     └── vanilla/            # Stock OpenSearch, without the Fess plugins
