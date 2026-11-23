@@ -189,14 +189,14 @@ The full set the images understand:
 | `SEARCH_ENGINE_HTTP_URL` | `http://localhost:9200` | Backend search engine URL |
 | `SEARCH_ENGINE_TYPE` | (none) | Set to `vanilla` (Fess 15.9 or later; `cloud` on earlier releases) for a plain OpenSearch without the Fess plugins, such as Amazon OpenSearch Service (`aws` adds AWS-specific behavior on top of `vanilla`). That mode loses the Japanese analyzers, minhash near-duplicate detection, result collapsing and the dictionary admin UI |
 | `SEARCH_ENGINE_USERNAME` | (none) | Username, when the search engine requires authentication |
-| `SEARCH_ENGINE_PASSWORD` | (none) | Password, when the search engine requires authentication. The entrypoint writes it into the `search_engine.password` line of `fess_config.properties` instead of passing it as a JVM option, so it does not appear in `ps` or `docker top`. The file is the one in `FESS_OVERRIDE_CONF_PATH` if you mounted a `fess_config.properties` there (it must be writable), otherwise the packaged one in `/etc/fess`. Spaces at either end of the password are dropped, because Fess trims every value it reads from that file |
+| `SEARCH_ENGINE_PASSWORD` | (none) | Password, when the search engine requires authentication. The entrypoint hands it to Fess as the environment variable `FESS_CONFIG_SEARCH_ENGINE_PASSWORD`, not as a JVM option, so `ps` and `docker top` do not show it (Fess 15.10 or later) |
 | `FESS_DICTIONARY_PATH` | `/var/lib/opensearch/config/` | Dictionary directory shared with OpenSearch: the `configsync.config_path` of that OpenSearch. Set it to `/usr/share/opensearch/config/dictionary/` for the `fess-opensearch` image; the default does not match it. See below |
 | `FESS_PORT` | `8080` | Port Fess listens on inside the container |
 | `FESS_CONTEXT_PATH` | `/` | Context path Fess is served under, e.g. `/fess` |
 | `FESS_HEAP_SIZE` | `512m` | Heap size; see Memory Settings below |
 | `FESS_MIN_MEM` / `FESS_MAX_MEM` | (none) | Asymmetric heap bounds; see Memory Settings below |
 | `FESS_HEAP_NEWSIZE` | (none) | Size of the young generation, passed to the JVM as `-Xmn`, e.g. `256m` |
-| `FESS_JAVA_OPTS` | (none) | Extra JVM options, mainly `-Dfess.config.*` and `-Dfess.system.*` |
+| `FESS_JAVA_OPTS` | (none) | Extra JVM options, mainly `-Dfess.config.*` and `-Dfess.system.*`. Do not put a password or an API key here: `ps` and `docker top` show it, and Fess warns at start. Set the environment variable of the key instead, e.g. `FESS_CONFIG_RAG_LLM_GEMINI_API_KEY` for `rag.llm.gemini.api.key` (`FESS_SYSTEM_` for a `system.properties` key; Fess 15.10 or later) |
 | `FESS_USE_IPV4` | (none) | Any non-empty value makes the JVM prefer the IPv4 stack (`-Djava.net.preferIPv4Stack=true`) |
 | `FESS_PROXY_HOST` / `FESS_PROXY_PORT` | (none) | Proxy for the Fess application's HTTP and HTTPS connections (`-Dhttp.proxyHost`, `-Dhttps.proxyHost` and the matching `proxyPort` options). It applies to the whole JVM, so Fess's own requests to the search engine use it too: add the search engine's host to `FESS_NON_PROXY_HOSTS` unless the proxy can reach it. The web crawl runs in a child JVM and does not use it |
 | `FESS_NON_PROXY_HOSTS` | (none) | Hosts that bypass the proxy for HTTP and HTTPS, separated by `\|` (`-Dhttp.nonProxyHosts`), e.g. `search01\|localhost` |

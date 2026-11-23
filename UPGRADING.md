@@ -19,13 +19,15 @@ Three things differ for a deployment that carries files or settings over from a 
   `bin/fess-setup check` (run it with `docker exec`) reports them as FAIL ("built for another
   release"). Change the version of every entry to the 15.10 one. The seven plugins the images
   install themselves already match the image.
-- **`SEARCH_ENGINE_PASSWORD` (and `ES_PASSWORD`) is written to `fess_config.properties`, no longer
-  passed as `-Dfess.config.search_engine.password`.** The JVM option showed the password in `ps` and
-  `docker top`, and in the command line of every crawler, suggest and thumbnail process. If you mount
-  your own `fess_config.properties` into `/opt/fess`, the entrypoint now rewrites its
-  `search_engine.password` line (or appends one), so the mounted file has to be writable, and the
-  container stops with an error when it is not. Remove `SEARCH_ENGINE_PASSWORD` and keep the password
-  in that file if you would rather not have it changed.
+- **A secret is given by an environment variable, not by a `-D` option.** `SEARCH_ENGINE_PASSWORD`
+  (and `ES_PASSWORD`) used to be passed as `-Dfess.config.search_engine.password`, which `ps` and
+  `docker top` show and which Fess repeats on the command line of the crawler, suggest and
+  thumbnail processes. The entrypoint now exports `FESS_CONFIG_SEARCH_ENGINE_PASSWORD` instead, which
+  Fess 15.10 reads. The same goes for any other secret you put in `FESS_JAVA_OPTS`
+  (`-Dfess.config.rag.llm.<name>.api.key=...`, `-Dfess.system.storage.secretkey=...`): Fess 15.10
+  warns about it at start. Give it as the variable made from the key instead: `FESS_CONFIG_` or
+  `FESS_SYSTEM_`, then the key in upper case with `.` written as `_`
+  (`FESS_CONFIG_RAG_LLM_GEMINI_API_KEY`, `FESS_SYSTEM_STORAGE_SECRETKEY`).
 
 ## Upgrading to 15.9
 
