@@ -55,46 +55,11 @@ elif [[ "x${ES_USERNAME}" != "x" ]] ; then
   FESS_JAVA_OPTS="${FESS_JAVA_OPTS} -Dfess.config.search_engine.username=${ES_USERNAME}"
 fi
 
-# The search engine password goes into fess_config.properties rather than into
-# -Dfess.config.search_engine.password: a JVM option is part of the command line that
-# `ps` and `docker top` print, and Fess repeats every -Dfess.config.* option on the command
-# line of the crawler, suggest, thumbnail and chunk processes it starts. The file is the copy
-# in the override directory if one was mounted there, otherwise the packaged one. The value
-# reaches awk through its environment, so it is not on any command line.
-set_search_engine_password() {
-  local conf="/opt/fess/fess_config.properties"
-  local packaged=false
-  if [[ ! -f "${conf}" ]] ; then
-    conf="/etc/fess/fess_config.properties"
-    packaged=true
-  fi
-  # Escape for a properties file: a backslash is doubled and a line break would end the value.
-  local value="${1//\\/\\\\}"
-  value="${value//$'\n'/\\n}"
-  value="${value//$'\r'/\\r}"
-  local tmp
-  if ! tmp=$(mktemp "${temp_dir}/fess_config.XXXXXX") \
-    || ! SEARCH_ENGINE_PASSWORD_LINE="${value}" awk '
-         /^search_engine\.password[ \t]*[=:]/ { print "search_engine.password=" ENVIRON["SEARCH_ENGINE_PASSWORD_LINE"]; found = 1; next }
-         { print }
-         END { if (!found) print "search_engine.password=" ENVIRON["SEARCH_ENGINE_PASSWORD_LINE"] }
-       ' "${conf}" > "${tmp}" \
-    || ! cat "${tmp}" > "${conf}" ; then
-    rm -f "${tmp}"
-    print_log ERROR "Failed to write the search engine password to ${conf}."
-    exit 1
-  fi
-  rm -f "${tmp}"
-  if [[ "${packaged}" = "true" ]] ; then
-    chmod 600 "${conf}"
-  fi
-}
-
 if [[ "x${SEARCH_ENGINE_PASSWORD}" != "x" ]] ; then
-  set_search_engine_password "${SEARCH_ENGINE_PASSWORD}"
+  export FESS_CONFIG_SEARCH_ENGINE_PASSWORD="${SEARCH_ENGINE_PASSWORD}"
 elif [[ "x${ES_PASSWORD}" != "x" ]] ; then
   print_log WARN "ES_PASSWORD is deprecated."
-  set_search_engine_password "${ES_PASSWORD}"
+  export FESS_CONFIG_SEARCH_ENGINE_PASSWORD="${ES_PASSWORD}"
 fi
 
 if [[ "x${FESS_JAVA_OPTS}" != "x" ]] ; then
