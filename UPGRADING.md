@@ -34,7 +34,10 @@ Four things differ for a deployment that carries files or settings over from a 1
   (`-Dfess.config.rag.llm.<name>.api.key=...`, `-Dfess.system.storage.secretkey=...`): Fess 15.10
   warns about it at start. Give it as the variable made from the key instead: `FESS_CONFIG_` or
   `FESS_SYSTEM_`, then the key in upper case with `.` written as `_`
-  (`FESS_CONFIG_RAG_LLM_GEMINI_API_KEY`, `FESS_SYSTEM_STORAGE_SECRETKEY`).
+  (`FESS_CONFIG_RAG_LLM_GEMINI_API_KEY`, `FESS_SYSTEM_STORAGE_SECRETKEY`). The 15.9 images also
+  left `SEARCH_ENGINE_PASSWORD` in the environment of the Fess process, where the System Info page
+  of the admin console lists it in clear text; the 15.10 entrypoint removes `SEARCH_ENGINE_PASSWORD`
+  and `ES_PASSWORD` from that environment, so the page shows only the masked `FESS_CONFIG_` entry.
 
 ## Upgrading to 15.9
 
