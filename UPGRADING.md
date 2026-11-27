@@ -4,7 +4,7 @@ Notes for moving an existing docker-fess deployment to a newer Fess image line.
 
 ## Upgrading to 15.10
 
-Three things differ for a deployment that carries files or settings over from a 15.9 image:
+Four things differ for a deployment that carries files or settings over from a 15.9 image:
 
 - **`tika.xml` is no longer read.** Fess 15.10 uses Apache Tika 4, which has no XML configuration
   file, so Fess builds the Tika parser in code. The 15.9 images move `tika.xml` into `/etc/fess`;
@@ -19,6 +19,13 @@ Three things differ for a deployment that carries files or settings over from a 
   `bin/fess-setup check` (run it with `docker exec`) reports them as FAIL ("built for another
   release"). Change the version of every entry to the 15.10 one. The seven plugins the images
   install themselves already match the image.
+- **The compose files start OpenSearch 3.10.0 (15.9 used 3.9.0), and the move is one way.**
+  `fess-opensearch:3.10.0` starts on the data and dictionary volumes a 3.9.0 container wrote, so
+  keep the volume names and change only the tag, but a 3.9.0 container refuses data a 3.10.0 node
+  has opened (`IndexFormatTooNewException`) and a snapshot taken on 3.10.0 cannot be restored
+  into 3.9.0. Take a snapshot or a copy of the volumes before pulling, and to go back start a new
+  3.9.0 node on empty volumes and restore the snapshot taken before the upgrade. Move the Fess
+  image to 15.10 in the same step: Fess 15.10 supports OpenSearch 3.10.0 only.
 - **A secret is given by an environment variable, not by a `-D` option.** `SEARCH_ENGINE_PASSWORD`
   (and `ES_PASSWORD`) used to be passed as `-Dfess.config.search_engine.password`, which `ps` and
   `docker top` show and which Fess repeats on the command line of the crawler, suggest and

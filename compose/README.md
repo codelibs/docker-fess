@@ -16,7 +16,6 @@ For Linux users, please see [Installing Compose V2](https://docs.docker.com/comp
 | `compose.yaml` | Base configuration for Fess (required) |
 | `compose-opensearch3.yaml` | OpenSearch 3.x backend |
 | `compose-dashboards3.yaml` | OpenSearch Dashboards for visualization |
-| `compose-minio.yaml` | MinIO object storage integration |
 | `compose-ollama.yaml` | Ollama LLM service with NVIDIA GPU support |
 | `compose-gemini.yaml` | Google Gemini LLM (cloud API) for AI/RAG Chat |
 | `compose-openai.yaml` | OpenAI LLM (cloud API) for AI/RAG Chat |
@@ -41,12 +40,6 @@ docker compose -f compose.yaml -f compose-opensearch3.yaml up -d
 
 ```bash
 docker compose -f compose.yaml -f compose-opensearch3.yaml -f compose-dashboards3.yaml up -d
-```
-
-### Fess with OpenSearch and MinIO
-
-```bash
-docker compose -f compose.yaml -f compose-opensearch3.yaml -f compose-minio.yaml up -d
 ```
 
 ### Fess with OpenSearch and Ollama with GPU (AI/RAG Chat)
@@ -119,7 +112,6 @@ docker volume rm compose_search01_data compose_search01_dictionary
 | Fess | http://localhost:8080 | Enterprise search web UI |
 | OpenSearch | http://localhost:9200 | Search engine API |
 | OpenSearch Dashboards | http://localhost:5601 | Data visualization (when enabled) |
-| MinIO Console | http://localhost:9000 | Object storage (when enabled) |
 | Ollama API | http://localhost:11434 | LLM API (when enabled) |
 | Google Gemini | https://generativelanguage.googleapis.com | Cloud LLM API (when `compose-gemini.yaml` is used) |
 | OpenAI | https://api.openai.com | Cloud LLM API (when `compose-openai.yaml` is used) |
@@ -164,15 +156,15 @@ echo 'vm.max_map_count=262144' | sudo tee -a /etc/sysctl.conf
 
 ### Combining Multiple Services
 
-When using multiple overlay files that set `FESS_JAVA_OPTS`, the last file's value takes precedence. If you need to combine options from multiple services (e.g., MinIO + Ollama), create a custom compose file with merged `FESS_JAVA_OPTS`.
+When using multiple overlay files that set `FESS_JAVA_OPTS`, the last file's value takes precedence. If you need to combine options from multiple services (e.g., Ollama + OCR), create a custom compose file with merged `FESS_JAVA_OPTS`.
 
-Example for MinIO + Ollama:
+Example for Ollama + OCR:
 
 ```yaml
 services:
   fess01:
     environment:
-      - "FESS_JAVA_OPTS=-Dfess.system.storage.accesskey=... -Dfess.system.storage.secretkey=... -Dfess.system.storage.endpoint=http://minio01:9000 -Dfess.system.storage.bucket=fess -Drag.llm.ollama.api.url=http://ollama01:11434"
+      - "FESS_JAVA_OPTS=-Dfess.config.rag.chat.enabled=true -Dfess.config.rag.llm.ollama.api.url=http://ollama01:11434 -Dfess.config.crawler.document.ocr.enabled=true -Dfess.config.crawler.document.ocr.language=jpn+eng"
 ```
 
 ### Behind an HTTP Proxy (Cloud LLMs)

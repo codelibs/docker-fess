@@ -46,6 +46,9 @@ fi
 if [[ "x${SEARCH_ENGINE_PASSWORD}" != "x" ]] ; then
   export FESS_CONFIG_SEARCH_ENGINE_PASSWORD="${SEARCH_ENGINE_PASSWORD}"
 fi
+# Fess reads the FESS_CONFIG_ variable only. Keep the original names out of the environment of
+# the Fess process, where the System Info page would list the password in cleartext.
+unset SEARCH_ENGINE_PASSWORD ES_PASSWORD
 
 # bin/fess runs as a child process, so this has to be exported rather than
 # written back into /etc/default/fess.
