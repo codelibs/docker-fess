@@ -30,9 +30,12 @@ Four things differ for a deployment that carries files or settings over from a 1
   (and `ES_PASSWORD`) used to be passed as `-Dfess.config.search_engine.password`, which `ps` and
   `docker top` show and which Fess repeats on the command line of the crawler, suggest and
   thumbnail processes. The entrypoint now exports `FESS_CONFIG_SEARCH_ENGINE_PASSWORD` instead, which
-  Fess 15.10 reads. The same goes for any other secret you put in `FESS_JAVA_OPTS`
-  (`-Dfess.config.rag.llm.<name>.api.key=...`, `-Dfess.system.storage.secretkey=...`): Fess 15.10
-  warns about it at start. Give it as the variable made from the key instead: `FESS_CONFIG_` or
+  Fess 15.10 reads. The 15.9 images also left `SEARCH_ENGINE_PASSWORD` in the environment of the
+  Fess process, where the System Info page of the admin console lists it in clear text; the 15.10
+  entrypoint removes `SEARCH_ENGINE_PASSWORD` and `ES_PASSWORD` from that environment, so the page
+  shows only the masked `FESS_CONFIG_` entry. The same goes for any other secret you put in
+  `FESS_JAVA_OPTS` (`-Dfess.config.rag.llm.<name>.api.key=...`,
+  `-Dfess.system.storage.secretkey=...`): Fess 15.10 warns about it at start. Give it as the variable made from the key instead: `FESS_CONFIG_` or
   `FESS_SYSTEM_`, then the key in upper case with `.` written as `_`
   (`FESS_CONFIG_RAG_LLM_GEMINI_API_KEY`, `FESS_SYSTEM_STORAGE_SECRETKEY`).
 
