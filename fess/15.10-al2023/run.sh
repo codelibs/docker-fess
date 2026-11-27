@@ -61,6 +61,9 @@ elif [[ "x${ES_PASSWORD}" != "x" ]] ; then
   print_log WARN "ES_PASSWORD is deprecated."
   export FESS_CONFIG_SEARCH_ENGINE_PASSWORD="${ES_PASSWORD}"
 fi
+# Fess reads the FESS_CONFIG_ variable only. Keep the original names out of the environment of
+# the Fess process, where the System Info page would list the password in cleartext.
+unset SEARCH_ENGINE_PASSWORD ES_PASSWORD
 
 if [[ "x${FESS_JAVA_OPTS}" != "x" ]] ; then
   echo "FESS_JAVA_OPTS=\"${FESS_JAVA_OPTS}\"" >> /etc/sysconfig/fess
