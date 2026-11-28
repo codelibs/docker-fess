@@ -64,7 +64,8 @@ docker compose -f compose.yaml -f compose-opensearch3.yaml -f compose-gemini.yam
 ```
 
 The Gemini overlay installs the `fess-llm-gemini` plugin via `FESS_PLUGINS`,
-sets `rag.chat.enabled=true` and `rag.llm.name=gemini`, and forwards the API key.
+sets `rag.chat.enabled=true` and `rag.llm.name=gemini`, and passes the API key
+as the environment variable `FESS_CONFIG_RAG_LLM_GEMINI_API_KEY` (Fess 15.10 or later).
 Override the model with `GEMINI_MODEL` (default: `gemini-2.5-flash`).
 
 ### Fess with OpenSearch and OpenAI (AI/RAG Chat)
@@ -75,7 +76,8 @@ docker compose -f compose.yaml -f compose-opensearch3.yaml -f compose-openai.yam
 ```
 
 The OpenAI overlay installs the `fess-llm-openai` plugin via `FESS_PLUGINS`,
-sets `rag.chat.enabled=true` and `rag.llm.name=openai`, and forwards the API key.
+sets `rag.chat.enabled=true` and `rag.llm.name=openai`, and passes the API key
+as the environment variable `FESS_CONFIG_RAG_LLM_OPENAI_API_KEY` (Fess 15.10 or later).
 Override the model with `OPENAI_MODEL` (default: `gpt-5-mini`).
 
 ### Fess Snapshot Builds
@@ -171,25 +173,32 @@ services:
 
 When the Fess container reaches the Internet through a corporate proxy
 (typical for `compose-gemini.yaml` / `compose-openai.yaml`), append the
-proxy options to `FESS_JAVA_OPTS` in your overlay file:
+proxy options to `FESS_JAVA_OPTS` in your overlay file. The API key stays in
+`FESS_CONFIG_RAG_LLM_GEMINI_API_KEY` from `compose-gemini.yaml`, so it does not
+need to be repeated here:
 
 ```yaml
 services:
   fess01:
     environment:
-      - "FESS_JAVA_OPTS=-Dfess.config.rag.chat.enabled=true -Dfess.config.rag.llm.gemini.api.key=${GEMINI_API_KEY} -Dfess.system.rag.llm.name=gemini -Dhttps.proxyHost=proxy.example.com -Dhttps.proxyPort=8080"
+      - "FESS_JAVA_OPTS=-Dfess.config.rag.chat.enabled=true -Dfess.system.rag.llm.name=gemini -Dhttps.proxyHost=proxy.example.com -Dhttps.proxyPort=8080"
 ```
 
 ### Why `FESS_JAVA_OPTS` Instead of Bare Environment Variables?
 
 Fess does not auto-map shell-style environment variables such as
 `RAG_CHAT_ENABLED` or `RAG_LLM_GEMINI_API_KEY` to internal properties.
-All RAG / LLM settings must be passed as JVM options:
+RAG / LLM settings are passed as JVM options. From Fess 15.10, a setting can
+also be given as the environment variable made from its key: the prefix
+`FESS_CONFIG_` or `FESS_SYSTEM_`, then the key in upper case with every
+character other than a letter or a digit replaced by `_`. Give a secret such
+as an API key that way: a JVM option is shown by `ps` and `docker top`, and
+Fess warns at start when one carries a secret.
 
-| Setting kind | Prefix | Example |
+| Setting kind | JVM option | Environment variable (Fess 15.10 or later) |
 |---|---|---|
-| `fess_config.properties` keys (`rag.chat.enabled`, `rag.llm.gemini.api.key`, ...) | `-Dfess.config.` | `-Dfess.config.rag.chat.enabled=true` |
-| `system.properties` keys (`rag.llm.name`) | `-Dfess.system.` | `-Dfess.system.rag.llm.name=gemini` |
+| `fess_config.properties` keys (`rag.chat.enabled`, `rag.llm.gemini.api.key`, ...) | `-Dfess.config.rag.chat.enabled=true` | `FESS_CONFIG_RAG_LLM_GEMINI_API_KEY=...` |
+| `system.properties` keys (`rag.llm.name`) | `-Dfess.system.rag.llm.name=gemini` | `FESS_SYSTEM_RAG_LLM_NAME=gemini` |
 
 `rag.llm.name` is also editable from the admin UI ("System > General"),
 which persists the value in OpenSearch. The `-Dfess.system.*` form only
