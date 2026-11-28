@@ -2,10 +2,13 @@
 # Usage:
 #   export OPENAI_API_KEY="sk-..."
 #   docker compose -f compose.yaml -f compose-opensearch3.yaml -f compose-openai.yaml up -d
+# The API key is given to Fess as the environment variable FESS_CONFIG_RAG_LLM_OPENAI_API_KEY,
+# not as a -D option, which ps and docker top show (Fess 15.10 or later).
 # API key:
 #   https://platform.openai.com/api-keys
 services:
   fess01:
     environment:
       - "FESS_PLUGINS=fess-llm-openai:15.9.0"
-      - "FESS_JAVA_OPTS=-Dfess.config.rag.chat.enabled=true -Dfess.config.rag.llm.openai.api.key=${OPENAI_API_KEY:-} -Dfess.config.rag.llm.openai.model=${OPENAI_MODEL:-gpt-5-mini} -Dfess.system.rag.llm.name=openai"
+      - "FESS_CONFIG_RAG_LLM_OPENAI_API_KEY=${OPENAI_API_KEY:-}"
+      - "FESS_JAVA_OPTS=-Dfess.config.rag.chat.enabled=true -Dfess.config.rag.llm.openai.model=${OPENAI_MODEL:-gpt-5-mini} -Dfess.system.rag.llm.name=openai"

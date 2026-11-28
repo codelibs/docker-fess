@@ -2,10 +2,13 @@
 # Usage:
 #   export GEMINI_API_KEY="AIzaSy..."
 #   docker compose -f compose.yaml -f compose-opensearch3.yaml -f compose-gemini.yaml up -d
+# The API key is given to Fess as the environment variable FESS_CONFIG_RAG_LLM_GEMINI_API_KEY,
+# not as a -D option, which ps and docker top show (Fess 15.10 or later).
 # API key:
 #   https://aistudio.google.com/apikey
 services:
   fess01:
     environment:
       - "FESS_PLUGINS=fess-llm-gemini:15.9.0"
-      - "FESS_JAVA_OPTS=-Dfess.config.rag.chat.enabled=true -Dfess.config.rag.llm.gemini.api.key=${GEMINI_API_KEY:-} -Dfess.config.rag.llm.gemini.model=${GEMINI_MODEL:-gemini-2.5-flash} -Dfess.system.rag.llm.name=gemini"
+      - "FESS_CONFIG_RAG_LLM_GEMINI_API_KEY=${GEMINI_API_KEY:-}"
+      - "FESS_JAVA_OPTS=-Dfess.config.rag.chat.enabled=true -Dfess.config.rag.llm.gemini.model=${GEMINI_MODEL:-gemini-2.5-flash} -Dfess.system.rag.llm.name=gemini"
